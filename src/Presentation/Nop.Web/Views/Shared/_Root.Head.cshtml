@@ -11,12 +11,15 @@
 @inject IPermissionService permissionService
 @inject SeoSettings seoSettings
 @inject AppSettings appSettings
-
+@inject IWebHostEnvironment webHostEnvironment
 @{
     if (catalogSettings.DisplayAllPicturesOnCatalogPages)
     {
         NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/lib_npm/swiper/swiper-bundle.min.js");
     }
+    if (webHostEnvironment.IsDevelopment())
+        NopHtml.AppendScriptParts(ResourceLocation.Footer,"~/js/westwind.hot.reload.js", excludeFromBundle : true);
+    
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/js/public.countryselect.js");
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/js/public.ajaxcart.js");
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/js/public.common.js");

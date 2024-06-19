@@ -2,6 +2,7 @@
 using Nop.Core.Configuration;
 using Nop.Core.Infrastructure;
 using Nop.Web.Framework.Infrastructure.Extensions;
+using Westwind.AspNetCore.LiveReload;
 
 namespace Nop.Web;
 
@@ -38,6 +39,16 @@ public partial class Program
 
         //add services to the application and configure service provider
         builder.Services.ConfigureApplicationServices(builder);
+
+        builder.Services.AddLiveReload(config =>
+        {
+            config.LiveReloadEnabled = builder.Environment.IsDevelopment();
+            //config.WebSocketHost = "ws://localhost:5000";
+            config.ClientFileExtensions = ".cshtml,.css,.js,.htm,.html,.ts,.razor,.cs"; // track also cs file
+            // optional - use config instead
+            //config.LiveReloadEnabled = true;
+            //config.FolderToMonitor = Path.GetFullname(Path.Combine(Env.ContentRootPath,"..")) ;
+        });
 
         var app = builder.Build();
 

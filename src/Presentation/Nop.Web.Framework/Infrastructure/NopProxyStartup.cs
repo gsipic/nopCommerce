@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nop.Core.Infrastructure;
 using Nop.Web.Framework.Infrastructure.Extensions;
+using Westwind.AspNetCore.LiveReload;
 
 namespace Nop.Web.Framework.Infrastructure;
 
@@ -24,6 +25,7 @@ public partial class NopProxyStartup : INopStartup
     /// <param name="application">Builder for configuring an application's request pipeline</param>
     public void Configure(IApplicationBuilder application)
     {
+        application.UseLiveReload();
         application.UseNopProxy();
     }
 
