@@ -26,6 +26,9 @@ x64/
 # Visual Studio Code files
 .vscode/
 
+# Rider files
+.idea/
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
