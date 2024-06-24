@@ -32,7 +32,7 @@ public partial class NopStaticFilesStartup : INopStartup
     public void Configure(IApplicationBuilder application)
     {
         //use response compression before UseNopStaticFiles to support compress for it
-        application.UseNopResponseCompression();
+        //application.UseNopResponseCompression();
 
         //WebOptimizer should be placed before configuring static files
         application.UseNopWebOptimizer();

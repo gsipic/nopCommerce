@@ -29,7 +29,7 @@ public partial class NopWebMarkupMinStartup : INopStartup
     public void Configure(IApplicationBuilder application)
     {
         //use WebMarkupMin
-        application.UseNopWebMarkupMin();
+        //application.UseNopWebMarkupMin();
     }
 
     /// <summary>
