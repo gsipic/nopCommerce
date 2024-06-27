@@ -1,4 +1,5 @@
 ﻿using Autofac.Extensions.DependencyInjection;
+using BlazorApp1;
 using Nop.Core.Configuration;
 using Nop.Core.Infrastructure;
 using Nop.Web.Framework.Infrastructure.Extensions;
@@ -39,7 +40,11 @@ public partial class Program
 
         //add services to the application and configure service provider
         builder.Services.ConfigureApplicationServices(builder);
-
+        builder.Services
+            .AddRazorComponents()
+            .AddInteractiveServerComponents()
+            .AddInteractiveWebAssemblyComponents();
+            
         builder.Services.AddLiveReload(config =>
         {
             config.LiveReloadEnabled = builder.Environment.IsDevelopment();
@@ -48,7 +53,11 @@ public partial class Program
         });
 
         var app = builder.Build();
-
+        app.MapRazorComponents<App>()
+            .AddInteractiveServerRenderMode()
+            .AddInteractiveWebAssemblyRenderMode()
+            //.AddAdditionalAssemblies(typeof(BlazorApp1._Imports).Assembly);
+        ;
         //configure the application HTTP request pipeline
         app.ConfigureRequestPipeline();
         await app.StartEngineAsync();

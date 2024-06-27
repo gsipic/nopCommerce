@@ -1,0 +1,16 @@
+<h3>Test</h3>
+
+<button @onclick="IncrementCount2">Button</button>
+
+<p>@counter</p>
+
+@code {
+
+    private int counter = 0;
+
+    private void IncrementCount2()
+    {
+        counter += 10;
+    }
+
+}

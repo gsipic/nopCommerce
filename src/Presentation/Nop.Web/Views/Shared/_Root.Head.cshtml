@@ -77,6 +77,10 @@
     <!--Powered by nopCommerce - https://www.nopCommerce.com-->
     
     @Html.Raw(commonSettings.HeaderCustomHtml)
+
+    <base href="~/" />
+    <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)"
+               render-mode="WebAssemblyPrerendered" />
 </head>
 <body>
     <nop-antiforgery-token />
@@ -86,5 +90,6 @@
     @NopHtml.GenerateInlineScripts(ResourceLocation.Footer)
     
     @Html.Raw(commonSettings.FooterCustomHtml)
+    <!script src="_framework/blazor.web.js"></!script>
 </body>
 </html>

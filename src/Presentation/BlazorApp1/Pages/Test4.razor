@@ -1,0 +1,54 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<PageTitle>JS Collocation erer</PageTitle>
+
+<h1>JS Collocation Example 2dfdfdf</h1>
+
+<button @onclick="ShowPrompt">Call showPrompt2</button>
+
+@if (!string.IsNullOrEmpty(result))
+{
+    <p>
+        Hello @result!
+    </p>
+}
+
+@code {
+    private IJSObjectReference? module;
+    private string? result;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            /*
+                Change the {PATH} placeholder in the next line to the path of
+                the collocated JS file in the app. Examples:
+
+                ./Components/Pages/JsCollocation2.razor.js (.NET 8 or later)
+                ./Pages/JsCollocation2.razor.js (.NET 7 or earlier)
+            */
+            module = await JS.InvokeAsync<IJSObjectReference>("import",
+                $"./Pages/Test4.razor.js?v={System.Guid.NewGuid().ToString()}");
+        }
+    }
+
+    public async void ShowPrompt()
+    {
+        if (module is not null)
+        {
+            result = await module.InvokeAsync<string>(
+                "showPrompt2","What's your name?");
+            StateHasChanged();
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
+    }
+}

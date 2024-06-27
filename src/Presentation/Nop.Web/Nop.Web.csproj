@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\Libraries\Nop.Core\Nop.Core.csproj" />
     <ProjectReference Include="..\..\Libraries\Nop.Data\Nop.Data.csproj" />
     <ProjectReference Include="..\..\Libraries\Nop.Services\Nop.Services.csproj" />
+    <ProjectReference Include="..\BlazorApp1\BlazorApp1.csproj" />
     <ProjectReference Include="..\Nop.Web.Framework\Nop.Web.Framework.csproj" />
   </ItemGroup>
 
@@ -62,6 +63,9 @@
     in order to avoid the "Duplicate dll" error during publication. 
     We can also use “ExcludeConfigFilesFromBuildOutput” according to https://github.com/aspnet/AspNetCore/issues/14017 -->
     <Content Update="**\*.config;**\*.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
   </ItemGroup>
 
   <!-- This target execute after "Build" target.

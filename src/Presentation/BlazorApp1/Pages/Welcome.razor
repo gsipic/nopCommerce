@@ -1,0 +1,25 @@
+<h1>Hello</h1>
+<h1>World</h1>
+
+<h1>World</h1>
+
+<button class="btn btn-success" @onclick="IncrementCount">Click</button>
+
+@if (currentCount > 5)
+{
+    <p>Sucess!!</p>
+}
+else
+{
+    <p>Keep clicking :).....</p>
+}
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount += 1;
+    }
+
+}
