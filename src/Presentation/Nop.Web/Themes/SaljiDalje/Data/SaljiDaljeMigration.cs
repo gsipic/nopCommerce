@@ -1,3 +1,4 @@
+using System.Data;
 using System.Text;
 using FluentMigrator;
 using Newtonsoft.Json;
@@ -10,6 +11,7 @@ using Nop.Core.Domain.Media;
 using Nop.Core.Domain.Security;
 using Nop.Core.Infrastructure;
 using Nop.Data;
+using Nop.Data.Extensions;
 using Nop.Data.Migrations;
 using Nop.Services.Authentication.External;
 using Nop.Services.Catalog;
@@ -161,11 +163,11 @@ namespace SaljiDalje.Core.Data
 
             InstallCategories();
 
-            //Create.TableFor<CostumerPictureAttachmentMapping>();
+            Create.TableFor<CostumerPictureAttachmentMapping>();
 
-            //Create.TableFor<ProductExtended>();
+            Create.TableFor<ProductExtended>();
 
-            /*Create.ForeignKey()
+            Create.ForeignKey()
                 .FromTable(nameof(ProductExtended))
                 .ForeignColumn(nameof(ProductExtended.ProductId))
                 .ToTable(nameof(Product)).PrimaryColumn(nameof(Product.Id)).OnDelete(Rule.Cascade);
@@ -173,7 +175,7 @@ namespace SaljiDalje.Core.Data
             Create.ForeignKey()
                 .FromTable(nameof(ProductExtended))
                 .ForeignColumn(nameof(ProductExtended.UserId))
-                .ToTable(nameof(Customer)).PrimaryColumn(nameof(Customer.Id)).OnDelete(Rule.Cascade);*/
+                .ToTable(nameof(Customer)).PrimaryColumn(nameof(Customer.Id)).OnDelete(Rule.Cascade);
         }
 
         private void InstallCategories()
