@@ -1,7 +1,10 @@
-﻿using Autofac.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Autofac.Extensions.DependencyInjection;
 using BlazorApp1;
 using Nop.Core.Configuration;
 using Nop.Core.Infrastructure;
+using Nop.Data;
+using Nop.Data.Migrations;
 using Nop.Web.Framework.Infrastructure.Extensions;
 using Westwind.AspNetCore.LiveReload;
 
@@ -61,6 +64,16 @@ public partial class Program
         //configure the application HTTP request pipeline
         app.ConfigureRequestPipeline();
         await app.StartEngineAsync();
+        
+        //further actions are performed only when the database is installed
+        if (DataSettingsManager.IsDatabaseInstalled())
+        {
+            var engine = EngineContext.Current;
+            //update nopCommerce core and db
+            var migrationManager = engine.Resolve<IMigrationManager>();
+            var assembly = Assembly.GetAssembly(typeof(Program));
+            migrationManager.ApplyUpMigrations(assembly, MigrationProcessType.Update);
+        }
 
         await app.RunAsync();
     }
