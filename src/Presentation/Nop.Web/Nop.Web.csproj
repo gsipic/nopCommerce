@@ -38,6 +38,7 @@
     <Compile Remove="Plugins\**;Themes\**" />
     <Compile Include="Themes\SaljiDalje\Data\**"/>
     <Compile Include="Themes\SaljiDalje\Controllers\**"/>
+    <Compile Include="Themes\SaljiDalje\ExternalAuth\**"/>
     <Content Remove="Plugins\**;Themes\**" />
     <EmbeddedResource Remove="Plugins\**;Themes\**" />
     <None Remove="Plugins\**;Themes\**" />
@@ -69,6 +70,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.7" />
   </ItemGroup>
 
   <!-- This target execute after "Build" target.
