@@ -1,6 +1,8 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Nop.Core.Domain.Seo
 @using Nop.Web.Factories
 @inject ICatalogModelFactory _catalogModelFactory
+@inject SeoSettings seoSettings
 
 @functions {
 
@@ -43,15 +45,31 @@
 
 }
 
+@{
+    //custom tag(s);
+    if (!string.IsNullOrEmpty(seoSettings.CustomHeadTags))
+    {
+        NopHtml.AppendHeadCustomParts(seoSettings.CustomHeadTags);
+    }
+
+    //event
+    //await eventPublisher.PublishAsync(new PageRenderingEvent(NopHtml));
+
+    var title = await NopHtml.GenerateTitleAsync();
+    var description = await @NopHtml.GenerateMetaDescriptionAsync();
+    var keywords = await NopHtml.GenerateMetaKeywordsAsync();
+}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName" dir="@Html.GetUIDirection(!await Html.ShouldUseRtlThemeAsync())" class="@NopHtml.GeneratePageCssClasses()">
 <head>
     <meta charset="utf-8">
-    <title>Finder | Car Finder | Home</title>
+    <title>@title</title>
     <!-- SEO Meta Tags-->
-    <meta name="description" content="Finder - Directory &amp; Listings Bootstrap Template">
-    <meta name="keywords" content="bootstrap, business, directory, listings, e-commerce, car dealer, city guide, real estate, job board, user account, multipurpose, ui kit, html5, css3, javascript, gallery, slider, touch">
-    <meta name="author" content="Createx Studio">
+    <meta name="description" content="@description" />
+    <meta name="keywords" content="@keywords" />
+    <meta name="author" content="Salji Dalje">
+    @NopHtml.GenerateHeadCustom()
     <!-- Viewport-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Favicon and Touch Icons-->
