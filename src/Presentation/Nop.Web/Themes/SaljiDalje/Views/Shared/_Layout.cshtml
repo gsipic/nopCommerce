@@ -9,7 +9,7 @@
         if (lineModel.Category.SubCategories.Count > 0)
         {
             <li class="dropdown">
-                <a class="dropdown-item dropdown-toggle" href="@Url.RouteUrl("Category", new { SeName = lineModel.Category.SeName })" role="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="pe-3">@lineModel.Category.Name</span></a>
+                <a class="dropdown-item dropdown-toggle" href="@Url.RouteUrl("Category", new { SeName = lineModel.Category.SeName })" role="button" aria-expanded="false"><span class="pe-3">@lineModel.Category.Name</span></a>
                 <ul class="dropdown-menu dropdown-menu-dark">
                     @{
                         foreach (var subCategory in lineModel.Category.SubCategories)
