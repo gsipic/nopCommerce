@@ -2,6 +2,7 @@
 @using Nop.Core.Domain.Seo
 @using Nop.Web.Factories
 @inject ICatalogModelFactory _catalogModelFactory
+@inject ICommonModelFactory _commonModelFactory;
 @inject SeoSettings seoSettings
 
 @functions {
@@ -58,6 +59,8 @@
     var title = await NopHtml.GenerateTitleAsync();
     var description = await @NopHtml.GenerateMetaDescriptionAsync();
     var keywords = await NopHtml.GenerateMetaKeywordsAsync();
+
+    var model = await _commonModelFactory.PrepareHeaderLinksModelAsync();
 }
 
 <!DOCTYPE html>
@@ -305,7 +308,17 @@
         </a>
         <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
-        </button><a class="btn btn-link btn-light btn-sm d-none d-lg-block order-lg-3" href="#signin-modal" data-bs-toggle="modal"><i class="fi-user me-2"></i>Sign in</a><a class="btn btn-primary btn-sm ms-2 order-lg-3" href="/sellcar"><i class="fi-plus me-2"></i>Sell car</a>
+        </button>
+        @if (model.IsAuthenticated)
+        {
+            <a class="btn btn-link btn-light btn-sm d-none d-lg-block order-lg-3" href="@Url.RouteUrl("Logout")"><i class="fi-user me-2"></i>LogOut</a>
+        }
+        else
+        {
+            <a class="btn btn-link btn-light btn-sm d-none d-lg-block order-lg-3" href="@Url.RouteUrl("Login")"><i class="fi-user me-2"></i>Login</a>
+
+        }
+        <a class="btn btn-primary btn-sm ms-2 order-lg-3" href="/sellcar"><i class="fi-plus me-2"></i>Sell car</a>
         <ul class="collapse navbar-collapse order-lg-2" id="navbarNav">
             <ul class="navbar-nav navbar-nav-scroll" style="max-height: 35rem;">
                 <!-- Demos switcher-->
