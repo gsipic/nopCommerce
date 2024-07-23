@@ -73,7 +73,7 @@ namespace Nop.Web.Themes.SaljiDalje.ExternalAuth.Facebook
             //configure login callback action
             var authenticationProperties = new AuthenticationProperties
             {
-                RedirectUri = Url.Action("LoginCallback", "FacebookAuthentication", new { returnUrl = returnUrl })
+                RedirectUri = Url.Action("LoginCallback", "FacebookTestAuthentication", new { returnUrl = returnUrl })
             };
             authenticationProperties.SetString(FacebookAuthenticationDefaults.ErrorCallback, Url.RouteUrl("Login", new { returnUrl }));
 

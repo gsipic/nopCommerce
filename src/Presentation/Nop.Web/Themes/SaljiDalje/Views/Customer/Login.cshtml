@@ -40,6 +40,7 @@
                 </div>
                 <form class="needs-validation" asp-route="Login" asp-route-returnurl="@Context.Request.Query["ReturnUrl"]" method="post" novalidate>
                     <div asp-validation-summary="ModelOnly">@T("Account.Login.Unsuccessful")</div>
+                    @await Html.PartialAsync("_ExternalAuthentication.Errors")
                     <div class="mb-4">
                         <label asp-for="Username" class="form-label text-light mb-2"></label>
                         <input asp-for="Username" class="form-control form-control-light" placeholder="Enter your username" required autofocus="autofocus"/>

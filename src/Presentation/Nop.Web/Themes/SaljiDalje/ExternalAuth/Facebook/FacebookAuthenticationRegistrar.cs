@@ -18,7 +18,7 @@ namespace SaljiDalje.Core
         /// <param name="builder">Authentication builder</param>
         public void Configure(AuthenticationBuilder builder)
         {
-            builder.AddGoogle(FacebookDefaults.AuthenticationScheme, options =>
+            builder.AddFacebook(FacebookDefaults.AuthenticationScheme, options =>
             {
                 //set credentials
                 //var settings = EngineContext.Current.Resolve<GoogleExternalAuthSettings>();
