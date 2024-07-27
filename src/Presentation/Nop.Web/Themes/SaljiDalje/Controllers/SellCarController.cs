@@ -189,7 +189,7 @@ public partial class SellCarController(
                     Title = "",
                     VehicleCondition = item.Select(option => new SpecificationOption { Text = option.Text, Value = option.Value })
                         .ToList()
-                    ,SpecificationAttributeOptionIdStateOptionId = "3",
+                    ,SpecificationAttributeOptionIdStateOptionId = "2",
                     SpecificationAttributeAdTypeIdStateOptionId = "0",
                     AdType = new List<SpecificationOption>
                     {
@@ -206,10 +206,30 @@ public partial class SellCarController(
                     }
                 }, Price = new Price
                 {
-                    SellCarPrice = 230,
+                    SellCarPrice = 260,
                     NegotiatedPrice = true
+                },
+                VehicleInformation = new VehicleInformation
+                {
+                    Color = new List<SpecificationOption>
+                    {
+                        new()
+                        {
+                            Text = "Red",
+                            Value = "1"
+                        },
+                        new()
+                        {
+                            Text = "Green",
+                            Value = "2"
+                        },
+                        new()
+                        {
+                            Text = "Blue",
+                            Value = "2"
+                        }
+                    }
                 }
-                
             });
     }
 

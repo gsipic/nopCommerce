@@ -1,7 +1,7 @@
 @inject HttpClient HttpClient
 
 <EditForm Model="SellCarModel" OnValidSubmit="PlaceAd">
-    <!-- Basic info-->
+<!-- Basic info-->
 <section class="card card-light card-body border-0 shadow-sm p-4 mb-4" id="basic-info">
     <h2 class="h4 text-light mb-4"><i class="fi-info-circle text-primary fs-5 mt-n1 me-2"></i>Basic info</h2>
     <div class="mb-3">
@@ -151,8 +151,14 @@
                     <option value="Rear Wheel Drive">Rear Wheel Drive</option>
                     <option value="All Wheel Drive">All Wheel Drive</option>
                 </select>
-                <label class="form-label text-light" for="sc-color">Color </label>
-                <input class="form-control form-control-light mb-3" type="text" id="sc-color" value="Aspen White" placeholder="Enter color">
+                <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Color)">Color </label>
+                <InputSelect class="form-select form-select-light" id="@nameof(SellCarModel.VehicleInformation.Color)" @bind-Value="SellCarModel.VehicleInformation.SpecificationAttributeOptionIdColorOptionId" placeholder="Enter color">
+                    <option value="" disabled>Select color</option>
+                    @foreach (var item in SellCarModel.VehicleInformation.Color)
+                    {
+                        <option value="@item.Value" selected>@item.Text</option>
+                    }
+                </InputSelect>
             </div>
         </div>
     </div>
