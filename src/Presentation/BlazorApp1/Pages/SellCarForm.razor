@@ -1,6 +1,6 @@
 @inject HttpClient HttpClient
 
-<EditForm Model="SellCarModel" OnValidSubmit="PlaceAd">
+<EditForm EditContext="EditContext" OnValidSubmit="PlaceAd">
 <!-- Basic info-->
 <section class="card card-light card-body border-0 shadow-sm p-4 mb-4" id="basic-info">
     <h2 class="h4 text-light mb-4"><i class="fi-info-circle text-primary fs-5 mt-n1 me-2"></i>Basic info</h2>
@@ -55,116 +55,101 @@
     <h2 class="h4 text-light mb-4"><i class="fi-car text-primary fs-5 mt-n1 me-2"></i>Vehicle information</h2>
     <div class="row pb-2">
         <div class="col-sm-6 mb-3">
-            <label class="form-label text-light" for="sc-make">Make <span class="text-danger">*</span></label>
-            <select class="form-select form-select-light" id="sc-make">
+            <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Make)">Make <span class="text-danger">*</span></label>
+            <InputSelect class="form-select form-select-light" id="@nameof(SellCarModel.VehicleInformation.Make)" @bind-Value="SellCarModel.VehicleInformation.MakeSpecificationOption">
                 <option value="" disabled>Select make</option>
-                <option value="Acura">Acura</option>
-                <option value="BMW">BMW</option>
-                <option value="Citroen">Citroen</option>
-                <option value="Lexus">Lexus</option>
-                <option value="Mercedes-Benz" selected>Mercedes-Benz</option>
-                <option value="Nissan">Nissan</option>
-                <option value="Toyota">Toyota</option>
-            </select>
+                @foreach (var item in SellCarModel.VehicleInformation.Make)
+                {
+                    <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.MakeSpecificationOption.ToString() == item.Value)">@item.Text</option>
+                }
+            </InputSelect>
         </div>
         <div class="col-sm-6 mb-3">
-            <label class="form-label text-light" for="sc-model">Model <span class="text-danger">*</span></label>
-            <select class="form-select form-select-light" id="sc-model">
+            <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Model)">Model <span class="text-danger">*</span></label>
+            <InputSelect class="form-select form-select-light" for="@nameof(SellCarModel.VehicleInformation.Model)" @bind-Value="SellCarModel.VehicleInformation.ModelSpecificationOption">
                 <option value="" disabled>Select model</option>
-                <option value="A-Class">A-Class</option>
-                <option value="B-Class">B-Class</option>
-                <option value="C-Class">C-Class</option>
-                <option value="E 220">E 220</option>
-                <option value="E 400" selected>E 400</option>
-                <option value="GLS 550">GLS 550</option>
-                <option value="GLE-Class">GLE-Class</option>
-                <option value="ML 350">ML 350</option>
-                <option value="Viano">Viano</option>
-            </select>
+                @foreach (var item in model)
+                {
+                    <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.ModelSpecificationOption == item.Value)">@item.Text</option>
+                }
+            </InputSelect>
         </div>
         <div class="col-md-3 col-sm-6 mb-3">
-            <label class="form-label text-light" for="sc-year">Year <span class="text-danger">*</span></label>
-            <select class="form-select form-select-light" id="sc-year">
+            <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Year)">Year <span class="text-danger">*</span></label>
+            <InputSelect class="form-select form-select-light" id="@nameof(SellCarModel.VehicleInformation.Year)" @bind-Value="SellCarModel.VehicleInformation.Year">
                 <option value="" disabled>Select year</option>
-                <option value="2021">2021</option>
-                <option value="2020">2020</option>
-                <option value="2019">2019</option>
-                <option value="2018" selected>2018</option>
-                <option value="2017">2017</option>
-                <option value="2016">2016</option>
-                <option value="2015">2015</option>
-                <option value="2014">2014</option>
-                <option value="2013">2013</option>
-            </select>
+                @foreach (var item in SellCarModel.VehicleInformation.YearOptions)
+                {
+                    <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.Year.ToString() == item.Value)">@item.Text</option>
+                }
+            </InputSelect>
         </div>
         <div class="col-md-3 col-sm-6 mb-3">
-            <label class="form-label text-light" for="sc-mileage">Mileage <span class="text-danger">*</span></label>
-            <input class="form-control form-control-light" type="number" id="sc-mileage" min="200" step="100" value="25000" placeholder="Enter mileage">
+            <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Mileage)">Mileage <span class="text-danger">*</span></label>
+            <InputNumber class="form-control form-control-light" type="number" id="@(SellCarModel.VehicleInformation.Mileage)" min="200" step="100" @bind-Value="SellCarModel.VehicleInformation.Mileage" placeholder="Enter mileage"/>
         </div>
         <div class="col-md-6 mb-3">
-            <label class="form-label text-light" for="sc-vin">VIN</label>
-            <input class="form-control form-control-light" type="text" id="sc-vin" value="2VW821AU9JM754284" placeholder="Enter VIN code">
+            <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.VIN)">VIN</label>
+            <InputText class="form-control form-control-light" type="text" id="@nameof(SellCarModel.VehicleInformation.VIN)" @bind-Value="SellCarModel.VehicleInformation.VIN" placeholder="Enter VIN code"/>
         </div>
     </div>
     <div class="border-top border-light mt-2 pt-4">
         <div class="row pb-2">
             <div class="col-md-6">
-                <label class="form-label text-light" for="sc-body">Body type <span class="text-danger">*</span></label>
-                <select class="form-select form-select-light mb-3" id="sc-body">
+                <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.BodyTypeOption)">Body type <span class="text-danger">*</span></label>
+                <InputSelect class="form-select form-select-light mb-3" id="@nameof(SellCarModel.VehicleInformation.BodyTypeOption)" @bind-Value="SellCarModel.VehicleInformation.BodyTypeOption">
                     <option value="" disabled>Select body type</option>
-                    <option value="Compact">Compact</option>
-                    <option value="Convertible" selected>Convertible</option>
-                    <option value="Crossover">Crossover</option>
-                    <option value="Coupe">Coupe</option>
-                    <option value="Family MPV">Family MPV</option>
-                    <option value="Pickup">Pickup</option>
-                    <option value="Sedan">Sedan</option>
-                    <option value="SUV">SUV</option>
-                    <option value="Wagon">Wagon</option>
-                </select>
-                <label class="form-label text-light" for="sc-fuel">Fuel type <span class="text-danger">*</span></label>
-                <select class="form-select form-select-light mb-3" id="sc-fuel">
+                    @foreach (var item in SellCarModel.VehicleInformation.BodyType)
+                    {
+                    <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.BodyTypeOption == item.Value)">@item.Text</option>
+                    }
+                </InputSelect>
+                <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.FuelTypeOption)">Fuel type <span class="text-danger">*</span></label>
+                <InputSelect class="form-select form-select-light mb-3" id="@nameof(SellCarModel.VehicleInformation.FuelTypeOption)" @bind-Value="SellCarModel.VehicleInformation.FuelTypeOption">
                     <option value="" disabled>Select fuel type</option>
-                    <option value="Gasoline" selected>Gasoline</option>
-                    <option value="Diesel">Diesel</option>
-                    <option value="Hybrid">Hybrid</option>
-                    <option value="Electric">Electric</option>
-                </select>
-                <label class="form-label text-light" for="sc-engine">Engine <span class="text-danger">*</span></label>
+                    @foreach (var item in SellCarModel.VehicleInformation.FuelType)
+                    {
+                    <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.FuelTypeOption == item.Value)">@item.Text</option>
+                    }
+                </InputSelect>
+                @*<label class="form-label text-light" for="sc-engine">Engine <span class="text-danger">*</span></label>
                 <select class="form-select form-select-light mb-3" id="sc-engine">
                     <option value="" disabled>Select engine</option>
                     <option value="1.5 Turbo 3 Cylinder Engine">1.5 Turbo 3 Cylinder Engine</option>
                     <option value="2.4L 4 Cylinder Engine">2.4L 4 Cylinder Engine</option>
                     <option value="3.5L 4 Cylinder Engine">3.5L 4 Cylinder Engine</option>
                     <option value="2.5L Turbo 6 Cylinder" selected>2.5L Turbo 6 Cylinder</option>
-                </select>
-                <label class="form-label text-light" for="sc-transmission">Transmission <span class="text-danger">*</span></label>
-                <select class="form-select form-select-light mb-3" id="sc-transmission">
+                </select>*@
+                <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.TranmissionTypeOption)">Transmission <span class="text-danger">*</span></label>
+                <InputSelect class="form-select form-select-light mb-3" id="@nameof(SellCarModel.VehicleInformation.TranmissionTypeOption)" @bind-Value="SellCarModel.VehicleInformation.TranmissionTypeOption">
                     <option value="" disabled>Select transmission</option>
-                    <option value="Manual">Manual</option>
-                    <option value="Automatic" selected>Automatic</option>
-                </select>
-                <label class="form-label text-light" for="sc-drivetrain">Drivetrain <span class="text-danger">*</span></label>
-                <select class="form-select form-select-light mb-3" id="sc-drivetrain">
+                    @foreach (var item in SellCarModel.VehicleInformation.Tranmission)
+                    {
+                    <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.TranmissionTypeOption == item.Value)">@item.Text</option>
+                    }
+                </InputSelect>
+                <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.DriveTrainTypeOption)">Drivetrain <span class="text-danger">*</span></label>
+                <InputSelect class="form-select form-select-light mb-3" id="@nameof(SellCarModel.VehicleInformation.DriveTrainTypeOption)" @bind-Value="SellCarModel.VehicleInformation.DriveTrainTypeOption">
                     <option value="" disabled>Select drivetrain</option>
-                    <option value="Front Wheel Drive" selected>Front Wheel Drive</option>
-                    <option value="Rear Wheel Drive">Rear Wheel Drive</option>
-                    <option value="All Wheel Drive">All Wheel Drive</option>
-                </select>
-                <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Color)">Color </label>
-                <InputSelect class="form-select form-select-light" id="@nameof(SellCarModel.VehicleInformation.Color)" @bind-Value="SellCarModel.VehicleInformation.SpecificationAttributeOptionIdColorOptionId" placeholder="Enter color">
+                    @foreach (var item in SellCarModel.VehicleInformation.DriveTrain)
+                    {
+                    <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.DriveTrainTypeOption == item.Value)">@item.Text</option>
+                    }
+                </InputSelect>
+                <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.ColorTypeOption)">Color </label>
+                <InputSelect class="form-select form-select-light" id="@nameof(SellCarModel.VehicleInformation.ColorTypeOption)" @bind-Value="SellCarModel.VehicleInformation.ColorTypeOption" placeholder="Enter color">
                     <option value="" disabled>Select color</option>
                     @foreach (var item in SellCarModel.VehicleInformation.Color)
                     {
-                        <option value="@item.Value" selected>@item.Text</option>
+                        <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.ColorTypeOption == item.Value)">@item.Text</option>
                     }
                 </InputSelect>
             </div>
         </div>
     </div>
     <div class="border-top border-light mt-2 pt-4">
-        <label class="form-label text-light" for="sc-description">Description </label>
-        <textarea class="form-control form-control-light" id="sc-description" rows="5" placeholder="Describe your vehicle"></textarea><span class="form-text text-light opacity-50">3000 characters left</span>
+        <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Description)">Description </label>
+        <InputTextArea class="form-control form-control-light" id="@nameof(SellCarModel.VehicleInformation.Description)" @bind-Value="SellCarModel.VehicleInformation.Description" rows="5" placeholder="Describe your vehicle"></InputTextArea><span class="form-text text-light opacity-50">3000 characters left</span>
     </div>
 </section>
 <!-- Features-->
@@ -468,10 +453,35 @@
 
 @code {
     bool _isSubmitting;
-   
-    string _text = "Save and continue";
 
+    string _text = "Save and continue";
+    private EditContext EditContext = default!;
+    private List<SpecificationOption> model = [];
     [Parameter] public SellCarModel SellCarModel { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(SellCarModel);
+        EditContext.OnFieldChanged += EditContext_OnFieldChanged;
+    }
+
+    private async void EditContext_OnFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        if (e.FieldIdentifier.FieldName == nameof(SellCarModel.VehicleInformation.MakeSpecificationOption))
+        {
+            var model = e.FieldIdentifier.Model as VehicleInformation;
+            model.ModelSpecificationOption = string.Empty;
+            //model.MakeSpecificationOption 
+            var result = await HttpClient.PostAsJsonAsync("https://localhost:5001/SellCar/ChildrenCategories", new PostExample
+            {
+                id = Int32.Parse(model.MakeSpecificationOption)
+            });
+
+            this.model = await result.Content.ReadFromJsonAsync<List<SpecificationOption>>();
+
+            StateHasChanged();
+        }
+    }
 
     private async Task PlaceAd(EditContext obj)
     {

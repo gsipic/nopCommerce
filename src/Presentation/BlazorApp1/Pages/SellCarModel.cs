@@ -34,16 +34,26 @@ public class Price
 
 public class VehicleInformation
 {
-    private int Year { get; set; } = 0;
-    private int Mileage { get; set; } = 0;
-    private string VIN { get; set; } = string.Empty;
+    public IList<SpecificationOption> Make { get; set; } = new List<SpecificationOption>();
+    public string MakeSpecificationOption { get; set; } = string.Empty;
+    public IList<SpecificationOption> Model { get; set; } = new List<SpecificationOption>();
+    public string ModelSpecificationOption { get; set; } = string.Empty;
+    public int Year { get; set; } = 0;
+    public IList<SpecificationOption> YearOptions { get; set; } = new List<SpecificationOption>();
+    public int? Mileage { get; set; }
+    public string VIN { get; set; } = string.Empty;
     public IList<SpecificationOption> BodyType { get; set; } = new List<SpecificationOption>();
+    public string BodyTypeOption { get; set; } = string.Empty;
     public IList<SpecificationOption> FuelType { get; set; } = new List<SpecificationOption>();
+    public string FuelTypeOption { get; set; } = string.Empty;
     public IList<SpecificationOption> Engine { get; set; } = new List<SpecificationOption>();
     public IList<SpecificationOption> Tranmission { get; set; } = new List<SpecificationOption>();
+    public string TranmissionTypeOption { get; set; } = string.Empty;
     public IList<SpecificationOption> DriveTrain { get; set; } = new List<SpecificationOption>();
+    public string DriveTrainTypeOption { get; set; } = string.Empty;
     public IList<SpecificationOption> Color { get; set; } = new List<SpecificationOption>();
-    public string SpecificationAttributeOptionIdColorOptionId { get; set; } = string.Empty;
+    public string ColorTypeOption { get; set; } = string.Empty;
+  
     public string Description { get; set; } = string.Empty;
 }
 
@@ -66,5 +76,15 @@ public static class MyEnumExtensions
             .GetField(val.ToString())
             .GetCustomAttributes(typeof(DescriptionAttribute), false);
         return attributes.Length > 0 ? attributes[0].Description : string.Empty;
+    }
+}
+
+public class PostExample
+{
+    public int id { get; set; }
+
+    public override string ToString()
+    {
+        return $"{nameof(id)}: {id}";
     }
 }

@@ -39,94 +39,48 @@ public partial class SellCarController(
         Product productToEdit = null;
         StepTwoModel stepTwoModel = null;
 
-        Dictionary<string, IList<SpecificationAttributeOption>> specificationAttributeOptions = new();
+        Dictionary<string, IList<SpecificationOption>> specificationAttributeOptions = new();
 
-        var specificationAttributeGroup = (await specificationAttributeService
-                .GetSpecificationAttributeGroupsAsync())
-            .First(item => item.Name == "BasicAdsAttributes");
+        var StanjeOption = await getSpecificationOptions("BasicInfo","Stanje vozila");
 
-        var specificationAttributeBasicAds = await specificationAttributeService
-            .GetSpecificationAttributesByGroupIdAsync(specificationAttributeGroup.Id);
+        var adType = await getSpecificationOptions("BasicInfo","Tip prodavaca");
 
-        var specificationAttributeState = specificationAttributeBasicAds
-            .Single(item => item.Name == "Stanje");
+        //Location
+        var location = await getSpecificationOptions("Location","Županija");
 
-        var specificationAttributeNegotiateForPrice = specificationAttributeBasicAds
-            .Single(item => item.Name == "Pregovaranje za cijenu");
+        var negotiateForPrice = await getSpecificationOptions("Price","Pregovaranje za cijenu");
+        
+        var bodyType = await getSpecificationOptions("Vehicle information","BodyType");
+        
+        var fuelType = await getSpecificationOptions("Vehicle information","FuelType");
+        
+        var transmission = await getSpecificationOptions("Vehicle information","Tranmission");
+        
+        var driveTrain = await getSpecificationOptions("Vehicle information","DriveTrain");
+        
+        var color = await getSpecificationOptions("Vehicle information","Color");
 
-        var specificationAttributeZupanija = specificationAttributeBasicAds
-            .Single(item => item.Name == "Županija");
-
-        var specificationAttributeDostava = specificationAttributeBasicAds
-            .Single(item => item.Name == "Dostava");
-
-        var specificationAttributeMogućnostPlaćanja = specificationAttributeBasicAds
-            .Single(item => item.Name == "Mogućnost plaćanja");
-
-        var Dostava = (await specificationAttributeService
-            .GetSpecificationAttributeOptionsBySpecificationAttributeAsync(
-                specificationAttributeDostava.Id));
-
-        specificationAttributeOptions["Dostava"] = Dostava;
-
-
-        var MogućnostPlaćanja = (await specificationAttributeService
-            .GetSpecificationAttributeOptionsBySpecificationAttributeAsync(
-                specificationAttributeMogućnostPlaćanja.Id));
-
-        specificationAttributeOptions["MogućnostPlaćanja"] = MogućnostPlaćanja;
-
-
-        var specificationAttributeNegotiateForPriceId = (await specificationAttributeService
-            .GetSpecificationAttributeOptionsBySpecificationAttributeAsync(
-                specificationAttributeNegotiateForPrice.Id)).First();
-
-        specificationAttributeOptions["PregovaranjeZaCijenu"] = new List<SpecificationAttributeOption>
-        {
-            specificationAttributeNegotiateForPriceId
-        };
-
-
-        var StanjeOption = await specificationAttributeService
-            .GetSpecificationAttributeOptionsBySpecificationAttributeAsync(
-                specificationAttributeState.Id);
+        specificationAttributeOptions["PregovaranjeZaCijenu"] = negotiateForPrice;
 
         specificationAttributeOptions["StanjeOption"] = StanjeOption;
 
-        var item = (StanjeOption)
-            .Select(option => new SelectListItem { Text = option.Name, Value = option.Id.ToString() })
-            .ToList();
+        specificationAttributeOptions["Županije"] = location;
 
-        var itemZupanijeOption = await specificationAttributeService
-            .GetSpecificationAttributeOptionsBySpecificationAttributeAsync(
-                specificationAttributeZupanija.Id);
-
-        specificationAttributeOptions["Županije"] = itemZupanijeOption;
-
-
-        var itemZupanije = (itemZupanijeOption)
-            .Select(option => new SelectListItem { Text = option.Name, Value = option.Id.ToString() })
-            .ToList();
 
         if (isEditMode)
         {
-            var itemsOfValue = item.Select(itemA => int.Parse(itemA.Value));
-            var itemsOfValueZupanije = itemZupanije.Select(itemA => int.Parse(itemA.Value));
+            var itemsOfValue = StanjeOption;
+            var itemsOfValueZupanije = location.Select(itemA => int.Parse(itemA.Value));
 
             var currentUser = await workContext.GetCurrentCustomerAsync();
 
             var productSpecification = await specificationAttributeService
                 .GetProductSpecificationAttributesAsync(productId);
 
-            var productSpecificationOption = productSpecification.Single(itemSpecification =>
-                itemsOfValue.Any(itemB => itemSpecification.SpecificationAttributeOptionId == itemB));
-
             var productSpecificationOptionZupanije = productSpecification.FirstOrDefault(itemSpecification =>
                 itemsOfValueZupanije.Any(itemB => itemSpecification.SpecificationAttributeOptionId == itemB));
 
-            var productSpecificationPrice = productSpecification
-                .FirstOrDefault(item => item.SpecificationAttributeOptionId
-                                        == specificationAttributeNegotiateForPrice.Id);
+            var productSpecificationPrice = negotiateForPrice;
 
             categoryId = (await categoryService
                 .GetProductCategoriesByProductIdAsync(productId))[0].CategoryId;
@@ -141,26 +95,6 @@ public partial class SellCarController(
             {
                 return RedirectToRoute("Homepage");
             }
-
-            stepTwoModel = new StepTwoModel
-            {
-                Title = productToEdit.Name,
-                Cijena = (int)productToEdit.Price,
-                categoryId = (int)categoryId,
-                Dostava = Dostava,
-                MogućnostPlaćanja = MogućnostPlaćanja,
-                OdabaranaZupanija = productSpecificationOptionZupanije?.SpecificationAttributeOptionId,
-                SpecificationAttributeOptionIdStateOptionId =
-                    productSpecificationOption.SpecificationAttributeOptionId,
-                NegotatiedPrice = specificationAttributeNegotiateForPriceId != null ? true : false,
-                Stanje = item,
-                Zupanije = itemZupanije,
-                GenericOptionsList = new List<GenericItem> { new() { item = "67" }, new() { item = "67" } },
-                SpecificationAttributeOptions = specificationAttributeOptions,
-                ImageFile = (await pictureService.GetPicturesByProductIdAsync(productId))
-                    .Select(item => item.Id.ToString())
-                    .ToArray()
-            };
         }
         else
         {
@@ -170,16 +104,18 @@ public partial class SellCarController(
             }
             else
             {
-                stepTwoModel = new StepTwoModel
-                {
-                    Stanje = item,
-                    Dostava = Dostava,
-                    MogućnostPlaćanja = MogućnostPlaćanja,
-                    Zupanije = itemZupanije,
-                    SpecificationAttributeOptions = specificationAttributeOptions,
-                };
             }
         }
+
+        var allCategories = await categoryService.GetAllCategoriesByParentCategoryIdAsync(1);
+        var Make = (allCategories).Select(option =>
+            new SpecificationOption { Text = option.Name, Value = option.Id.ToString() }).ToList();
+        var Model = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(Int32.Parse(Make.First().Value)))
+            .Select(option => new SpecificationOption { Text = option.Name, Value = option.Id.ToString() }).ToList();
+        var listYears = Enumerable.Range(1971, DateTime.Now.Year - 1971 + 1).Select(year => new SpecificationOption {
+            Text = year.ToString(),
+            Value = year.ToString(),
+        }).ToList();
 
         return View("~/Themes/SaljiDalje/Views/SellCar/Index.cshtml",
             new SellCarModel
@@ -187,50 +123,64 @@ public partial class SellCarController(
                 BasicInfo = new BasicInfo
                 {
                     Title = "",
-                    VehicleCondition = item.Select(option => new SpecificationOption { Text = option.Text, Value = option.Value })
-                        .ToList()
-                    ,SpecificationAttributeOptionIdStateOptionId = "2",
-                    SpecificationAttributeAdTypeIdStateOptionId = "0",
-                    AdType = new List<SpecificationOption>
-                    {
-                        new()
-                        {
-                            Text = "I am a registered dealer",
-                            Value = "0"
-                        },
-                        new()
-                        {
-                            Text = "I am a private seller",
-                            Value = "1"
-                        }
-                    }
-                }, Price = new Price
-                {
-                    SellCarPrice = 260,
-                    NegotiatedPrice = true
+                    VehicleCondition = StanjeOption,
+                    SpecificationAttributeOptionIdStateOptionId = StanjeOption.Select(option => option.Value).First(),
+                    SpecificationAttributeAdTypeIdStateOptionId = adType.First().Value,
+                    AdType = adType,
                 },
+                Price = new Price { SellCarPrice = 200, NegotiatedPrice = false },
                 VehicleInformation = new VehicleInformation
                 {
-                    Color = new List<SpecificationOption>
-                    {
-                        new()
-                        {
-                            Text = "Red",
-                            Value = "1"
-                        },
-                        new()
-                        {
-                            Text = "Green",
-                            Value = "2"
-                        },
-                        new()
-                        {
-                            Text = "Blue",
-                            Value = "2"
-                        }
-                    }
+                    Make = Make,
+                    Model = Model,
+                    Year = Int32.Parse(listYears.Last().Value),
+                    YearOptions = listYears,
+                    Mileage = null,
+                    VIN = string.Empty,
+                    BodyType = bodyType,
+                    FuelType = fuelType,
+                    Tranmission = transmission,
+                    DriveTrain = driveTrain,
+                    Color = color
                 }
             });
+    }
+
+    private async Task<IList<SpecificationOption>> getSpecificationOptions(string specificationGroup, string specificationOption)
+    {
+        var specificationAttributeGroup = (await specificationAttributeService
+                .GetSpecificationAttributeGroupsAsync())
+            .First(item => item.Name == specificationGroup);
+
+        var specificationAttributeBasicAds = await specificationAttributeService
+            .GetSpecificationAttributesByGroupIdAsync(specificationAttributeGroup.Id);
+
+        var specificationAttributeState = specificationAttributeBasicAds
+            .Single(item => item.Name == specificationOption);
+        
+        var StanjeOption = (await specificationAttributeService
+            .GetSpecificationAttributeOptionsBySpecificationAttributeAsync(
+                specificationAttributeState.Id)).Select( option => new SpecificationOption
+        {
+            Text = option.Name,
+            Value = option.Id.ToString()
+        }).ToList();
+        return StanjeOption;
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> ChildrenCategories([FromBody] PostExample test)
+    {
+        Console.WriteLine(test);
+        var model = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(test.id))
+            .Select(option => new SpecificationOption { Text = option.Name, Value = option.Id.ToString() }).ToList();
+        if (model.Count == 0)
+        {
+            return NoContent();
+        }
+
+        return Json(model);
     }
 
     [HttpPost]

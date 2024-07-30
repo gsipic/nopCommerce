@@ -96,7 +96,7 @@ namespace SaljiDalje.Core.Data
             if (!DataSettingsManager.IsDatabaseInstalled())
                 return;
 
-            var method = _authenticationPluginManager.LoadPluginBySystemNameAsync("ExternalAuth.Facebook").GetAwaiter()
+            /*var method = _authenticationPluginManager.LoadPluginBySystemNameAsync("ExternalAuth.Facebook").GetAwaiter()
                 .GetResult();
             if (method.PluginDescriptor.Installed)
             {
@@ -120,7 +120,7 @@ namespace SaljiDalje.Core.Data
             else
             {
                 throw new NotSupportedException();
-            }
+            }*/
 
 
             var storeInformationSettings = EngineContext.Current.Resolve<StoreInformationSettings>();
