@@ -1,4 +1,7 @@
+@using System.ComponentModel
+@using System.Xml.XPath
 @inject HttpClient HttpClient
+@inject IJSRuntime JS
 
 <EditForm EditContext="EditContext" OnValidSubmit="PlaceAd">
 <!-- Basic info-->
@@ -156,157 +159,108 @@
 <section class="card card-light card-body border-0 shadow-sm p-4 mb-4" id="features">
     <h2 class="h4 text-light mb-4"><i class="fi-check-circle text-primary fs-5 mt-n1 me-2"></i>Features</h2>
     <div class="mb-4">
-        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Exterior</label>
+        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Sustav pomoći</label>
         <div class="row">
-            <div class="col-sm-4">
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="alloy-wheels">
-                    <label class="form-check-label" for="alloy-wheels">Alloy wheels</label>
+            @foreach(var item in SellCarModel.Features.SustavPomoći){
+               <div class="col-sm-6">
+                    <div class="form-check form-check-light">
+                        <InputCheckbox class="form-check-input" type="checkbox" id="@item.Text" @bind-Value="item.Data"/>
+                        <label class="form-check-label" for="@item.Text">@item.Text</label>
+                    </div>
                 </div>
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="sunroof">
-                    <label class="form-check-label" for="sunroof">Sunroof / moonroof</label>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="panoramic-roof">
-                    <label class="form-check-label" for="panoramic-roof">Panoramic roof</label>
-                </div>
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="tinted-glass">
-                    <label class="form-check-label" for="tinted-glass">Tinted glass</label>
-                </div>
-            </div>
+            }
         </div>
     </div>
     <div class="mb-4">
-        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Interior</label>
+        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Sigurnost putnika</label>
         <div class="row">
-            <div class="col-sm-4">
+            @foreach(var item in SellCarModel.Features.SigurnostPutnika){
+            <div class="col-sm-6">
                 <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="ac">
-                    <label class="form-check-label" for="ac">Multi-zone A/C</label>
-                </div>
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="heated-seats">
-                    <label class="form-check-label" for="heated-seats">Heated front seats</label>
+                    <InputCheckbox class="form-check-input" type="checkbox" id="@item.Text" @bind-Value="item.Data"/>
+                    <label class="form-check-label" for="@item.Text">@item.Text</label>
                 </div>
             </div>
-            <div class="col-sm-4">
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="navi">
-                    <label class="form-check-label" for="navi">Navigation system</label>
-                </div>
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="leather-seats">
-                    <label class="form-check-label" for="leather-seats">Leather seats</label>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="wipers">
-                    <label class="form-check-label" for="wipers">Intermittent wipers</label>
-                </div>
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="memory-seat">
-                    <label class="form-check-label" for="memory-seat">Memory seat</label>
-                </div>
-            </div>
+            }
         </div>
-        <div class="collapse" id="moreInterior">
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="premium-sound">
-                        <label class="form-check-label" for="premium-sound">Premium sound system</label>
-                    </div>
-                    <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="bluetooth">
-                        <label class="form-check-label" for="bluetooth">Bluetooth</label>
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="usb">
-                        <label class="form-check-label" for="usb">USB port</label>
-                    </div>
-                    <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="leather-wheel">
-                        <label class="form-check-label" for="leather-wheel">Leather steering wheel</label>
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="apple-play">
-                        <label class="form-check-label" for="apple-play">Apple CarPlay</label>
-                    </div>
-                    <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="android-auto">
-                        <label class="form-check-label" for="android-auto">Android Auto</label>
-                    </div>
-                </div>
-            </div>
-        </div><a class="collapse-label collapsed fs-sm" href="#moreInterior" data-bs-toggle="collapse" data-bs-label-collapsed="Show more" data-bs-label-expanded="Show less" role="button" aria-expanded="false" aria-controls="moreInterior"></a>
     </div>
     <div class="mb-4">
-        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Safety</label>
+        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Udobnost putnika</label>
         <div class="row">
-            <div class="col-sm-4">
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="airbag-driver">
-                    <label class="form-check-label" for="airbag-driver">Airbag: driver</label>
+            @foreach(var item in SellCarModel.Features.UdobnostPutnika){
+                <div class="col-sm-6">
+                    <div class="form-check form-check-light">
+                        <InputCheckbox class="form-check-input" type="checkbox" id="@item.Text" @bind-Value="item.Data"/>
+                        <label class="form-check-label" for="@item.Text">@item.Text</label>
+                    </div>
                 </div>
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="airbag-pasenger">
-                    <label class="form-check-label" for="airbag-pasenger">Airbag: passenger</label>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="alarm">
-                    <label class="form-check-label" for="alarm">Alarm</label>
-                </div>
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="antilock">
-                    <label class="form-check-label" for="antilock">Antilock brakes</label>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="stability-control">
-                    <label class="form-check-label" for="stability-control">Stability control</label>
-                </div>
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="fog-lights">
-                    <label class="form-check-label" for="fog-lights">Fog lights</label>
-                </div>
-            </div>
+            }
         </div>
-        <div class="collapse" id="moreSafety">
-            <div class="row">
-                <div class="col-sm-4">
+    </div>
+    <div class="mb-4">
+        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Svjetla i farovi</label>
+        <div class="row">
+            @foreach(var item in SellCarModel.Features.SvjetlaiFarovi){
+                <div class="col-sm-6">
                     <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="adaptive-cruise">
-                        <label class="form-check-label" for="adaptive-cruise">Adaptive cruise control</label>
-                    </div>
-                    <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="blind-monitor">
-                        <label class="form-check-label" for="blind-monitor">Blind spot monitor</label>
+                        <InputCheckbox class="form-check-input" type="checkbox" id="@item.Text" @bind-Value="item.Data"/>
+                        <label class="form-check-label" for="@item.Text">@item.Text</label>
                     </div>
                 </div>
-                <div class="col-sm-4">
+            }
+        </div>
+    </div>
+    <div class="mb-4">
+        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Zaštita od krađe</label>
+        <div class="row">
+            @foreach(var item in SellCarModel.Features.ZaštitaOdKrađe){
+                <div class="col-sm-6">
                     <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="brake-assist">
-                        <label class="form-check-label" for="brake-assist">Brake assist</label>
+                        <InputCheckbox class="form-check-input" type="checkbox" id="@item.Text" @bind-Value="item.Data"/>
+                        <label class="form-check-label" for="@item.Text">@item.Text</label>
                     </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="mb-4">
+        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Multimedia</label>
+        <div class="row">
+            @foreach(var item in SellCarModel.Features.Multimedia){
+                <div class="col-sm-6">
                     <div class="form-check form-check-light">
-                        <input class="form-check-input" type="checkbox" id="lane-warning">
-                        <label class="form-check-label" for="lane-warning">Lane departure warning</label>
+                        <InputCheckbox class="form-check-input" type="checkbox" id="@item.Text" @bind-Value="item.Data"/>
+                        <label class="form-check-label" for="@item.Text">@item.Text</label>
                     </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="mb-4">
+        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Gume i naplatci</label>
+        <div class="row">
+            @foreach(var item in SellCarModel.Features.Gumeinaplatci){
+                <div class="col-sm-6">
+                    <div class="form-check form-check-light">
+                        <InputCheckbox class="form-check-input" type="checkbox" id="@item.Text" @bind-Value="item.Data"/>
+                        <label class="form-check-label" for="@item.Text">@item.Text</label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="mb-4">
+        <label class="form-label d-block text-light fw-bold mb-2 pb-1">Ostali dodaci</label>
+        <div class="row">
+            @foreach(var item in SellCarModel.Features.Ostalidodaci){
+            <div class="col-sm-6">
+                <div class="form-check form-check-light">
+                    <InputCheckbox class="form-check-input" type="checkbox" id="@item.Text" @bind-Value="item.Data"/>
+                    <label class="form-check-label" for="@item.Text">@item.Text</label>
                 </div>
             </div>
-        </div><a class="collapse-label collapsed fs-sm" href="#moreSafety" data-bs-toggle="collapse" data-bs-label-collapsed="Show more" data-bs-label-expanded="Show less" role="button" aria-expanded="false" aria-controls="moreSafety"></a>
+            }
+        </div>
     </div>
 </section>
 <!-- Photos / video-->
@@ -325,17 +279,16 @@
     <h2 class="h4 text-light mb-4"><i class="fi-map-pin text-primary fs-5 mt-n1 me-2"></i>Location</h2>
     <div class="row">
         <div class="col-sm-6 mb-3">
-            <label class="form-label text-light" for="sc-country">Country / region <span class="text-danger">*</span></label>
-            <select class="form-select form-select-light" id="sc-country" required>
-                <option value="" disabled>Choose country</option>
-                <option value="Australia">Australia</option>
-                <option value="Belgium">Belgium</option>
-                <option value="Canada">Canada</option>
-                <option value="Germany">Germany</option>
-                <option value="United States" selected>United States</option>
-            </select>
+            <label class="form-label text-light" for="@nameof(SellCarModel.Location.Županije)">Županija <span class="text-danger">*</span></label>
+            <InputSelect class="form-select form-select-light" id="@nameof(SellCarModel.Location.Županije)" @bind-Value="SellCarModel.Location.ŽupanijeSpecificationOption">
+                <option value="" disabled>Izaberi županiju</option>
+                @foreach (var item in SellCarModel.Location.Županije)
+                {
+                <option value="@item.Value" selected="@(SellCarModel.Location.ŽupanijeSpecificationOption == item.Value)">@item.Text</option>
+                }
+            </InputSelect>
         </div>
-        <div class="col-sm-6 mb-3">
+        @*<div class="col-sm-6 mb-3">
             <label class="form-label text-light" for="sc-state">State <span class="text-danger">*</span></label>
             <select class="form-select form-select-light" id="sc-state" required>
                 <option value="" disabled>Choose state</option>
@@ -347,9 +300,9 @@
                 <option value="Indiana">Indiana</option>
                 <option value="Kansas">Kansas</option>
             </select>
-        </div>
+        </div>*@
     </div>
-    <div class="row">
+    @*<div class="row">
         <div class="col-sm-8 mb-3">
             <label class="form-label text-light" for="sc-city">City <span class="text-danger">*</span></label>
             <select class="form-select form-select-light" id="sc-city" required>
@@ -365,11 +318,11 @@
             <label class="form-label text-light" for="sc-zip">Zip code <span class="text-danger">*</span></label>
             <input class="form-control form-control-light" type="text" id="sc-zip" placeholder="Enter Zip code" value="60603" required>
         </div>
-    </div>
-    <div class="mb-3">
+    </div>*@
+    @*<div class="mb-3">
         <label class="form-label text-light" for="ap-address">Street address <span class="text-danger">*</span></label>
         <input class="form-control form-control-light" type="text" id="ap-address" value="1904 S Michigan Avenue" required>
-    </div>
+    </div>*@
     <div class="form-label text-light fw-bold pt-3 pb-2">Display on the map</div>
     <div class="interactive-map rounded-3" data-map-options="{&quot;mapLayer&quot;: &quot;https://api.maptiler.com/maps/pastel/{z}/{x}/{y}.png?key=5vRQzd34MMsINEyeKPIs&quot;, &quot;coordinates&quot;: [41.75, -87.7], &quot;zoom&quot;: 9, &quot;scrollWheelZoom&quot;: false, &quot;markers&quot;: [{&quot;coordinates&quot;: [41.75, -87.7], &quot;className&quot;: &quot;custom-marker-dot&quot;, &quot;popup&quot;: &quot;&lt;div class='p-3'&gt;&lt;h6 class='fs-base'&gt;Mercedes-Benz E 400&lt;/h6&gt;&lt;p class='fs-xs text-muted pt-1 mt-n3 mb-0'&gt;1904 S Michigan Avenue, Chicago, IL&lt;/p&gt;&lt;/div&gt;&quot;}]}" style="height: 250px;"></div>
 </section>
@@ -378,26 +331,26 @@
     <h2 class="h4 text-light mb-4"><i class="fi-phone text-primary fs-5 mt-n1 me-2"></i>Contacts</h2>
     <div class="row">
         <div class="col-sm-6 mb-3">
-            <label class="form-label text-light" for="sc-fn">First name <span class="text-danger">*</span></label>
-            <input class="form-control form-control-light" type="text" id="sc-fn" value="Devon" placeholder="Enter your first name" required>
+            <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.FirstName)">First name <span class="text-danger">*</span></label>
+            <InputText class="form-control form-control-light" type="text" id="@nameof(SellCarModel.Contacts.FirstName)" @bind-Value="SellCarModel.Contacts.FirstName" placeholder="Enter your first name" />
         </div>
         <div class="col-sm-6 mb-3">
-            <label class="form-label text-light" for="sc-sn">Second name <span class="text-danger">*</span></label>
-            <input class="form-control form-control-light" type="text" id="sc-sn" value="Lane" placeholder="Enter your second name" required>
+            <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.LastName)">Second name <span class="text-danger">*</span></label>
+            <InputText class="form-control form-control-light" type="text" id="@nameof(SellCarModel.Contacts.LastName)" @bind-Value="SellCarModel.Contacts.LastName" placeholder="Enter your second name" />
         </div>
     </div>
     <div class="row">
         <div class="col-sm-6 mb-3">
-            <label class="form-label text-light" for="sc-email">Email<span class="text-danger">*</span></label>
-            <input class="form-control form-control-light" type="text" id="sc-email" value="devone_lane@email.com" placeholder="Enter your email">
+            <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.EmailAddress)">Email<span class="text-danger">*</span></label>
+            <InputText class="form-control form-control-light" type="text" id="@nameof(SellCarModel.Contacts.EmailAddress)" @bind-Value="SellCarModel.Contacts.EmailAddress" placeholder="Enter your email"/>
         </div>
         <div class="col-sm-6 mb-3">
-            <label class="form-label text-light" for="sc-phone">Phone number <span class="text-danger">*</span></label>
-            <input class="form-control form-control-light" type="tel" id="sc-phone" data-format="custom" data-delimiter="-" data-blocks="3 3 4" value="316-442-0597" placeholder="000-000-0000">
+            <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.PhoneNumber)">Phone number <span class="text-danger">*</span></label>
+            <InputText class="form-control form-control-light" type="tel" id="@nameof(SellCarModel.Contacts.PhoneNumber)" data-format="custom" data-delimiter="-" data-blocks="3 3 4" @bind-Value="SellCarModel.Contacts.PhoneNumber" placeholder="000-000-0000"/>
         </div>
     </div>
-    <label class="form-label text-light" for="sc-website">Website</label>
-    <input class="form-control form-control-light mb-3" type="text" id="sc-website" placeholder="Enter company name">
+    <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.WebSite)">Website</label>
+    <InputText class="form-control form-control-light mb-3" type="text" id="@nameof(SellCarModel.Contacts.WebSite)" @bind-Value="SellCarModel.Contacts.WebSite" placeholder="Enter company name"/>
     <div class="text-light py-3">Social accounts</div>
     <div class="d-flex align-items-center mb-3">
         <div class="btn btn-icon btn-translucent-light btn-xs rounded-circle pe-none flex-shrink-0 me-3">
@@ -482,6 +435,16 @@
             StateHasChanged();
         }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+           await JS.InvokeVoidAsync("fileUploader");
+           await JS.InvokeVoidAsync("interactiveMap");
+        }
+    }
+
 
     private async Task PlaceAd(EditContext obj)
     {

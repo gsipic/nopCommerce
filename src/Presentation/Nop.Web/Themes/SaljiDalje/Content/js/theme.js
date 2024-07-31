@@ -556,7 +556,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
    * @requires https://github.com/Leaflet/Leaflet
   */
 
-  var interactiveMap = function () {
+  window.interactiveMap = function () {
     var mapList = document.querySelectorAll('.interactive-map');
     if (mapList.length === 0) return;
     var _loop5 = function _loop5(i) {
@@ -679,7 +679,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
       var n;
       _loop5(i);
     }
-  }();
+  };
 
   /**
    * Mouse move (cursor) parallax effect
@@ -709,7 +709,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
    * @requires https://github.com/pqina/filepond
   */
 
-  var fileUploader = function () {
+  window.fileUploader = function () {
     var fileInput = document.querySelectorAll('.file-uploader');
     if (fileInput.length === 0) return;
     if (typeof FilePondPluginFileValidateType !== 'undefined') {
@@ -733,7 +733,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
     for (var i = 0; i < fileInput.length; i++) {
       FilePond.create(fileInput[i]);
     }
-  }();
+  };
 
   /**
    * Bind input value with target element text

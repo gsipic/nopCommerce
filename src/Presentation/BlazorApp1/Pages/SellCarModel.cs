@@ -1,3 +1,4 @@
+using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,6 +9,12 @@ public class SellCarModel
     public BasicInfo BasicInfo { get; set; }
     public Price Price { get; set; }
     public VehicleInformation VehicleInformation { get; set; }
+
+    public Features Features { get; set; }
+    
+    public Location Location { get; set; }
+
+    public Contacts Contacts { get; set; }
 }
 
 public class BasicInfo
@@ -24,6 +31,13 @@ public class SpecificationOption
 {
     public string Text { get; set; }
     public string Value { get; set; }
+}
+
+public class SpecificationOptionValue
+{
+    public string Text { get; set; }
+    public string Value { get; set; }
+    public bool Data { get; set; }
 }
 
 public class Price
@@ -57,26 +71,43 @@ public class VehicleInformation
     public string Description { get; set; } = string.Empty;
 }
 
-public enum AdType
+public class Features
 {
-    [Description("I am a private seller")] Private,
-
-    [Description("I am a registered dealer")]
-    Company
+    public IList<SpecificationOptionValue> SustavPomoći { get; set; } = new List<SpecificationOptionValue>();
+    public IList<SpecificationOptionValue> SigurnostPutnika { get; set; } = new List<SpecificationOptionValue>();
+    
+    public IList<SpecificationOptionValue> UdobnostPutnika { get; set; } = new List<SpecificationOptionValue>();
+    public IList<SpecificationOptionValue> SvjetlaiFarovi { get; set; } = new List<SpecificationOptionValue>();
+    
+    public IList<SpecificationOptionValue> ZaštitaOdKrađe { get; set; } = new List<SpecificationOptionValue>();
+    public IList<SpecificationOptionValue> Multimedia { get; set; } = new List<SpecificationOptionValue>();
+    public IList<SpecificationOptionValue> Gumeinaplatci { get; set; } = new List<SpecificationOptionValue>();
+    public IList<SpecificationOptionValue> Ostalidodaci { get; set; } = new List<SpecificationOptionValue>();
 }
 
-public enum VehicleCondition { Used, New }
-
-public static class MyEnumExtensions
+public class Location
 {
-    public static string ToDescriptionString(this AdType val)
-    {
-        DescriptionAttribute[] attributes = (DescriptionAttribute[])val
-            .GetType()
-            .GetField(val.ToString())
-            .GetCustomAttributes(typeof(DescriptionAttribute), false);
-        return attributes.Length > 0 ? attributes[0].Description : string.Empty;
-    }
+    public IList<SpecificationOption> Županije { get; set; } = new List<SpecificationOption>();
+    public string ŽupanijeSpecificationOption { get; set; } = string.Empty;
+}
+
+public class Contacts
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string EmailAddress { get; set; }
+    public string PhoneNumber { get; set; }
+    public string WebSite { get; set; }
+
+    public SocialAccount SocialAccount { get; set; }
+}
+
+public class SocialAccount
+{
+    public string Facebook { get; set; }
+    public string Twitter { get; set; }
+    public string Instagram { get; set; }
+   
 }
 
 public class PostExample

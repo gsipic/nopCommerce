@@ -59,6 +59,25 @@ public partial class SellCarController(
         var driveTrain = await getSpecificationOptions("Vehicle information","DriveTrain");
         
         var color = await getSpecificationOptions("Vehicle information","Color");
+        
+        var sustavPomoći = await getSpecificationOptionsWithValue("Features","Sustav pomoći");
+        
+        var sigurnostPutnika = await getSpecificationOptionsWithValue("Features","Sigurnost putnika");
+        
+        var udobnostPutnika = await getSpecificationOptionsWithValue("Features","Udobnost putnika");
+        
+        var svjetlaifarovi = await getSpecificationOptionsWithValue("Features","Svjetla i farovi");
+        
+        var Zaštitaodkrađe = await getSpecificationOptionsWithValue("Features","Zaštita od krađe");
+        
+        var Multimedia = await getSpecificationOptionsWithValue("Features","Multimedia");
+        
+        var Gumeinaplatci = await getSpecificationOptionsWithValue("Features","Gume i naplatci");
+        
+        var Ostalidodaci = await getSpecificationOptionsWithValue("Features","Ostali dodaci");
+        
+        var županije = await getSpecificationOptions("Location","Županija");
+        
 
         specificationAttributeOptions["PregovaranjeZaCijenu"] = negotiateForPrice;
 
@@ -142,7 +161,24 @@ public partial class SellCarController(
                     Tranmission = transmission,
                     DriveTrain = driveTrain,
                     Color = color
-                }
+                },
+                Features = new Features
+                {
+                    SustavPomoći = sustavPomoći,
+                    SigurnostPutnika = sigurnostPutnika,
+                    UdobnostPutnika = udobnostPutnika,
+                    SvjetlaiFarovi = svjetlaifarovi,
+                    ZaštitaOdKrađe = Zaštitaodkrađe,
+                    Multimedia = Multimedia,
+                    Gumeinaplatci = Gumeinaplatci,
+                    Ostalidodaci = Ostalidodaci,
+                    
+                },
+                Location = new Location
+                {
+                    Županije = županije
+                },
+                Contacts = new Contacts()
             });
     }
 
@@ -164,6 +200,29 @@ public partial class SellCarController(
         {
             Text = option.Name,
             Value = option.Id.ToString()
+        }).ToList();
+        return StanjeOption;
+    }
+    
+    private async Task<IList<SpecificationOptionValue>> getSpecificationOptionsWithValue(string specificationGroup, string specificationOption)
+    {
+        var specificationAttributeGroup = (await specificationAttributeService
+                .GetSpecificationAttributeGroupsAsync())
+            .First(item => item.Name == specificationGroup);
+
+        var specificationAttributeBasicAds = await specificationAttributeService
+            .GetSpecificationAttributesByGroupIdAsync(specificationAttributeGroup.Id);
+
+        var specificationAttributeState = specificationAttributeBasicAds
+            .Single(item => item.Name == specificationOption);
+        
+        var StanjeOption = (await specificationAttributeService
+            .GetSpecificationAttributeOptionsBySpecificationAttributeAsync(
+                specificationAttributeState.Id)).Select( option => new SpecificationOptionValue
+        {
+            Text = option.Name,
+            Value = option.Id.ToString(),
+            Data = false
         }).ToList();
         return StanjeOption;
     }
