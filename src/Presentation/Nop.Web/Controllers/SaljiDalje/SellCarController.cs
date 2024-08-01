@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
+using System.Text;
 using System.Transactions;
 using BlazorApp1.Pages;
 using Microsoft.AspNetCore.Authorization;
@@ -225,6 +227,115 @@ public partial class SellCarController(
             Data = false
         }).ToList();
         return StanjeOption;
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Process(IFormFile ImageFile, CancellationToken cancellationToken)
+    {
+        
+        if (ImageFile is null)
+        {
+            return BadRequest("Process Error: No file submitted");
+        }
+
+        // We do some internal application validation here with our caseId
+
+        try
+        {
+            // get a guid to use as the filename as they're highly unique
+            var guid = Guid.NewGuid().ToString();
+            //var newimage = string.Format("{0}.{1}", guid, file.FileName.Split('.').LastOrDefault());
+                
+            using var newMemoryStream = new MemoryStream();
+            await ImageFile.CopyToAsync(newMemoryStream, cancellationToken);
+                
+            await costumerPictureAttachmentMappingRepository.InsertAsync(new CostumerPictureAttachmentMapping
+            {
+                FileName = ImageFile.FileName,
+                FileType = ImageFile.ContentType,
+                FileSize = ImageFile.Length,
+                CreatedOn = DateTime.Now,
+                UserId = (await workContext.GetCurrentCustomerAsync()).Id,
+                PictureData = newMemoryStream.ToArray(),
+                Guid = guid
+            });
+                
+            return Ok(guid);
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"Process Error: {e.Message}"); // Oops!
+        }
+    }
+    
+    [HttpDelete]
+    public async Task<ActionResult> Revert()
+    {
+        // The server id will be send in the delete request body as plain text
+        using StreamReader reader = new(Request.Body, Encoding.UTF8);
+        string guid = await reader.ReadToEndAsync();
+        if (string.IsNullOrEmpty(guid))
+        {
+            return BadRequest("Revert Error: Invalid unique file ID");
+        }
+        var attachment = await costumerPictureAttachmentMappingRepository.Table.FirstOrDefaultAsync(i => i.Guid == guid);
+        // We do some internal application validation here
+        try
+        {
+            await costumerPictureAttachmentMappingRepository.DeleteAsync(attachment);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(string.Format("Revert Error:'{0}' when writing an object", e.Message));
+        }
+    }
+        
+    [HttpDelete]
+    public async Task<ActionResult> Remove()
+    {
+        // The server id will be send in the delete request body as plain text
+        using StreamReader reader = new(Request.Body, Encoding.UTF8);
+        string guid = await reader.ReadToEndAsync();
+        if (string.IsNullOrEmpty(guid))
+        {
+            return BadRequest("Revert Error: Invalid unique file ID");
+        }
+        var attachment = await pictureService.GetPictureByIdAsync(int.Parse(guid));
+        // We do some internal application validation here
+        try
+        {
+            await pictureService.DeletePictureAsync(attachment);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(string.Format("Revert Error:'{0}' when writing an object", e.Message));
+        }
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> Load(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound("Load Error: Invalid parameters");
+        }
+
+        var attachment = await pictureService.GetPictureByIdAsync(int.Parse(id));
+        var pictureBinary = await pictureService.GetPictureBinaryByPictureIdAsync(attachment.Id);
+        if (attachment is null)
+        {
+            return NotFound("Load Error: File not found");
+        }
+
+        Response.Headers.Add("Content-Disposition", new ContentDisposition
+        {
+            FileName = string.Format("{0}.{1}", attachment.SeoFilename, attachment.MimeType.Split("/").LastOrDefault()),
+            Inline = true // false = prompt the user for downloading; true = browser to try to show the file inline
+        }.ToString());
+        return File(pictureBinary.BinaryData, attachment.MimeType);
     }
 
     [HttpPost]
@@ -475,4 +586,45 @@ public record GenericItem
 {
     [Required] public string item { get; set; }
     public string itemBool { get; set; }
+}
+
+public class ProductDemo
+{
+    public string Name { get; set; }
+    public IFormFile ImageFile1 { get; set; }
+}
+
+public class Center
+{
+    public double x { get; set; }
+    public double y { get; set; }
+}
+
+public class Crop
+{
+    public Center center { get; set; }
+    public Flip flip { get; set; }
+    public int rotation { get; set; }
+    public int zoom { get; set; }
+    public object aspectRatio { get; set; }
+}
+
+public class Flip
+{
+    public bool horizontal { get; set; }
+    public bool vertical { get; set; }
+}
+
+public class Output
+{
+    public object type { get; set; }
+    public object quality { get; set; }
+    public List<string> client { get; set; }
+}
+
+public class Root
+{
+    public Crop crop { get; set; }
+    public object color { get; set; }
+    public Output output { get; set; }
 }

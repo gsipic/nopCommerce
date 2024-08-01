@@ -387,5 +387,56 @@
 <script src="/Themes/SaljiDalje/Content/vendor/filepond/dist/filepond.min.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/cleave.js/dist/cleave.min.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/tiny-slider/dist/min/tiny-slider.js" asp-exclude-from-bundle="true"></script>
+<script asp-location="Footer">
+    function remove (source, load, error) {
+        const request = new XMLHttpRequest();
+        request.open('DELETE', '@Url.Action("Remove", "SellCar")');
+// Setting computable to false switches the loading indicator to infinite mode
+        request.upload.onprogress = (e) => {
+            progress(e.lengthComputable, e.loaded, e.total);
+        };
+        request.onload = function () {
+            if (request.status >= 200 && request.status < 300) {
+                load();// the load method accepts either a string (id) or an object
+            }
+            else {
+                error('Error while removing file!');
+            }
+        }
+        request.send(source);
+    }
+    window.pondSetOptions = function () {
+        FilePond.setOptions({
+            maxFileSize: "8MB",
+            maxFiles:5,
+            imagePreviewHeight: 100,
+            allowReorder: true,
+            imageResizeTargetHeight: 5,
+            imageResizeTargetWidth:5,
+            imageResizeMode : 'force',
+            
+            //imageResizeTargetWidth:50,
+            //imageResizeTargetHeight:50,
+            server: {
+                process: {
+                    url:"@Url.Action("Process", "SellCar")",
+                    ondata: (formData) => {
+//add token
+                        var tokenInput = document.querySelectorAll("input[name='__RequestVerificationToken']");
+
+                        if (tokenInput.length) {
+                            formData.append('__RequestVerificationToken', tokenInput[0].defaultValue);
+                        }
+                        return formData;
+                    }
+                },
+                revert: '@Url.Action("Revert","SellCar")',
+                load: '@Url.Action("Load","SellCar")?id=',
+                remove: remove
+            },
+        });
+    }
+</script>
+
 <!-- Main theme script-->
 @* <script src="js/theme.min.js"></script> *@
