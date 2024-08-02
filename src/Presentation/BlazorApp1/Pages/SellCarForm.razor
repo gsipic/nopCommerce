@@ -457,10 +457,13 @@
         var result = await module.InvokeAsync<string[]>("getFilepondInputFiles");
         _isSubmitting = true;
         _text = "Loading";
+        StateHasChanged();
         
         var response = (await SaljiDaljeClient.HttpClient.PostAsJsonAsync($"https://localhost:5001/SellCar/StepTwoFinish/", obj.Model)).IsSuccessStatusCode;
         _isSubmitting = false;
         _text = "Save and continue";
+        
+        StateHasChanged();
         if (response)
         {
             await module.InvokeVoidAsync("navigate", "https://localhost:5001/");
