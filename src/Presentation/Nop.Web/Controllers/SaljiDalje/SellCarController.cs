@@ -379,7 +379,7 @@ public partial class SellCarController(
         //await UpdateLocalesAsync(product, model);
 
         //categories
-        //await SaveCategoryMappingsAsync(product, sellCarModel);
+        await SaveCategoryMappingsAsync(product, sellCarModel);
 
         //await Insertpictures(sellCarModel, product);
 
@@ -486,29 +486,29 @@ public partial class SellCarController(
         //Console.Write(picture.VirtualPath);
     }
 
-    protected virtual async Task SaveCategoryMappingsAsync(Product product, StepTwoModel model)
+    protected virtual async Task SaveCategoryMappingsAsync(Product product, SellCarModel model)
     {
         var existingProductCategories =
             await categoryService.GetProductCategoriesByProductIdAsync(product.Id, true);
-
+        var categoryId = Int32.Parse(model.VehicleInformation.ModelSpecificationOption);
         //delete categories
         foreach (var existingProductCategory in existingProductCategories)
-            if (model.categoryId != existingProductCategory.CategoryId)
+            if (categoryId != existingProductCategory.CategoryId)
                 await categoryService.DeleteProductCategoryAsync(existingProductCategory);
 
         //add categories
 
-        if (categoryService.FindProductCategory(existingProductCategories, product.Id, model.categoryId) == null)
+        if (categoryService.FindProductCategory(existingProductCategories, product.Id, categoryId) == null)
         {
             //find next display order
             var displayOrder = 1;
             var existingCategoryMapping =
-                await categoryService.GetProductCategoriesByCategoryIdAsync(model.categoryId, showHidden: true);
+                await categoryService.GetProductCategoriesByCategoryIdAsync(categoryId, showHidden: true);
             if (existingCategoryMapping.Any())
                 displayOrder = existingCategoryMapping.Max(x => x.DisplayOrder) + 1;
             await categoryService.InsertProductCategoryAsync(new ProductCategory
             {
-                ProductId = product.Id, CategoryId = model.categoryId, DisplayOrder = displayOrder
+                ProductId = product.Id, CategoryId = categoryId, DisplayOrder = displayOrder
             });
         }
     }

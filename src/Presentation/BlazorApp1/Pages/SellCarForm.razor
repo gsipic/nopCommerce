@@ -425,8 +425,6 @@
         if (e.FieldIdentifier.FieldName == nameof(SellCarModel.VehicleInformation.MakeSpecificationOption))
         {
             var model = e.FieldIdentifier.Model as VehicleInformation;
-            model.ModelSpecificationOption = string.Empty;
-            //model.MakeSpecificationOption 
             var result = await HttpClient.PostAsJsonAsync("https://localhost:5001/SellCar/ChildrenCategories", new PostExample
             {
                 id = Int32.Parse(model.MakeSpecificationOption)
