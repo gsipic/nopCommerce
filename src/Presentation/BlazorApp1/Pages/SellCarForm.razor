@@ -1,6 +1,8 @@
 @using System.ComponentModel
 @using System.Xml.XPath
 @inject HttpClient HttpClient
+@inject ISaljiDaljeClient SaljiDaljeClient
+@implements IAsyncDisposable
 @inject IJSRuntime JS
 
 <EditForm EditContext="EditContext" OnValidSubmit="PlaceAd">
@@ -9,7 +11,7 @@
     <h2 class="h4 text-light mb-4"><i class="fi-info-circle text-primary fs-5 mt-n1 me-2"></i>Basic info</h2>
     <div class="mb-3">
         <label class="form-label text-light" asp-for="BasicInfo.Title">Title <span class="text-danger">*</span></label>
-        <InputText @bind-Value="SellCarModel.BasicInfo.Title" class="form-control form-control-light" type="text" placeholder="Title for your property"/>
+        <InputText @bind-Value="SellCarModel.BasicInfo.Title" class="form-control form-control-light" autocomplete="off" type="text" placeholder="Title for your property"/>
         <span class="form-text text-light opacity-50">48 characters left</span>
     </div>
     <div class="row">
@@ -406,7 +408,7 @@
 
 @code {
     bool _isSubmitting;
-
+    private IJSObjectReference module = default!;
     string _text = "Save and continue";
     private EditContext EditContext = default!;
     private List<SpecificationOption> model = [];
@@ -443,24 +445,35 @@
            await JS.InvokeVoidAsync("fileUploader");
            await JS.InvokeVoidAsync("interactiveMap");
            await JS.InvokeVoidAsync("pondSetOptions");
+           module = await JS.InvokeAsync<IJSObjectReference>("import",
+               $"./Pages/SellCarForm.razor.js?v={Guid.NewGuid().ToString()}");
+           
         }
     }
 
 
     private async Task PlaceAd(EditContext obj)
     {
+        var result = await module.InvokeAsync<string[]>("getFilepondInputFiles");
         _isSubmitting = true;
         _text = "Loading";
-        Console.WriteLine("My debug output.");
-        Console.WriteLine(obj.Model.ToString());
-        var postBody = new { Test = "Blazor POST Request Example" };
-        await Task.Delay(2000);
-        using var response = await HttpClient.PostAsJsonAsync($"https://localhost:5001/SellCar/Test", postBody);
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
+        
+        var response = (await SaljiDaljeClient.HttpClient.PostAsJsonAsync($"https://localhost:5001/SellCar/StepTwoFinish/", obj.Model)).IsSuccessStatusCode;
         _isSubmitting = false;
         _text = "Save and continue";
-
+        if (response)
+        {
+            await module.InvokeVoidAsync("navigate", "https://localhost:5001/");
+        }
         //throw new NotImplementedException();
+    }
+    
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
     }
 
 }

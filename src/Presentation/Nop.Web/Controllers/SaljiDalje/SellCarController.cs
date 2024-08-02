@@ -43,43 +43,43 @@ public partial class SellCarController(
 
         Dictionary<string, IList<SpecificationOption>> specificationAttributeOptions = new();
 
-        var StanjeOption = await getSpecificationOptions("BasicInfo","Stanje vozila");
+        var StanjeOption = await getSpecificationOptions("BasicInfo", "Stanje vozila");
 
-        var adType = await getSpecificationOptions("BasicInfo","Tip prodavaca");
+        var adType = await getSpecificationOptions("BasicInfo", "Tip prodavaca");
 
         //Location
-        var location = await getSpecificationOptions("Location","Županija");
+        var location = await getSpecificationOptions("Location", "Županija");
 
-        var negotiateForPrice = await getSpecificationOptions("Price","Pregovaranje za cijenu");
-        
-        var bodyType = await getSpecificationOptions("Vehicle information","BodyType");
-        
-        var fuelType = await getSpecificationOptions("Vehicle information","FuelType");
-        
-        var transmission = await getSpecificationOptions("Vehicle information","Tranmission");
-        
-        var driveTrain = await getSpecificationOptions("Vehicle information","DriveTrain");
-        
-        var color = await getSpecificationOptions("Vehicle information","Color");
-        
-        var sustavPomoći = await getSpecificationOptionsWithValue("Features","Sustav pomoći");
-        
-        var sigurnostPutnika = await getSpecificationOptionsWithValue("Features","Sigurnost putnika");
-        
-        var udobnostPutnika = await getSpecificationOptionsWithValue("Features","Udobnost putnika");
-        
-        var svjetlaifarovi = await getSpecificationOptionsWithValue("Features","Svjetla i farovi");
-        
-        var Zaštitaodkrađe = await getSpecificationOptionsWithValue("Features","Zaštita od krađe");
-        
-        var Multimedia = await getSpecificationOptionsWithValue("Features","Multimedia");
-        
-        var Gumeinaplatci = await getSpecificationOptionsWithValue("Features","Gume i naplatci");
-        
-        var Ostalidodaci = await getSpecificationOptionsWithValue("Features","Ostali dodaci");
-        
-        var županije = await getSpecificationOptions("Location","Županija");
-        
+        var negotiateForPrice = await getSpecificationOptions("Price", "Pregovaranje za cijenu");
+
+        var bodyType = await getSpecificationOptions("Vehicle information", "BodyType");
+
+        var fuelType = await getSpecificationOptions("Vehicle information", "FuelType");
+
+        var transmission = await getSpecificationOptions("Vehicle information", "Tranmission");
+
+        var driveTrain = await getSpecificationOptions("Vehicle information", "DriveTrain");
+
+        var color = await getSpecificationOptions("Vehicle information", "Color");
+
+        var sustavPomoći = await getSpecificationOptionsWithValue("Features", "Sustav pomoći");
+
+        var sigurnostPutnika = await getSpecificationOptionsWithValue("Features", "Sigurnost putnika");
+
+        var udobnostPutnika = await getSpecificationOptionsWithValue("Features", "Udobnost putnika");
+
+        var svjetlaifarovi = await getSpecificationOptionsWithValue("Features", "Svjetla i farovi");
+
+        var Zaštitaodkrađe = await getSpecificationOptionsWithValue("Features", "Zaštita od krađe");
+
+        var Multimedia = await getSpecificationOptionsWithValue("Features", "Multimedia");
+
+        var Gumeinaplatci = await getSpecificationOptionsWithValue("Features", "Gume i naplatci");
+
+        var Ostalidodaci = await getSpecificationOptionsWithValue("Features", "Ostali dodaci");
+
+        var županije = await getSpecificationOptions("Location", "Županija");
+
 
         specificationAttributeOptions["PregovaranjeZaCijenu"] = negotiateForPrice;
 
@@ -133,10 +133,8 @@ public partial class SellCarController(
             new SpecificationOption { Text = option.Name, Value = option.Id.ToString() }).ToList();
         var Model = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(Int32.Parse(Make.First().Value)))
             .Select(option => new SpecificationOption { Text = option.Name, Value = option.Id.ToString() }).ToList();
-        var listYears = Enumerable.Range(1971, DateTime.Now.Year - 1971 + 1).Select(year => new SpecificationOption {
-            Text = year.ToString(),
-            Value = year.ToString(),
-        }).ToList();
+        var listYears = Enumerable.Range(1971, DateTime.Now.Year - 1971 + 1).Select(year =>
+            new SpecificationOption { Text = year.ToString(), Value = year.ToString(), }).ToList();
 
         return View("~/Themes/SaljiDalje/Views/SellCar/Index.cshtml",
             new SellCarModel
@@ -174,17 +172,14 @@ public partial class SellCarController(
                     Multimedia = Multimedia,
                     Gumeinaplatci = Gumeinaplatci,
                     Ostalidodaci = Ostalidodaci,
-                    
                 },
-                Location = new Location
-                {
-                    Županije = županije
-                },
+                Location = new Location { Županije = županije },
                 Contacts = new Contacts()
             });
     }
 
-    private async Task<IList<SpecificationOption>> getSpecificationOptions(string specificationGroup, string specificationOption)
+    private async Task<IList<SpecificationOption>> getSpecificationOptions(string specificationGroup,
+        string specificationOption)
     {
         var specificationAttributeGroup = (await specificationAttributeService
                 .GetSpecificationAttributeGroupsAsync())
@@ -195,18 +190,18 @@ public partial class SellCarController(
 
         var specificationAttributeState = specificationAttributeBasicAds
             .Single(item => item.Name == specificationOption);
-        
+
         var StanjeOption = (await specificationAttributeService
             .GetSpecificationAttributeOptionsBySpecificationAttributeAsync(
-                specificationAttributeState.Id)).Select( option => new SpecificationOption
+                specificationAttributeState.Id)).Select(option => new SpecificationOption
         {
-            Text = option.Name,
-            Value = option.Id.ToString()
+            Text = option.Name, Value = option.Id.ToString()
         }).ToList();
         return StanjeOption;
     }
-    
-    private async Task<IList<SpecificationOptionValue>> getSpecificationOptionsWithValue(string specificationGroup, string specificationOption)
+
+    private async Task<IList<SpecificationOptionValue>> getSpecificationOptionsWithValue(string specificationGroup,
+        string specificationOption)
     {
         var specificationAttributeGroup = (await specificationAttributeService
                 .GetSpecificationAttributeGroupsAsync())
@@ -217,23 +212,20 @@ public partial class SellCarController(
 
         var specificationAttributeState = specificationAttributeBasicAds
             .Single(item => item.Name == specificationOption);
-        
+
         var StanjeOption = (await specificationAttributeService
             .GetSpecificationAttributeOptionsBySpecificationAttributeAsync(
-                specificationAttributeState.Id)).Select( option => new SpecificationOptionValue
+                specificationAttributeState.Id)).Select(option => new SpecificationOptionValue
         {
-            Text = option.Name,
-            Value = option.Id.ToString(),
-            Data = false
+            Text = option.Name, Value = option.Id.ToString(), Data = false
         }).ToList();
         return StanjeOption;
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Process(IFormFile ImageFile, CancellationToken cancellationToken)
     {
-        
         if (ImageFile is null)
         {
             return BadRequest("Process Error: No file submitted");
@@ -246,10 +238,10 @@ public partial class SellCarController(
             // get a guid to use as the filename as they're highly unique
             var guid = Guid.NewGuid().ToString();
             //var newimage = string.Format("{0}.{1}", guid, file.FileName.Split('.').LastOrDefault());
-                
+
             using var newMemoryStream = new MemoryStream();
             await ImageFile.CopyToAsync(newMemoryStream, cancellationToken);
-                
+
             await costumerPictureAttachmentMappingRepository.InsertAsync(new CostumerPictureAttachmentMapping
             {
                 FileName = ImageFile.FileName,
@@ -260,7 +252,7 @@ public partial class SellCarController(
                 PictureData = newMemoryStream.ToArray(),
                 Guid = guid
             });
-                
+
             return Ok(guid);
         }
         catch (Exception e)
@@ -268,7 +260,7 @@ public partial class SellCarController(
             return BadRequest($"Process Error: {e.Message}"); // Oops!
         }
     }
-    
+
     [HttpDelete]
     public async Task<ActionResult> Revert()
     {
@@ -279,7 +271,9 @@ public partial class SellCarController(
         {
             return BadRequest("Revert Error: Invalid unique file ID");
         }
-        var attachment = await costumerPictureAttachmentMappingRepository.Table.FirstOrDefaultAsync(i => i.Guid == guid);
+
+        var attachment =
+            await costumerPictureAttachmentMappingRepository.Table.FirstOrDefaultAsync(i => i.Guid == guid);
         // We do some internal application validation here
         try
         {
@@ -291,7 +285,7 @@ public partial class SellCarController(
             return BadRequest(string.Format("Revert Error:'{0}' when writing an object", e.Message));
         }
     }
-        
+
     [HttpDelete]
     public async Task<ActionResult> Remove()
     {
@@ -302,6 +296,7 @@ public partial class SellCarController(
         {
             return BadRequest("Revert Error: Invalid unique file ID");
         }
+
         var attachment = await pictureService.GetPictureByIdAsync(int.Parse(guid));
         // We do some internal application validation here
         try
@@ -314,7 +309,7 @@ public partial class SellCarController(
             return BadRequest(string.Format("Revert Error:'{0}' when writing an object", e.Message));
         }
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Load(string id)
     {
@@ -360,107 +355,100 @@ public partial class SellCarController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> StepTwoFinish(StepTwoModel stepTwoModel)
+    public async Task<IActionResult> StepTwoFinish([FromBody] SellCarModel sellCarModel)
     {
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-        try
+
+        var product = new Product
         {
-            var product = new Product
-            {
-                Name = stepTwoModel.Title,
-                Price = stepTwoModel.Cijena ?? 0,
-                FullDescription = stepTwoModel.Description,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow,
-                Published = true,
-                VisibleIndividually = true
-            };
-            await productService.InsertProductAsync(product);
+            Name = sellCarModel.BasicInfo.Title,
+            Price = sellCarModel.Price.SellCarPrice,
+            FullDescription = sellCarModel.VehicleInformation.Description,
+            CreatedOnUtc = DateTime.UtcNow,
+            UpdatedOnUtc = DateTime.UtcNow,
+            Published = true,
+            VisibleIndividually = true
+        };
+        await productService.InsertProductAsync(product);
 
-            //search engine name
-            var SeName = await urlRecordService.ValidateSeNameAsync(product, null, product.Name, true);
-            await urlRecordService.SaveSlugAsync(product, SeName, 0);
+        //search engine name
+        var SeName = await urlRecordService.ValidateSeNameAsync(product, null, product.Name, true);
+        await urlRecordService.SaveSlugAsync(product, SeName, 0);
 
-            //locales
-            //await UpdateLocalesAsync(product, model);
+        //locales
+        //await UpdateLocalesAsync(product, model);
 
-            //categories
-            await SaveCategoryMappingsAsync(product, stepTwoModel);
+        //categories
+        //await SaveCategoryMappingsAsync(product, sellCarModel);
 
-            await Insertpictures(stepTwoModel, product);
+        //await Insertpictures(sellCarModel, product);
 
-            //var psa = model.ToEntity<ProductSpecificationAttribute>();
-            //psa.CustomValue = model.ValueRaw;
+        //var psa = model.ToEntity<ProductSpecificationAttribute>();
+        //psa.CustomValue = model.ValueRaw;
 
-            //var sawp = await _specificationAttributeService.GetSpecificationAttributesWithOptionsAsync();
-            //sawp.First(item => item.Id == 1 )
-            async Task InsertProductAttribute(string s)
-            {
-                int numericValue;
-                if (int.TryParse(s, out numericValue))
-                    await specificationAttributeService.InsertProductSpecificationAttributeAsync(
-                        new ProductSpecificationAttribute()
-                        {
-                            ProductId = product.Id,
-                            AttributeType = SpecificationAttributeType.Option,
-                            AllowFiltering = true,
-                            ShowOnProductPage = true,
-                            SpecificationAttributeOptionId = numericValue
-                        });
-            }
-
-            foreach (var mogućaDostavaItem in stepTwoModel.MogucaDostavaList)
-            {
-                await InsertProductAttribute(mogućaDostavaItem);
-            }
-
-            foreach (var mogućnostPlaćanjaItem in stepTwoModel.MogućnostPlaćanjaList)
-            {
-                await InsertProductAttribute(mogućnostPlaćanjaItem);
-            }
-
-            var psa = new ProductSpecificationAttribute
-            {
-                ProductId = product.Id,
-                AttributeType = SpecificationAttributeType.Option,
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                SpecificationAttributeOptionId = stepTwoModel.SpecificationAttributeOptionIdStateOptionId
-            };
-            var psaZupanija = new ProductSpecificationAttribute
-            {
-                ProductId = product.Id,
-                AttributeType = SpecificationAttributeType.Option,
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                SpecificationAttributeOptionId = (int)stepTwoModel.OdabaranaZupanija
-            };
-
-            await specificationAttributeService.InsertProductSpecificationAttributeAsync(psa);
-            await specificationAttributeService
-                .InsertProductSpecificationAttributeAsync(
-                    psaZupanija); //_specificationAttributeService.GetProductSpecificationAttributesAsync(1);
-
-            //await _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttributeAsync(Convert.ToInt32(attributeId));
-
-            await productExtendedRepository.InsertAsync(new ProductExtended
-            {
-                ProductId = product.Id, UserId = (await workContext.GetCurrentCustomerAsync()).Id
-            });
-
-            notificationService.SuccessNotification("Uspješno dodan oglas!");
-
-            transaction.Complete();
-            transaction.Dispose();
-
-            return RedirectToRoute("Homepage");
-        }
-        catch (Exception exception)
+        //var sawp = await _specificationAttributeService.GetSpecificationAttributesWithOptionsAsync();
+        //sawp.First(item => item.Id == 1 )
+        async Task InsertProductAttribute(string s)
         {
-            transaction.Dispose();
-            throw;
+            int numericValue;
+            if (int.TryParse(s, out numericValue))
+                await specificationAttributeService.InsertProductSpecificationAttributeAsync(
+                    new ProductSpecificationAttribute()
+                    {
+                        ProductId = product.Id,
+                        AttributeType = SpecificationAttributeType.Option,
+                        AllowFiltering = true,
+                        ShowOnProductPage = true,
+                        SpecificationAttributeOptionId = numericValue
+                    });
         }
+
+        /*foreach (var mogućaDostavaItem in sellCarModel.MogucaDostavaList)
+        {
+            await InsertProductAttribute(mogućaDostavaItem);
+        }
+
+        foreach (var mogućnostPlaćanjaItem in sellCarModel.MogućnostPlaćanjaList)
+        {
+            await InsertProductAttribute(mogućnostPlaćanjaItem);
+        }
+
+        var psa = new ProductSpecificationAttribute
+        {
+            ProductId = product.Id,
+            AttributeType = SpecificationAttributeType.Option,
+            AllowFiltering = true,
+            ShowOnProductPage = true,
+            SpecificationAttributeOptionId = sellCarModel.SpecificationAttributeOptionIdStateOptionId
+        };
+        var psaZupanija = new ProductSpecificationAttribute
+        {
+            ProductId = product.Id,
+            AttributeType = SpecificationAttributeType.Option,
+            AllowFiltering = true,
+            ShowOnProductPage = true,
+            SpecificationAttributeOptionId = (int)sellCarModel.OdabaranaZupanija
+        };
+
+        await specificationAttributeService.InsertProductSpecificationAttributeAsync(psa);
+        await specificationAttributeService
+            .InsertProductSpecificationAttributeAsync(
+                psaZupanija); //_specificationAttributeService.GetProductSpecificationAttributesAsync(1);*/
+
+        //await _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttributeAsync(Convert.ToInt32(attributeId));
+
+        await productExtendedRepository.InsertAsync(new ProductExtended
+        {
+            ProductId = product.Id, UserId = (await workContext.GetCurrentCustomerAsync()).Id
+        });
+
+        notificationService.SuccessNotification("Uspješno dodan oglas!");
+
+        transaction.Complete();
+        return Json("Homepage");
     }
+
+    
 
     private async Task Insertpictures(StepTwoModel stepTwoModel, Product product)
     {

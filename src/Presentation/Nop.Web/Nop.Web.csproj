@@ -39,6 +39,7 @@
     <Compile Include="Themes\SaljiDalje\Data\**"/>
     <Compile Include="Themes\SaljiDalje\Controllers\**"/>
     <Compile Include="Themes\SaljiDalje\ExternalAuth\**"/>
+    <Compile Include="Themes\SaljiDalje\InfraStructure\**" />
     <Content Remove="Plugins\**;Themes\**" />
     <EmbeddedResource Remove="Plugins\**;Themes\**" />
     <None Remove="Plugins\**;Themes\**" />
