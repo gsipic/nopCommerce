@@ -7,6 +7,7 @@ using BlazorApp1.Pages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Data;
@@ -147,7 +148,7 @@ public partial class SellCarController(
                     SpecificationAttributeAdTypeIdStateOptionId = adType.First().Value,
                     AdType = adType,
                 },
-                Price = new Price { SellCarPrice = 200, NegotiatedPrice = false },
+                Price = new Price { SellCarPrice = 0, NegotiatedPrice = false },
                 VehicleInformation = new VehicleInformation
                 {
                     Make = Make,
@@ -381,34 +382,24 @@ public partial class SellCarController(
         //categories
         await SaveCategoryMappingsAsync(product, sellCarModel);
 
-        //await Insertpictures(sellCarModel, product);
+        await Insertpictures(sellCarModel, product);
 
         //var psa = model.ToEntity<ProductSpecificationAttribute>();
         //psa.CustomValue = model.ValueRaw;
 
         //var sawp = await _specificationAttributeService.GetSpecificationAttributesWithOptionsAsync();
         //sawp.First(item => item.Id == 1 )
-        async Task InsertProductAttribute(string s)
-        {
-            int numericValue;
-            if (int.TryParse(s, out numericValue))
-                await specificationAttributeService.InsertProductSpecificationAttributeAsync(
-                    new ProductSpecificationAttribute()
-                    {
-                        ProductId = product.Id,
-                        AttributeType = SpecificationAttributeType.Option,
-                        AllowFiltering = true,
-                        ShowOnProductPage = true,
-                        SpecificationAttributeOptionId = numericValue
-                    });
-        }
-
-        /*foreach (var mogućaDostavaItem in sellCarModel.MogucaDostavaList)
-        {
-            await InsertProductAttribute(mogućaDostavaItem);
-        }
-
-        foreach (var mogućnostPlaćanjaItem in sellCarModel.MogućnostPlaćanjaList)
+        await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.SustavPomoći);
+        await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.SigurnostPutnika);
+        await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.UdobnostPutnika);
+        await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.SvjetlaiFarovi);
+        await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.ZaštitaOdKrađe);
+        await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.Multimedia);
+        await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.Gumeinaplatci);
+        await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.Ostalidodaci);
+        
+        
+        /*foreach (var mogućnostPlaćanjaItem in sellCarModel.MogućnostPlaćanjaList)
         {
             await InsertProductAttribute(mogućnostPlaćanjaItem);
         }
@@ -448,19 +439,40 @@ public partial class SellCarController(
         return Json("Homepage");
     }
 
-    
-
-    private async Task Insertpictures(StepTwoModel stepTwoModel, Product product)
+    private async Task insertSpecificationAttributeOptionsTest(Product product, IList<SpecificationOptionValue> items)
     {
-        foreach (var base64EncodedPictures in stepTwoModel.ImageFile)
+        foreach (var mogućaDostavaItem in items)
         {
-            if (base64EncodedPictures == null)
+            if (mogućaDostavaItem.Data)
             {
-                return;
+                int numericValue;
+                if (int.TryParse(mogućaDostavaItem.Value, out numericValue))
+                    await specificationAttributeService.InsertProductSpecificationAttributeAsync(
+                        new ProductSpecificationAttribute()
+                        {
+                            ProductId = product.Id,
+                            AttributeType = SpecificationAttributeType.Option,
+                            AllowFiltering = true,
+                            ShowOnProductPage = true,
+                            SpecificationAttributeOptionId = numericValue
+                        });
             }
         }
+    }
 
-        foreach (var base64EncodedPictures in stepTwoModel.ImageFile)
+
+    private async Task Insertpictures(SellCarModel stepTwoModel, Product product)
+    {
+        if (stepTwoModel.PhotosAndVideo.ImageFile.IsNullOrEmpty())
+        {
+            return;
+        }
+        if (stepTwoModel.PhotosAndVideo.ImageFile.Any(item => item.IsNullOrEmpty()))
+        {
+            return;
+        }
+        
+        foreach (var base64EncodedPictures in stepTwoModel.PhotosAndVideo.ImageFile)
         {
             var filePond = await costumerPictureAttachmentMappingRepository.Table
                 .FirstOrDefaultAsync(item => item.Guid == base64EncodedPictures);

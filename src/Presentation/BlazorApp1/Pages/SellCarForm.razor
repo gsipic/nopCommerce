@@ -48,7 +48,7 @@
             <option value="gbp">&#163;</option>
             <option value="jpy">&#165;</option>
         </select>
-        <InputNumber class="form-control form-control-light w-100 me-2 mb-2" type="number" id="@nameof(SellCarModel.Price)" min="0" step="1" @bind-Value="SellCarModel.Price.SellCarPrice"/>
+        <InputNumber class="form-control form-control-light w-100 me-2 mb-2" type="number" id="@nameof(SellCarModel.Price)" placeholder="Enter price" @bind-Value="SellCarModel.Price.SellCarPrice"/>
     </div>
     <div class="form-check form-switch form-switch-light">
         <InputCheckbox class="form-check-input" type="checkbox" id="@nameof(SellCarModel.Price.NegotiatedPrice)" @bind-Value="SellCarModel.Price.NegotiatedPrice"/>
@@ -91,11 +91,11 @@
         </div>
         <div class="col-md-3 col-sm-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Mileage)">Mileage <span class="text-danger">*</span></label>
-            <InputNumber class="form-control form-control-light" type="number" id="@(SellCarModel.VehicleInformation.Mileage)" min="200" step="100" @bind-Value="SellCarModel.VehicleInformation.Mileage" placeholder="Enter mileage"/>
+            <InputNumber class="form-control form-control-light" type="number" id="@(SellCarModel.VehicleInformation.Mileage)" @bind-Value="SellCarModel.VehicleInformation.Mileage" placeholder="Enter mileage"/>
         </div>
         <div class="col-md-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.VIN)">VIN</label>
-            <InputText class="form-control form-control-light" type="text" id="@nameof(SellCarModel.VehicleInformation.VIN)" @bind-Value="SellCarModel.VehicleInformation.VIN" placeholder="Enter VIN code"/>
+            <InputText class="form-control form-control-light" autocomplete="off" type="text" id="@nameof(SellCarModel.VehicleInformation.VIN)" @bind-Value="SellCarModel.VehicleInformation.VIN" placeholder="Enter VIN code"/>
         </div>
     </div>
     <div class="border-top border-light mt-2 pt-4">
@@ -334,17 +334,17 @@
     <div class="row">
         <div class="col-sm-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.FirstName)">First name <span class="text-danger">*</span></label>
-            <InputText class="form-control form-control-light" type="text" id="@nameof(SellCarModel.Contacts.FirstName)" @bind-Value="SellCarModel.Contacts.FirstName" placeholder="Enter your first name" />
+            <InputText class="form-control form-control-light" autocomplete="off" type="text" id="@nameof(SellCarModel.Contacts.FirstName)" @bind-Value="SellCarModel.Contacts.FirstName" placeholder="Enter your first name" />
         </div>
         <div class="col-sm-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.LastName)">Second name <span class="text-danger">*</span></label>
-            <InputText class="form-control form-control-light" type="text" id="@nameof(SellCarModel.Contacts.LastName)" @bind-Value="SellCarModel.Contacts.LastName" placeholder="Enter your second name" />
+            <InputText class="form-control form-control-light" autocomplete="off" type="text" id="@nameof(SellCarModel.Contacts.LastName)" @bind-Value="SellCarModel.Contacts.LastName" placeholder="Enter your second name" />
         </div>
     </div>
     <div class="row">
         <div class="col-sm-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.EmailAddress)">Email<span class="text-danger">*</span></label>
-            <InputText class="form-control form-control-light" type="text" id="@nameof(SellCarModel.Contacts.EmailAddress)" @bind-Value="SellCarModel.Contacts.EmailAddress" placeholder="Enter your email"/>
+            <InputText class="form-control form-control-light" autocomplete="off" type="text" id="@nameof(SellCarModel.Contacts.EmailAddress)" @bind-Value="SellCarModel.Contacts.EmailAddress" placeholder="Enter your email"/>
         </div>
         <div class="col-sm-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.PhoneNumber)">Phone number <span class="text-danger">*</span></label>
@@ -352,7 +352,7 @@
         </div>
     </div>
     <label class="form-label text-light" for="@nameof(SellCarModel.Contacts.WebSite)">Website</label>
-    <InputText class="form-control form-control-light mb-3" type="text" id="@nameof(SellCarModel.Contacts.WebSite)" @bind-Value="SellCarModel.Contacts.WebSite" placeholder="Enter company name"/>
+    <InputText class="form-control form-control-light mb-3" autocomplete="off" type="text" id="@nameof(SellCarModel.Contacts.WebSite)" @bind-Value="SellCarModel.Contacts.WebSite" placeholder="Enter company name"/>
     <div class="text-light py-3">Social accounts</div>
     <div class="d-flex align-items-center mb-3">
         <div class="btn btn-icon btn-translucent-light btn-xs rounded-circle pe-none flex-shrink-0 me-3">
@@ -453,11 +453,13 @@
     private async Task PlaceAd(EditContext obj)
     {
         var result = await module.InvokeAsync<string[]>("getFilepondInputFiles");
+        var formModel = obj.Model as SellCarModel;
+        formModel.PhotosAndVideo.ImageFile = result;
         _isSubmitting = true;
         _text = "Loading";
         StateHasChanged();
         
-        var response = (await SaljiDaljeClient.HttpClient.PostAsJsonAsync($"https://localhost:5001/SellCar/StepTwoFinish/", obj.Model)).IsSuccessStatusCode;
+        var response = (await SaljiDaljeClient.HttpClient.PostAsJsonAsync($"https://localhost:5001/SellCar/StepTwoFinish/", formModel)).IsSuccessStatusCode;
         _isSubmitting = false;
         _text = "Save and continue";
         

@@ -11,7 +11,9 @@ public class SellCarModel
     public VehicleInformation VehicleInformation { get; set; }
 
     public Features Features { get; set; }
-    
+
+    public PhotosAndVideo PhotosAndVideo { get; set; } = new();
+
     public Location Location { get; set; }
 
     public Contacts Contacts { get; set; }
@@ -42,7 +44,7 @@ public class SpecificationOptionValue
 
 public class Price
 {
-    public int SellCarPrice { get; set; }
+    [Required] public int SellCarPrice { get; set; }
     public bool NegotiatedPrice { get; set; }
 }
 
@@ -83,6 +85,11 @@ public class Features
     public IList<SpecificationOptionValue> Multimedia { get; set; } = new List<SpecificationOptionValue>();
     public IList<SpecificationOptionValue> Gumeinaplatci { get; set; } = new List<SpecificationOptionValue>();
     public IList<SpecificationOptionValue> Ostalidodaci { get; set; } = new List<SpecificationOptionValue>();
+}
+
+public class PhotosAndVideo
+{
+    public IList<string> ImageFile { get; set; } = new List<string>();
 }
 
 public class Location
