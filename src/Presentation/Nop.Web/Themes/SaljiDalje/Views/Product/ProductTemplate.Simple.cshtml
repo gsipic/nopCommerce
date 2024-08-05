@@ -1,6 +1,7 @@
 ﻿@{
     Layout = "_Layout";
 }
+@model ProductDetailsModel
 <!-- Vendor Styles-->
 @* <link rel="stylesheet" media="screen" href="Themes/SaljiDalje/Content/vendor/simplebar/dist/simplebar.min.css"/> *@
 <link rel="stylesheet" media="screen" href="/Themes/SaljiDalje/Content/vendor/tiny-slider/dist/tiny-slider.css" asp-exclude-from-bundle="true"/>
@@ -13,18 +14,26 @@
 <!-- Breadcrumb-->
 <nav class="mb-3 pt-md-3" aria-label="Breadcrumb">
     <ol class="breadcrumb breadcrumb-light">
-        <li class="breadcrumb-item"><a href="car-finder-home.html">Home</a></li>
-        <li class="breadcrumb-item"><a href="car-finder-catalog-grid.html">Used cars</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Mercedes-Benz E 400 Cabriolet</li>
+        @foreach (var item in Model.Breadcrumb.CategoryBreadcrumb.Select((item, index) => (item,index)))
+        {
+            if (item.index < Model.Breadcrumb.CategoryBreadcrumb.Count - 1)
+            {
+                <li class="breadcrumb-item"><a href="@item.item.SeName">@item.item.Name</a></li>
+            }
+            else
+            {
+                <li class="breadcrumb-item active" aria-current="page">@item.item.Name</li>
+            }
+        }
     </ol>
 </nav>
 <!-- Title + Sharing-->
 <div class="d-sm-flex align-items-end align-items-md-center justify-content-between position-relative mb-4" style="z-index: 1025;">
     <div class="me-3">
-        <h1 class="h2 text-light mb-md-0"> Mercedes-Benz E 400 Cabriolet</h1>
+        <h1 class="h2 text-light mb-md-0"> @Model.Name</h1>
         <div class="d-md-none">
             <div class="d-flex align-items-center mb-3">
-                <div class="h3 mb-0 text-light">$31,900</div>
+                <div class="h3 mb-0 text-light">$@Model.ProductPrice.Price</div>
                 <div class="text-nowrap ps-3"><span class="badge bg-info fs-base me-2">Used</span><span class="badge bg-success fs-base me-2" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-html="true" data-bs-content="&lt;div class=&quot;d-flex&quot;&gt;&lt;i class=&quot;fi-award mt-1 me-2&quot;&gt;&lt;/i&gt;&lt;div&gt;This car is checked and&lt;br&gt;certified by Finder.&lt;/div&gt;&lt;/div&gt;">Certified</span></div>
             </div>
             <div class="d-flex flex-wrap align-items-center text-light mb-2">
@@ -53,26 +62,18 @@
         <div class="ps-1"><span class="tns-current-slide fs-5 fw-bold"></span><span class="fs-5 fw-bold">/</span><span class="tns-total-slides fs-5 fw-bold"></span></div>
     </div>
     <div class="tns-carousel-inner" data-carousel-options="{&quot;navAsThumbnails&quot;: true, &quot;navContainer&quot;: &quot;#thumbnails&quot;, &quot;gutter&quot;: 12, &quot;responsive&quot;: {&quot;0&quot;:{&quot;controls&quot;: false},&quot;500&quot;:{&quot;controls&quot;: true}}}">
-        <div><img class="rounded-3" src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/01.jpg" alt="Image"></div>
-        <div><img class="rounded-3" src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/02.jpg" alt="Image"></div>
-        <div><img class="rounded-3" src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/03.jpg" alt="Image"></div>
-        <div><img class="rounded-3" src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/04.jpg" alt="Image"></div>
-        <div><img class="rounded-3" src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/05.jpg" alt="Image"></div>
-        <div><img class="rounded-3" src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/06.jpg" alt="Image"></div>
-        <div><img class="rounded-3" src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/07.jpg" alt="Image"></div>
-        <div><img class="rounded-3" src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/08.jpg" alt="Image"></div>
+        @foreach (var item in @Model.PictureModels)
+        {
+            <div><img class="rounded-3 w-100" style="height: 419px; object-fit: cover;" src="@item.FullSizeImageUrl" alt="Image"></div>
+        }
     </div>
 </div>
 <ul class="tns-thumbnails" id="thumbnails">
-    <li class="tns-thumbnail"><img src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/th01.jpg" alt="Thumbnail"></li>
-    <li class="tns-thumbnail"><img src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/th02.jpg" alt="Thumbnail"></li>
-    <li class="tns-thumbnail"><img src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/th03.jpg" alt="Thumbnail"></li>
-    <li class="tns-thumbnail"><img src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/th04.jpg" alt="Thumbnail"></li>
-    <li class="tns-thumbnail"><img src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/th05.jpg" alt="Thumbnail"></li>
-    <li class="tns-thumbnail"><img src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/th06.jpg" alt="Thumbnail"></li>
-    <li class="tns-thumbnail"><img src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/th07.jpg" alt="Thumbnail"></li>
-    <li class="tns-thumbnail"><img src="Themes/SaljiDalje/Content/img/car-finder/single/gallery/th08.jpg" alt="Thumbnail"></li>
-    <li class="tns-thumbnail"><a class="d-flex flex-column align-items-center justify-content-center w-100 h-100 bg-faded-light rounded text-light text-decoration-none" href="https://www.youtube.com/watch?v=0ffN2hgKzOE" data-bs-toggle="lightbox" data-video="true"><i class="fi-play-circle fs-5"></i><span class="opacity-70 mt-1">Play video</span></a></li>
+    @foreach (var item in @Model.PictureModels)
+    {
+        <li class="tns-thumbnail"><img style="height: 102px; object-fit: cover;" src="@item.ImageUrl" alt="Thumbnail"></li>
+    }
+    <li style="height: 102px; object-fit: cover;" class="tns-thumbnail"><a  class="d-flex flex-column align-items-center justify-content-center w-100 h-100 bg-faded-light rounded text-light text-decoration-none" href="https://www.youtube.com/watch?v=0ffN2hgKzOE" data-bs-toggle="lightbox" data-video="false"><i class="fi-play-circle fs-5"></i><span class="opacity-70 mt-1">Play video</span></a></li>
 </ul>
 <!-- Specs-->
 <div class="py-3 mb-3">
@@ -124,123 +125,47 @@
 <!-- Features-->
 <h2 class="h4 text-light pt-3 mb-4">Features</h2>
 <div class="accordion accordion-light" id="features">
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingExterior">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#exterior" aria-expanded="false" aria-controls="exterior">Exterior</button>
-        </h2>
-        <div class="accordion-collapse collapse" id="exterior" aria-labelledby="headingExterior" data-bs-parent="#features">
-            <div class="accordion-body fs-sm text-light opacity-70">
-                <ul>
-                    <li>Alloy Wheels</li>
-                    <li>Sunroof / Moonroof</li>
-                    <li>Tinged glass</li>
-                    <li>LED Headlights</li>
-                    <li>Foldable Roof</li>
-                    <li>Tow Hitch</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingInterior">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#interior" aria-expanded="true" aria-controls="interior">Interior</button>
-        </h2>
-        <div class="accordion-collapse collapse show" id="interior" aria-labelledby="headingInterior" data-bs-parent="#features">
-            <div class="accordion-body fs-sm text-light opacity-70">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <ul>
-                            <li>Adjustable Steering Wheel</li>
-                            <li>Auto-Dimming Rearview Mirror</li>
-                            <li>Driver Adjustable Lumbar</li>
-                            <li>Driver Illuminated Vanity Mirror</li>
-                            <li>Universal Garage Door Opener</li>
-                            <li>Steering Wheel Audio Controls</li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-6">
-                        <ul>
-                            <li>Heated Front Seats</li>
-                            <li>Leather Seats</li>
-                            <li>Leather Steering Wheel</li>
-                            <li>Pass-Through Rear Seat</li>
-                            <li>Passenger Adjustable Lumbar</li>
-                            <li>Passenger Illuminated Visor Mirror</li>
-                        </ul>
-                    </div>
+    @foreach (var item in Model.ProductSpecificationModel.Groups[1].Attributes)
+    {
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="@item.Id">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@("a" + item.Id)" aria-expanded="false" aria-controls="exterior">@item.Name</button>
+            </h2>
+            <div class="accordion-collapse collapse" id="@("a" + item.Id)" aria-labelledby="@item.Id" data-bs-parent="#features">
+                <div class="accordion-body fs-sm text-light opacity-70">
+                    <ul>
+                        @foreach (var productSpecificationAttribute in item.Values)
+                        {
+                            <li>@productSpecificationAttribute.ValueRaw</li>
+                        }
+                    </ul>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingSafety">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#safety" aria-expanded="false" aria-controls="safety">Safety</button>
-        </h2>
-        <div class="accordion-collapse collapse" id="safety" aria-labelledby="headingSafety" data-bs-parent="#features">
-            <div class="accordion-body fs-sm text-light opacity-70">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <ul>
-                            <li>Airbag: Driver</li>
-                            <li>Airbag: Passenger</li>
-                            <li>Adaptive Cruise Control</li>
-                            <li>Blind Spot Monitor</li>
-                            <li>Alarm</li>
-                            <li>Antilock Brakes</li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-6">
-                        <ul>
-                            <li>Brake Assist</li>
-                            <li>Lane Departure Warning</li>
-                            <li>Stability Control</li>
-                            <li>Fog Lights</li>
-                            <li>Power Door Locks</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingTechnology">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#technology" aria-expanded="false" aria-controls="technology">Technology</button>
-        </h2>
-        <div class="accordion-collapse collapse" id="technology" aria-labelledby="headingTechnology" data-bs-parent="#features">
-            <div class="accordion-body fs-sm text-light opacity-70">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <ul>
-                            <li>Multi-Zone A/C</li>
-                            <li>Climate Control</li>
-                            <li>Navigation System</li>
-                            <li>Remote Start</li>
-                            <li>Bluetooth</li>
-                            <li>Remote Start</li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-6">
-                        <ul>
-                            <li>Apple CarPlay</li>
-                            <li>Android Auto</li>
-                            <li>Backup Camera</li>
-                            <li>HomeLink</li>
-                            <li>Keyless Start</li>
-                            <li>Premium Sound System</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    }
 </div>
 <!-- Description-->
 <div class="pb-4 mb-3">
     <h2 class="h4 text-light pt-4 mt-3">Seller's Description</h2>
-    <p class="text-light opacity-70 mb-1">Lorem tincidunt lectus vitae id vulputate diam quam. Imperdiet non scelerisque turpis sed etiam ultrices. Blandit mollis dignissim egestas consectetur porttitor. Vulputate dolor pretium, dignissim eu augue sit ut convallis. Lectus est, magna urna feugiat sed ultricies sed in lacinia. Fusce potenti sit id pharetra vel ornare. Vestibulum sed tellus ullamcorper arcu.</p>
-    <div class="collapse" id="seeMoreDescription">
-        <p class="text-light opacity-70 mb-1">Asperiores eos molestias, aspernatur assumenda vel corporis ex, magni excepturi totam exercitationem quia inventore quod amet labore impedit quae distinctio? Officiis blanditiis consequatur alias, atque, sed est incidunt accusamus repudiandae tempora repellendus obcaecati delectus ducimus inventore tempore harum numquam autem eligendi culpa.</p>
-    </div><a class="collapse-label collapsed" href="#seeMoreDescription" data-bs-toggle="collapse" data-bs-label-collapsed="Show more" data-bs-label-expanded="Show less" role="button" aria-expanded="false" aria-controls="seeMoreDescription"></a>
+    @{
+        var fullText = Model.FullDescription;
+        string fullTextFirstPart = null;
+        string fullTextSecondPart = null;
+        const int LENGTH = 367; // magic number for finder site
+        if (fullText.Length > LENGTH)
+        {
+            fullTextFirstPart = fullText.Substring(0, LENGTH);
+            fullTextSecondPart = fullText.Substring(LENGTH, fullText.Length - LENGTH);
+        }
+    }
+    <p class="text-light opacity-70 mb-1">@(fullTextFirstPart ?? fullText)</p>
+    @if (fullTextSecondPart != null)
+    {
+        <div class="collapse" id="seeMoreDescription">
+            <p class="text-light opacity-70 mb-1">@fullTextSecondPart</p>
+        </div>
+        <a class="collapse-label collapsed" href="#seeMoreDescription" data-bs-toggle="collapse" data-bs-label-collapsed="Show more" data-bs-label-expanded="Show less" role="button" aria-expanded="false" aria-controls="seeMoreDescription"></a>
+    }
 </div>
 <!-- Post meta-->
 <div class="d-flex flex-wrap border-top border-light fs-sm text-light pt-4 pb-5 pb-md-2">
@@ -254,7 +179,7 @@
     <div class="sticky-top pt-5">
         <div class="d-none d-md-block pt-5">
             <div class="d-flex mb-4"><span class="badge bg-info fs-base me-2">Used</span><span class="badge bg-success fs-base me-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover" data-bs-html="true" data-bs-content="&lt;div class=&quot;d-flex&quot;&gt;&lt;i class=&quot;fi-award mt-1 me-2&quot;&gt;&lt;/i&gt;&lt;div&gt;This car is checked and&lt;br&gt;certified by Finder.&lt;/div&gt;&lt;/div&gt;">Certified</span></div>
-            <div class="h3 text-light">$31,900</div>
+            <div class="h3 text-light">@Model.ProductPrice.Price</div>
             <div class="d-flex align-items-center text-light pb-4 mb-2">
                 <div class="text-nowrap border-end border-light pe-3 me-3"><i class="fi-dashboard fs-lg opacity-70 me-2"></i><span class="align-middle">25K miles</span></div>
                 <div class="text-nowrap"><i class="fi-map-pin fs-lg opacity-70 me-2"></i><span class="align-middle">Chicago, IL 60603</span></div>
