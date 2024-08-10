@@ -158,7 +158,7 @@
             fullTextSecondPart = fullText.Substring(LENGTH, fullText.Length - LENGTH);
         }
     }
-    <p class="text-light opacity-70 mb-1">@(fullTextFirstPart ?? fullText)</p>
+    <p class="text-light opacity-70 mb-1" style="white-space: pre-wrap;">@(fullTextFirstPart ?? fullText)</p>
     @if (fullTextSecondPart != null)
     {
         <div class="collapse" id="seeMoreDescription">
