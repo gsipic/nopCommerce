@@ -747,7 +747,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
         unsetValue = bindedInput[i].dataset.bsUnsetValue;
       if (bindedInput[i].tagName === 'SELECT') {
         bindedInput[i].addEventListener('change', function (e) {
-          bindedElement.innerText = e.target.value;
+          bindedElement.innerText = bindedInput[i].options[bindedInput[i].selectedIndex].text;
         });
       } else if (bindedInput[i].classList.contains('date-picker')) {
         bindedInput[i].addEventListener('change', function (e) {

@@ -145,6 +145,8 @@ namespace SaljiDalje.Core.Data
             _customerSettings.UsernamesEnabled = true;
             _customerSettings.FirstNameRequired = false;
             _customerSettings.LastNameRequired = false;
+            _customerSettings.PhoneEnabled = true;
+            _customerSettings.StreetAddressEnabled = true;
             _customerSettings.AllowCustomersToUploadAvatars = true;
             _customerSettings.AvatarMaximumSizeBytes = 2000000;
 

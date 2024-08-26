@@ -44,24 +44,24 @@ public partial class SellCarController(
 
         Dictionary<string, IList<SpecificationOption>> specificationAttributeOptions = new();
 
-        var StanjeOption = await getSpecificationOptions("BasicInfo", "Stanje vozila");
+        var StanjeOption = await getSpecificationOptions(specificationAttributeService,"BasicInfo", "Stanje vozila");
 
-        var adType = await getSpecificationOptions("BasicInfo", "Tip prodavaca");
+        var adType = await getSpecificationOptions(specificationAttributeService,"BasicInfo", "Tip prodavaca");
 
         //Location
-        var location = await getSpecificationOptions("Location", "Županija");
+        var location = await getSpecificationOptions(specificationAttributeService,"Location", "Županija");
 
-        var negotiateForPrice = await getSpecificationOptions("Price", "Pregovaranje za cijenu");
+        var negotiateForPrice = await getSpecificationOptions(specificationAttributeService,"Price", "Pregovaranje za cijenu");
 
-        var bodyType = await getSpecificationOptions("Vehicle information", "BodyType");
+        var bodyType = await getSpecificationOptions(specificationAttributeService,"Vehicle information", "BodyType");
 
-        var fuelType = await getSpecificationOptions("Vehicle information", "FuelType");
+        var fuelType = await getSpecificationOptions(specificationAttributeService,"Vehicle information", "FuelType");
 
-        var transmission = await getSpecificationOptions("Vehicle information", "Tranmission");
+        var transmission = await getSpecificationOptions(specificationAttributeService,"Vehicle information", "Tranmission");
 
-        var driveTrain = await getSpecificationOptions("Vehicle information", "DriveTrain");
+        var driveTrain = await getSpecificationOptions(specificationAttributeService,"Vehicle information", "DriveTrain");
 
-        var color = await getSpecificationOptions("Vehicle information", "Color");
+        var color = await getSpecificationOptions(specificationAttributeService,"Vehicle information", "Color");
 
         var sustavPomoći = await getSpecificationOptionsWithValue("Features", "Sustav pomoći");
 
@@ -79,7 +79,7 @@ public partial class SellCarController(
 
         var Ostalidodaci = await getSpecificationOptionsWithValue("Features", "Ostali dodaci");
 
-        var županije = await getSpecificationOptions("Location", "Županija");
+        var županije = await getSpecificationOptions(specificationAttributeService,"Location", "Županija");
 
 
         specificationAttributeOptions["PregovaranjeZaCijenu"] = negotiateForPrice;
@@ -179,7 +179,8 @@ public partial class SellCarController(
             });
     }
 
-    private async Task<IList<SpecificationOption>> getSpecificationOptions(string specificationGroup,
+    public static async Task<IList<SpecificationOption>> getSpecificationOptions(ISpecificationAttributeService specificationAttributeService,
+        string specificationGroup,
         string specificationOption)
     {
         var specificationAttributeGroup = (await specificationAttributeService
