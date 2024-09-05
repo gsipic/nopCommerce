@@ -1,6 +1,8 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.IdentityModel.Tokens
 @using Nop.Core.Domain.Seo
 @using Nop.Web.Factories
+@using Nop.Web.Themes.SaljiDalje.Data
 @inject ICatalogModelFactory _catalogModelFactory
 @inject ICommonModelFactory _commonModelFactory;
 @inject SeoSettings seoSettings
@@ -311,9 +313,9 @@
         </button>
         @if (model.IsAuthenticated)
         {
-            <div class="dropdown d-none d-lg-block order-lg-3 my-n2 me-3"><a class="d-block py-2" asp-controller="Customer" asp-action="Info"><img class="rounded-circle" src="@(ViewBag.AvatarUrl != null ? ViewBag.AvatarUrl : "/Themes/SaljiDalje/Content/img/avatars/01.jpg")" width="40" alt="Robert Fox"></a>
+            <div class="dropdown d-none d-lg-block order-lg-3 my-n2 me-3"><a class="d-block py-2" asp-controller="Customer" asp-action="Info"><img class="rounded-circle" src="@(!(ViewData[SaljiDaljeConstants.AVATAR_URL] as string).IsNullOrEmpty() ? ViewData[SaljiDaljeConstants.AVATAR_URL] : SaljiDaljeConstants.NO_PROFILE_IMAGE)" width="40" alt="Robert Fox"></a>
                 <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-                    <div class="d-flex align-items-start border-bottom border-light px-3 py-1 mb-2" style="width: 16rem;"><img class="rounded-circle" src="@(ViewBag.AvatarUrl != null ? ViewBag.AvatarUrl : "/Themes/SaljiDalje/Content/img/avatars/01.jpg")" width="48" alt="Robert Fox">
+                    <div class="d-flex align-items-start border-bottom border-light px-3 py-1 mb-2" style="width: 16rem;"><img class="rounded-circle" src="@(!(ViewData[SaljiDaljeConstants.AVATAR_URL] as string).IsNullOrEmpty() ? ViewData[SaljiDaljeConstants.AVATAR_URL] : SaljiDaljeConstants.NO_PROFILE_IMAGE)" width="48" alt="Robert Fox">
                         <div class="ps-2">
                             <h6 class="fs-base text-light mb-0">Robert Fox</h6><span class="star-rating star-rating-sm"><i class="star-rating-icon fi-star-filled active"></i><i class="star-rating-icon fi-star-filled active"></i><i class="star-rating-icon fi-star-filled active"></i><i class="star-rating-icon fi-star-filled active"></i><i class="star-rating-icon fi-star-filled active"></i></span>
                             <div class="fs-xs py-2">(302) 555-0107<br>robert_fox@email.com</div>

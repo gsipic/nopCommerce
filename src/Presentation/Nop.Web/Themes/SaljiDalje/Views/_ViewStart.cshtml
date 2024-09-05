@@ -1,10 +1,11 @@
 @using Nop.Web.Factories
 @using Nop.Web.Models.Customer
+@using Nop.Web.Themes.SaljiDalje.Data
 @inject ICustomerModelFactory CustomerModelFactory
 @{
     var modelAvatar = new CustomerAvatarModel();
     await CustomerModelFactory.PrepareCustomerAvatarModelAsync(modelAvatar);
-    ViewBag.AvatarUrl = modelAvatar.AvatarUrl;
+    ViewData[SaljiDaljeConstants.AVATAR_URL] = modelAvatar.AvatarUrl;
     Layout = "_Layout";
 }
 
