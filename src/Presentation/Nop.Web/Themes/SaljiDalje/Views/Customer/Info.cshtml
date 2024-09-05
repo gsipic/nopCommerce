@@ -27,7 +27,7 @@
     <!-- Page content-->
     <div class="row">
         <!-- Sidebar-->
-        @await Html.PartialAsync("/Themes/SaljiDalje/Views/Customer/Shared/_CustomerNavigation.cshtml", new CostumerNavigationInfo { CustomerNavigationEnum = CostumerNavigationOptions.PersonalInfo})
+        @await Html.PartialAsync("/Themes/SaljiDalje/Views/Customer/Shared/_CustomerNavigation.cshtml", new CostumerNavigationInfo { CustomerNavigationEnum = CostumerNavigationOptions.PersonalInfo, CustomerInfoModel = Model})
         <!-- Content-->
         <div class="col-lg-8 col-md-7 mb-5">
             <form asp-route="CustomerInfo" method="post">
@@ -169,7 +169,15 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-12 col-sm-4 mb-4">
-                        <input class="file-uploader border-light bg-faded-light" type="file" accept="image/png, image/jpeg" data-label-idle="&lt;i class=&quot;d-inline-block fi-camera-plus fs-2 text-light text-muted mb-2&quot;&gt;&lt;/i&gt;&lt;br&gt;&lt;span class=&quot;fw-bold text-light opacity-70&quot;&gt;Change picture&lt;/span&gt;" data-style-panel-layout="compact" data-image-preview-height="160" data-image-crop-aspect-ratio="1:1" data-image-resize-target-width="200" data-image-resize-target-height="200">
+                        <input class="file-uploader border-light bg-faded-light" 
+                               type="file" 
+                               accept="image/png, image/jpeg" 
+                               data-label-idle="&lt;i class=&quot;d-inline-block fi-camera-plus fs-2 text-light text-muted mb-2&quot;&gt;&lt;/i&gt;&lt;br&gt;&lt;span class=&quot;fw-bold text-light opacity-70&quot;&gt;Change picture&lt;/span&gt;" 
+                               data-style-panel-layout="compact" 
+                               data-image-preview-height="160" 
+                               data-image-crop-aspect-ratio="1:1" 
+                               data-image-resize-target-width="200" 
+                               data-image-resize-target-height="200">
                         <div class="pt-4 pb-2 py-lg-5">
                             <h6 class="text-light mb-2">Who can see my profile?</h6>
                             <p class="fs-sm text-light opacity-70 mb-0">Your profile is private. No one else will see it untill a reservation is confirmed.</p>
@@ -198,9 +206,25 @@
 <script src="/Themes/SaljiDalje/Content/vendor/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.min.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.min.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.min.js" asp-exclude-from-bundle="true"></script>
+<script src="/Themes/SaljiDalje/Content/vendor/filepond-plugin-file-encode/filepond-plugin-file-encode.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/filepond/dist/filepond.min.js" asp-exclude-from-bundle="true"></script>
 <script>
     window.fileUploader();
+    @if (!Model.CustomerAvatarModel.AvatarUrl.IsNullOrEmpty())
+    {
+        <text>
+        FilePond.setOptions({
+        files : [
+                    {
+                    source: "@Model.CustomerAvatarModel.AvatarUrl",
+                    @*options: {
+                        type: 'local', // local to indicate an already uploaded file, so it hits the load endpoint
+                        }*@
+                    }
+                ]
+        });
+    </text>
+    }
 </script>
 <!-- Main theme script-->
 @* <script src="/Themes/SaljiDalje/Content/js/theme.js" asp-exclude-from-bundle="true"></script> *@

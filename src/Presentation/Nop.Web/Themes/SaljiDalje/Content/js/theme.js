@@ -730,6 +730,9 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
     if (typeof FilePondPluginImageTransform !== 'undefined') {
       FilePond.registerPlugin(FilePondPluginImageTransform);
     }
+    if (typeof FilePondPluginFileEncode !== 'undefined') {
+      FilePond.registerPlugin(FilePondPluginFileEncode);
+    }
     for (var i = 0; i < fileInput.length; i++) {
       FilePond.create(fileInput[i]);
     }

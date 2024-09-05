@@ -11,19 +11,19 @@ public class SaljiDaljeRouteProvider : BaseRouteProvider, IRouteProvider
         //customer account links
         endpointRouteBuilder.MapControllerRoute(name: "CustomerMyCars",
             pattern: $"{lang}/customer/mycars",
-            defaults: new { controller = "Customer", action = "MyCars" });
+            defaults: new { controller = "CustomCustomer", action = "MyCars" });
         
         endpointRouteBuilder.MapControllerRoute(name: "CustomerWishList",
             pattern: $"{lang}/customer/wishlist",
-            defaults: new { controller = "Customer", action = "WishList" });
+            defaults: new { controller = "CustomCustomer", action = "WishList" });
         
         endpointRouteBuilder.MapControllerRoute(name: "CustomerNotifications",
             pattern: $"{lang}/customer/notifications",
-            defaults: new { controller = "Customer", action = "Notifications" });
+            defaults: new { controller = "CustomCustomer", action = "Notifications" });
         
         endpointRouteBuilder.MapControllerRoute(name: "CustomerHelpDesk",
             pattern: $"{lang}/customer/helpdesk",
-            defaults: new { controller = "Customer", action = "HelpCenter" });
+            defaults: new { controller = "CustomCustomer", action = "HelpCenter" });
         
         endpointRouteBuilder.MapControllerRoute(name: "SellCar",
             pattern: $"{lang}/sellcar",

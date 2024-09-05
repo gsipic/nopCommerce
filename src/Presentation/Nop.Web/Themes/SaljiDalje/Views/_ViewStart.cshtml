@@ -1,4 +1,10 @@
+@using Nop.Web.Factories
+@using Nop.Web.Models.Customer
+@inject ICustomerModelFactory CustomerModelFactory
 @{
+    var modelAvatar = new CustomerAvatarModel();
+    await CustomerModelFactory.PrepareCustomerAvatarModelAsync(modelAvatar);
+    ViewBag.AvatarUrl = modelAvatar.AvatarUrl;
     Layout = "_Layout";
 }
 
