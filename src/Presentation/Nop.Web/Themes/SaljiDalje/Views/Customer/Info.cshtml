@@ -27,10 +27,10 @@
     <!-- Page content-->
     <div class="row">
         <!-- Sidebar-->
-        @await Html.PartialAsync("/Themes/SaljiDalje/Views/Customer/Shared/_CustomerNavigation.cshtml", new CostumerNavigationInfo { CustomerNavigationEnum = CostumerNavigationOptions.PersonalInfo, CustomerInfoModel = Model})
+        @await Html.PartialAsync("/Themes/SaljiDalje/Views/Customer/Shared/_CustomerNavigation.cshtml", new CostumerNavigationInfo { CustomerNavigationEnum = CostumerNavigationOptions.PersonalInfo})
         <!-- Content-->
         <div class="col-lg-8 col-md-7 mb-5">
-            <form asp-route="CustomerInfo" method="post">
+            <form method="post">
                 <h1 class="h2 text-light">Personal Info</h1>
                 <div class="text-light mb-2 pt-1">Your personal info is 50% completed</div>
                 <div class="progress progress-light mb-4" style="height: .25rem;">
@@ -178,6 +178,24 @@
                                data-image-crop-aspect-ratio="1:1" 
                                data-image-resize-target-width="200" 
                                data-image-resize-target-height="200">
+                        <script>
+                            window.fileUploader();
+                            @if (!Model.CustomerAvatarModel.AvatarUrl.IsNullOrEmpty())
+                            {
+                            <text>
+                            FilePond.setOptions({
+                                files : [
+                                    {
+                                        source: "@Model.CustomerAvatarModel.AvatarUrl",
+                                        @*options: {
+                        type: 'local', // local to indicate an already uploaded file, so it hits the load endpoint
+                        }*@
+                                    }
+                                ]
+                            });
+                            </text>
+                            }
+                        </script>
                         <div class="pt-4 pb-2 py-lg-5">
                             <h6 class="text-light mb-2">Who can see my profile?</h6>
                             <p class="fs-sm text-light opacity-70 mb-0">Your profile is private. No one else will see it untill a reservation is confirmed.</p>
@@ -188,11 +206,22 @@
                 <div class="row">
                     <div class="col-lg-9">
                         <div class="d-flex align-items-center justify-content-between pb-1">
-                            <button id="save-info-button" name="save-info-button" class="btn btn-primary" type="submit">Save changes</button>
-                            <button class="btn btn-link btn-light btn-sm px-0" type="button"><i class="fi-trash me-2"></i>Delete account</button>
+                            <button id="save-info-button" name="save-info-button" asp-controller="CustomCustomer"  asp-action="Info" class="btn btn-primary" type="submit">Save changes</button>
+                            <button id="delete-account" name="delete-account" asp-controller="CustomCustomer" asp-action="Delete" class="btn btn-link btn-light btn-sm px-0" type="submit"><i class="fi-trash me-2"></i>Delete account</button>
+                            <script asp-location="Footer">
+                                document.addEventListener("DOMContentLoaded", () => {
+                                    document.getElementById("delete-account").addEventListener('click',function(e){
+                                        let action = confirm('@T("Common.AreYouSure")');
+                                        if (!action){
+                                            e.preventDefault();// Don't bubble/capture the event any further
+                                        }
+                                    });
+                                });
+                            </script>
                         </div>
                     </div>
                 </div>
+                <input type="hidden" id="id" name="id" value="@Model.Customer.Id">
             </form>
         </div>
     </div>
@@ -208,24 +237,6 @@
 <script src="/Themes/SaljiDalje/Content/vendor/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.min.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/filepond-plugin-file-encode/filepond-plugin-file-encode.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/filepond/dist/filepond.min.js" asp-exclude-from-bundle="true"></script>
-<script>
-    window.fileUploader();
-    @if (!Model.CustomerAvatarModel.AvatarUrl.IsNullOrEmpty())
-    {
-        <text>
-        FilePond.setOptions({
-        files : [
-                    {
-                    source: "@Model.CustomerAvatarModel.AvatarUrl",
-                    @*options: {
-                        type: 'local', // local to indicate an already uploaded file, so it hits the load endpoint
-                        }*@
-                    }
-                ]
-        });
-    </text>
-    }
-</script>
 <!-- Main theme script-->
 @* <script src="/Themes/SaljiDalje/Content/js/theme.js" asp-exclude-from-bundle="true"></script> *@
 <script src="/Themes/SaljiDalje/Content/vendor/cleave.js/dist/cleave.min.js" asp-exclude-from-bundle="true"></script>

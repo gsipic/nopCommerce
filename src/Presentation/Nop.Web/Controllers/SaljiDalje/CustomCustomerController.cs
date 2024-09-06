@@ -31,6 +31,7 @@ using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
 using Nop.Services.Security;
+using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Web.Factories;
 using Nop.Web.Models.Customer;
@@ -85,7 +86,7 @@ public class CustomCustomerController(
     MediaSettings mediaSettings,
     MultiFactorAuthenticationSettings multiFactorAuthenticationSettings,
     StoreInformationSettings storeInformationSettings,
-    TaxSettings taxSettings)
+    TaxSettings taxSettings, IStoreService storeService)
     : Web.Controllers.CustomerController(addressSettings,
         captchaSettings, customerSettings, dateTimeSettings, forumSettings, gdprSettings, htmlEncoder,
         addressModelFactory, addressService, addressAttributeParser, customerAttributeParser, customerAttributeService,
@@ -109,6 +110,7 @@ public class CustomCustomerController(
         var modelAvatar = new CustomerAvatarModel();
         await _customerModelFactory.PrepareCustomerAvatarModelAsync(modelAvatar);
         model.CustomerAvatarModel = modelAvatar;
+        model.Customer = customer;
         return View("~/Themes/SaljiDalje/Views/Customer/Info.cshtml",model);
     }
 
@@ -119,6 +121,66 @@ public class CustomCustomerController(
         var customer = await _workContext.GetCurrentCustomerAsync();
         InsertProfilePicture(customer,form);
         return result;
+    }
+    
+    [HttpPost]
+    public virtual async Task<IActionResult> Delete(int id)
+    {
+        //if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageCustomers))
+        //    return AccessDeniedView();
+
+        //try to get a customer with the specified id
+        var customer = await _customerService.GetCustomerByIdAsync(id);
+        if (customer == null)
+            return RedirectToAction("Info");
+
+        try
+        {
+            //prevent attempts to delete the user, if it is the last active administrator
+            if (await _customerService.IsAdminAsync(customer) && !await SecondAdminAccountExistsAsync(customer))
+            {
+                _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Admin.Customers.Customers.AdminAccountShouldExists.DeleteAdministrator"));
+                return RedirectToAction("Edit", new { id = customer.Id });
+            }
+
+            //ensure that the current customer cannot delete "Administrators" if he's not an admin himself
+            if (await _customerService.IsAdminAsync(customer) && !await _customerService.IsAdminAsync(await _workContext.GetCurrentCustomerAsync()))
+            {
+                _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Admin.Customers.Customers.OnlyAdminCanDeleteAdmin"));
+                return RedirectToAction("Edit", new { id = customer.Id });
+            }
+
+            //delete
+            await _customerService.DeleteCustomerAsync(customer);
+
+            //remove newsletter subscription (if exists)
+            foreach (var store in await storeService.GetAllStoresAsync())
+            {
+                var subscription = await _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmailAndStoreIdAsync(customer.Email, store.Id);
+                if (subscription != null)
+                    await _newsLetterSubscriptionService.DeleteNewsLetterSubscriptionAsync(subscription);
+            }
+
+            //activity log
+            await _customerActivityService.InsertActivityAsync("DeleteCustomer",
+                string.Format(await _localizationService.GetResourceAsync("ActivityLog.DeleteCustomer"), customer.Id), customer);
+
+            _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Admin.Customers.Customers.Deleted"));
+
+            return RedirectToRoute("Homepage");
+        }
+        catch (Exception exc)
+        {
+            _notificationService.ErrorNotification(exc.Message);
+            return RedirectToAction("Info");
+        }
+    }
+    
+    protected virtual async Task<bool> SecondAdminAccountExistsAsync(Customer customer)
+    {
+        var customers = await _customerService.GetAllCustomersAsync(customerRoleIds: [(await _customerService.GetCustomerRoleBySystemNameAsync(NopCustomerDefaults.AdministratorsRoleName)).Id]);
+
+        return customers.Any(c => c.Active && c.Id != customer.Id);
     }
 
     private async void InsertProfilePicture(Customer customer,IFormCollection form)

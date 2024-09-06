@@ -5,12 +5,18 @@
 @inject ICustomerModelFactory CustomerModelFactory
 @inject IWorkContext WorkContext
 @model Nop.Web.Themes.SaljiDalje.Data.CostumerNavigationInfo
-
+@{
+    var customerInfoModel = new CustomerInfoModel();
+    customerInfoModel = await CustomerModelFactory.PrepareCustomerInfoModelAsync(customerInfoModel, await WorkContext.GetCurrentCustomerAsync(), false);
+    
+    var modelAvatar = new CustomerAvatarModel();
+    await CustomerModelFactory.PrepareCustomerAvatarModelAsync(modelAvatar);
+}
 <aside class="col-lg-4 col-md-5 pe-xl-4 mb-5">
     <!-- Account nav-->
     <div class="card card-body card-light border-0 shadow-sm pb-1 me-lg-1">
         <div class="d-flex d-md-block d-lg-flex align-items-start pt-lg-2 mb-4">
-            <img class="rounded-circle" src="@(!Model.CustomerInfoModel.CustomerAvatarModel.AvatarUrl.IsNullOrEmpty() ? Model.CustomerInfoModel.CustomerAvatarModel.AvatarUrl : SaljiDaljeConstants.NO_PROFILE_IMAGE)" width="48" alt="Robert Fox">
+            <img class="rounded-circle" src="@(!modelAvatar.AvatarUrl.IsNullOrEmpty() ? modelAvatar.AvatarUrl : SaljiDaljeConstants.NO_PROFILE_IMAGE)" width="48" alt="Robert Fox">
             <div class="pt-md-2 pt-lg-0 ps-3 ps-md-0 ps-lg-3">
                 <h2 class="fs-lg text-light mb-0">Robert Fox</h2>
                 <span class="star-rating"><i class="star-rating-icon fi-star-filled active"></i><i class="star-rating-icon fi-star-filled active"></i><i class="star-rating-icon fi-star-filled active"></i><i class="star-rating-icon fi-star-filled active"></i><i class="star-rating-icon fi-star-filled active"></i>
@@ -21,7 +27,7 @@
                     </li>
                     <li>
                         <a class="nav-link-light fw-normal" href="mailto:@@Model.CustomerInfoModel.Email">
-                            <i class="fi-mail opacity-60 me-2"></i>@Model.CustomerInfoModel.Email
+                            <i class="fi-mail opacity-60 me-2"></i>@customerInfoModel.Email
                         </a>
                     </li>
                 </ul>
