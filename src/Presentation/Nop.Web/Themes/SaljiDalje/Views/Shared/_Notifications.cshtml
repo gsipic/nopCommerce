@@ -1,0 +1,126 @@
+@using Newtonsoft.Json
+@using Nop.Core.Domain.Messages
+@using Nop.Services.Messages
+@inject MessagesSettings messagesSettings
+@{
+    var successMessages = new List<string>();
+    var errorMessages = new List<string>();
+    var warningMessages = new List<string>();
+
+//Get messages from TempData
+    var notes = TempData.ContainsKey(NopMessageDefaults.NotificationListKey)
+        ? JsonConvert.DeserializeObject<IList<NotifyData>>(TempData[NopMessageDefaults.NotificationListKey].ToString())
+        : null;
+
+    if (notes != null)
+    {
+        foreach (var note in notes)
+        {
+            switch (note.Type)
+            {
+                case NotifyType.Success:
+                    successMessages.Add(note.Message);
+                    break;
+                case NotifyType.Error:
+                    errorMessages.Add(note.Message);
+                    break;
+                case NotifyType.Warning:
+                    warningMessages.Add(note.Message);
+                    break;
+            }
+        }
+    }
+}
+@if (successMessages.Any() || warningMessages.Any() || errorMessages.Any())
+{
+    <script asp-location="Footer">
+    $(function() {
+        function displayBarNotificationSaljiDalje(message, messagetype, timeout) {
+            var notificationTimeout;
+
+            var messages = typeof message === 'string' ? [message] : message;
+            if (messages.length === 0)
+                return;
+
+            //types: success, error, warning
+            var cssclass = ['success', 'error', 'warning'].indexOf(messagetype) !== -1 ? messagetype : 'success';
+
+            //remove previous CSS classes and notifications
+            $('#bar-notification')
+                .removeClass('success')
+                .removeClass('error')
+                .removeClass('warning');
+            $('.bar-notification').remove();
+
+            //add new notifications
+            var htmlcode = document.createElement('div');
+
+            //IE11 Does not support miltiple parameters for the add() & remove() methods
+            htmlcode.classList.add('bar-notification', cssclass);
+            htmlcode.classList.add(cssclass);
+
+            //add close button for notification
+            var close = document.createElement('span');
+            close.classList.add('close');
+            close.setAttribute('title', document.getElementById('bar-notification').dataset.close);
+
+            for (var i = 0; i < messages.length; i++) {
+                var content = document.createElement('span');
+                content.classList.add('content');
+                content.innerHTML = messages[i];
+
+                htmlcode.appendChild(content);
+            }
+
+            htmlcode.appendChild(close);
+
+            $('#bar-notification')
+                .append(htmlcode);
+
+            $(htmlcode)
+                .fadeIn('slow')
+                .on('mouseenter', function() {
+                    clearTimeout(notificationTimeout);
+                });
+
+            //callback for notification removing
+            var removeNoteItem = function () {
+                $(htmlcode).remove();
+            };
+
+            $(close).on('click', function () {
+                $(htmlcode).fadeOut('slow', removeNoteItem);
+            });
+
+            //timeout (if set)
+            if (timeout > 0) {
+                notificationTimeout = setTimeout(function () {
+                    $(htmlcode).fadeOut('slow', removeNoteItem);
+                }, timeout);
+            }
+        }
+        var successMsg = [ @Html.Raw(string.Join(", ", successMessages.Select(x => $" '{JavaScriptEncoder.Default.Encode(x)}' "))) ];
+        displayBarNotificationSaljiDalje(successMsg, 'success', false);
+
+        var errorMsg = [ @Html.Raw(string.Join(", ", errorMessages.Select(x => $" '{JavaScriptEncoder.Default.Encode(x)}' "))) ];
+        displayBarNotificationSaljiDalje(errorMsg, 'error', false);
+
+        var warningMsg = [ @Html.Raw(string.Join(", ", warningMessages.Select(x => $" '{JavaScriptEncoder.Default.Encode(x)}' "))) ];
+        displayBarNotificationSaljiDalje(warningMsg, 'warning', false);
+    });
+    </script>
+    <div class="container pt-5 mt-5" style="margin-bottom: -6rem !important;">
+        <div class="row">
+            <div class="col">
+                <div id="bar-notification" class="alert alert-success alert-dismissible fade show" role="alert" data-close="@T("Common.Close")">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@*<div id="bar-notification" class="bar-notification-container" role="status" aria-live="polite" aria-atomic="true" data-close="@T("Common.Close")">
+</div>*@

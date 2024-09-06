@@ -483,6 +483,7 @@
         </ul>
     </div>
 </header>
+@{ await Html.RenderPartialAsync("_Notifications"); }
 <nop-antiforgery-token/>
 @RenderBody()
 </main>
@@ -631,6 +632,10 @@
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "/Themes/SaljiDalje/Content/vendor/bootstrap/dist/js/bootstrap.bundle.min.js", excludeFromBundle: true);
     <!-- Main theme script-->
     NopHtml.AddScriptParts(ResourceLocation.Footer, "/Themes/SaljiDalje/Content/js/theme.js", excludeFromBundle: true);
+    NopHtml.AddScriptParts(ResourceLocation.Footer, "~/lib_npm/jquery/jquery.min.js", excludeFromBundle: true);
+    NopHtml.AddScriptParts(ResourceLocation.Footer, "~/lib_npm/jquery-ui-dist/jquery-ui.min.js", excludeFromBundle: true);
+    NopHtml.AddScriptParts(ResourceLocation.Footer, "~/lib_npm/jquery-validation/jquery.validate.min.js", excludeFromBundle: true);
+    NopHtml.AddScriptParts(ResourceLocation.Footer, "~/lib_npm/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js", excludeFromBundle: true);
     NopHtml.AddScriptParts(ResourceLocation.Footer, "/js/public.common.js", excludeFromBundle: true);
 }
 @NopHtml.GenerateScripts(ResourceLocation.Footer)
