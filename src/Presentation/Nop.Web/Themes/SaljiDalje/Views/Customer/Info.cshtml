@@ -207,7 +207,7 @@
                     <div class="col-lg-9">
                         <div class="d-flex align-items-center justify-content-between pb-1">
                             <button id="save-info-button" name="save-info-button" asp-controller="CustomCustomer"  asp-action="Info" class="btn btn-primary" type="submit">Save changes</button>
-                            <button id="delete-account" name="delete-account" asp-controller="CustomCustomer" asp-action="Delete" class="btn btn-link btn-light btn-sm px-0" type="submit"><i class="fi-trash me-2"></i>Delete account</button>
+                            <button id="delete-account" asp-controller="CustomCustomer" asp-action="Delete" class="btn btn-link btn-light btn-sm px-0" type="submit"><i class="fi-trash me-2"></i>Delete account</button>
                             <script asp-location="Footer">
                                 document.addEventListener("DOMContentLoaded", () => {
                                     document.getElementById("delete-account").addEventListener('click',function(e){
@@ -221,7 +221,6 @@
                         </div>
                     </div>
                 </div>
-                <input type="hidden" id="id" name="id" value="@Model.Customer.Id">
             </form>
         </div>
     </div>

@@ -124,13 +124,13 @@ public class CustomCustomerController(
     }
     
     [HttpPost]
-    public virtual async Task<IActionResult> Delete(int id)
+    public virtual async Task<IActionResult> Delete()
     {
         //if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageCustomers))
         //    return AccessDeniedView();
 
         //try to get a customer with the specified id
-        var customer = await _customerService.GetCustomerByIdAsync(id);
+        var customer = await workContext.GetCurrentCustomerAsync();
         if (customer == null)
             return RedirectToAction("Info");
 
@@ -140,18 +140,19 @@ public class CustomCustomerController(
             if (await _customerService.IsAdminAsync(customer) && !await SecondAdminAccountExistsAsync(customer))
             {
                 _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Admin.Customers.Customers.AdminAccountShouldExists.DeleteAdministrator"));
-                return RedirectToAction("Edit", new { id = customer.Id });
+                return RedirectToAction("Info");
             }
 
             //ensure that the current customer cannot delete "Administrators" if he's not an admin himself
             if (await _customerService.IsAdminAsync(customer) && !await _customerService.IsAdminAsync(await _workContext.GetCurrentCustomerAsync()))
             {
                 _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Admin.Customers.Customers.OnlyAdminCanDeleteAdmin"));
-                return RedirectToAction("Edit", new { id = customer.Id });
+                return RedirectToAction("Info");
             }
 
             //delete
             await _customerService.DeleteCustomerAsync(customer);
+            await authenticationService.SignOutAsync();
 
             //remove newsletter subscription (if exists)
             foreach (var store in await storeService.GetAllStoresAsync())
