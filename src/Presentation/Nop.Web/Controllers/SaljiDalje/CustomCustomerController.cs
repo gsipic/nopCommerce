@@ -133,6 +133,9 @@ public class CustomCustomerController(
         var customer = await workContext.GetCurrentCustomerAsync();
         if (customer == null)
             return RedirectToAction("Info");
+        
+        if (!await _customerService.IsRegisteredAsync(customer))
+            return Challenge();
 
         try
         {
