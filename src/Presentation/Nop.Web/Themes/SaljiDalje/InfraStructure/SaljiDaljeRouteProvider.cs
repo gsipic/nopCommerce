@@ -13,10 +13,6 @@ public class SaljiDaljeRouteProvider : BaseRouteProvider, IRouteProvider
             pattern: $"{lang}/customer/mycars",
             defaults: new { controller = "CustomCustomer", action = "MyCars" });
         
-        endpointRouteBuilder.MapControllerRoute(name: "CustomerWishList",
-            pattern: $"{lang}/customer/wishlist",
-            defaults: new { controller = "CustomCustomer", action = "WishList" });
-        
         endpointRouteBuilder.MapControllerRoute(name: "CustomerNotifications",
             pattern: $"{lang}/customer/notifications",
             defaults: new { controller = "CustomCustomer", action = "Notifications" });
