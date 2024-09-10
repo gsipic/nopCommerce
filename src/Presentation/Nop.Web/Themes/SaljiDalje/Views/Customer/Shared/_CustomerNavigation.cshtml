@@ -1,9 +1,15 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Microsoft.IdentityModel.Tokens
 @using Nop.Core
+@using Nop.Core.Domain.Orders
+@using Nop.Services.Orders
 @using Nop.Web.Factories
 @using Nop.Web.Themes.SaljiDalje.Data
 @inject ICustomerModelFactory CustomerModelFactory
+@inject IStoreContext storeContext
 @inject IWorkContext WorkContext
+@inject IShoppingCartService shoppingCartService
+@inject IShoppingCartModelFactory shoppingCartModelFactory
 @model Nop.Web.Themes.SaljiDalje.Data.CostumerNavigationInfo
 @{
     var customerInfoModel = new CustomerInfoModel();
@@ -11,6 +17,13 @@
     
     var modelAvatar = new CustomerAvatarModel();
     await CustomerModelFactory.PrepareCustomerAvatarModelAsync(modelAvatar);
+    
+    var customer = await WorkContext.GetCurrentCustomerAsync();
+    var store = await storeContext.GetCurrentStoreAsync();
+    var cart = await shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.Wishlist, store.Id);
+
+    var wishlistModel = new WishlistModel();
+    wishlistModel = await shoppingCartModelFactory.PrepareWishlistModelAsync(wishlistModel, cart, true);
 }
 <aside class="col-lg-4 col-md-5 pe-xl-4 mb-5">
     <!-- Account nav-->
@@ -44,7 +57,7 @@
                 <a class="card-nav-link @(Model.CustomerNavigationEnum == CostumerNavigationOptions.PersonalInfo ? "active": "")" asp-controller="Customer" asp-action="Info"><i class="fi-user me-2"></i>Personal Info</a>
                 <a class="card-nav-link @(Model.CustomerNavigationEnum == CostumerNavigationOptions.PasswordSecurity ? "active": "")" asp-controller="Customer" asp-action="ChangePassword"><i class="fi-lock me-2"></i>Password &amp; Security</a>
                 <a class="card-nav-link @(Model.CustomerNavigationEnum == CostumerNavigationOptions.MyCars ? "active": "")" asp-controller="CustomCustomer" asp-action="MyCars"><i class="fi-car me-2"></i>My Cars</a>
-                <a class="card-nav-link @(Model.CustomerNavigationEnum == CostumerNavigationOptions.WishList ? "active": "")" asp-controller="ShoppingCart" asp-action="WishList"><i class="fi-heart me-2"></i>Wishlist<span class="badge bg-faded-light ms-2">4</span></a>
+                <a class="card-nav-link @(Model.CustomerNavigationEnum == CostumerNavigationOptions.WishList ? "active": "")" asp-controller="ShoppingCart" asp-action="WishList"><i class="fi-heart me-2"></i>Wishlist<span class="badge bg-faded-light ms-2">@wishlistModel.Items.Count</span></a>
                 <a class="card-nav-link @(Model.CustomerNavigationEnum == CostumerNavigationOptions.Reviews ? "active": "")" href="@Url.RouteUrl("CustomerProductReviews")"><i class="fi-star me-2"></i>Reviews</a>
                 <a class="card-nav-link @(Model.CustomerNavigationEnum == CostumerNavigationOptions.Notifications ? "active": "")" asp-controller="CustomCustomer" asp-action="Notifications"><i class="fi-bell me-2"></i>Notifications</a>
                 <a class="card-nav-link @(Model.CustomerNavigationEnum == CostumerNavigationOptions.Help ? "active": "")" asp-controller="CustomCustomer" asp-action="HelpCenter"><i class="fi-help me-2"></i>Help</a>

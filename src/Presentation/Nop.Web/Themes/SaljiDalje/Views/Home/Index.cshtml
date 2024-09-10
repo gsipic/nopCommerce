@@ -1,5 +1,15 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Nop.Core.Domain.Orders
+@using Nop.Web.Factories;
+@using Nop.Services.Catalog
+@using Nop.Web.Framework.TagHelpers.Shared
+@inject IProductService productService
+@inject IProductModelFactory productModelFactory
+@{
     Layout = "_Layout";
+
+    var products = await productService.GetAllProductsDisplayedOnHomepageAsync();
+    var productsModel = (await productModelFactory.PrepareProductOverviewModelsAsync(products, true, true)).ToList();
 }
 <!-- Vendor Styles-->
 <link rel="stylesheet" media="screen" href="/Themes/SaljiDalje/Content/vendor/tiny-slider/dist/tiny-slider.css" asp-exclude-from-bundle="true"/>
@@ -316,19 +326,24 @@
     <div class="row">
         <div class="col-lg-6">
             <!-- Item-->
+            @{ var result = productsModel[0]; }
             <div class="card card-light card-hover h-lg-100 mb-4 mb-lg-0">
                 <div class="tns-carousel-wrapper card-img-top card-img-hover">
-                    <a class="img-overlay" href="car-finder-single.html"></a>
+                    <a class="img-overlay" href="@result.SeName"></a>
                     <div class="position-absolute start-0 top-0 pt-3 ps-3">
                         <span class="d-table badge bg-info mb-1">New</span><span class="d-table badge bg-success" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-html="true" data-bs-content="&lt;div class=&quot;d-flex&quot;&gt;&lt;i class=&quot;fi-award mt-1 me-2&quot;&gt;&lt;/i&gt;&lt;div&gt;This car is checked and&lt;br&gt;certified by Finder.&lt;/div&gt;&lt;/div&gt;">Certified</span>
                     </div>
                     <div class="content-overlay end-0 top-0 pt-3 pe-3">
-                        <button class="btn btn-icon btn-light btn-xs text-primary rounded-circle" type="button" data-bs-toggle="tooltip" data-bs-placement="left" title="Add to Wishlist">
+                        @{ var addtowishlistlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = productsModel[3].Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist, quantity = 1 }); }
+                        <button class="btn btn-icon btn-light btn-xs text-primary rounded-circle" onclick="AjaxCart.addproducttocart_catalog('@addtowishlistlink');return false;" type="button" data-bs-toggle="tooltip" data-bs-placement="left" title="Add to Wishlist">
                             <i class="fi-heart"></i>
                         </button>
                     </div>
-                    <div class="tns-carousel-inner">
-                        <img src="/Themes/SaljiDalje/Content/img/car-finder/catalog/17.jpg" alt="Image"><img src="/Themes/SaljiDalje/Content/img/car-finder/catalog/17.jpg" alt="Image">
+                    <div class="tns-carousel-inner h-100">
+                        @foreach (var pictureModel in result.PictureModels)
+                        {
+                            <img src="@pictureModel.FullSizeImageUrl" alt="Image" style="height: 285px; object-fit: cover;">
+                        }
                     </div>
                 </div>
                 <div class="card-body">
@@ -369,108 +384,63 @@
             </div>
         </div>
         <div class="col-lg-6">
-            <!-- Item-->
-            <div class="card card-light card-hover card-horizontal mb-4">
-                <div class="tns-carousel-wrapper card-img-top card-img-hover">
-                    <a class="img-overlay" href="car-finder-single.html"></a>
-                    <div class="position-absolute start-0 top-0 pt-3 ps-3">
-                        <span class="d-table badge bg-info">Used</span>
-                    </div>
-                    <div class="content-overlay end-0 top-0 pt-3 pe-3">
-                        <button class="btn btn-icon btn-light btn-xs text-primary rounded-circle" type="button" data-bs-toggle="tooltip" data-bs-placement="left" title="Add to Wishlist">
-                            <i class="fi-heart"></i>
-                        </button>
-                    </div>
-                    <div class="tns-carousel-inner position-absolute top-0 h-100">
-                        <div class="bg-size-cover bg-position-center w-100 h-100" style="background-image: url(Themes/SaljiDalje/Content/img/car-finder/catalog/09.jpg);"></div>
-                        <div class="bg-size-cover bg-position-center w-100 h-100" style="background-image: url(Themes/SaljiDalje/Content/img/car-finder/catalog/09.jpg);"></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between pb-1">
-                        <span class="fs-sm text-light me-3">1995</span>
-                        <div class="form-check form-check-light">
-                            <input class="form-check-input" type="checkbox" id="compare2">
-                            <label class="form-check-label fs-sm" for="compare2">Compare</label>
+            @foreach (var productItems in productsModel.Skip(2).Take(2))
+            {
+                <!-- Item-->
+                <div class="card card-light card-hover card-horizontal mb-4">
+                    <div class="tns-carousel-wrapper card-img-top card-img-hover">
+                        <a class="img-overlay" href="@productItems.SeName"></a>
+                        <div class="position-absolute start-0 top-0 pt-3 ps-3">
+                            <span class="d-table badge bg-info">Used</span>
+                        </div>
+                        <div class="content-overlay end-0 top-0 pt-3 pe-3">
+                            @{ var addtowishlistlink2 = Url.RouteUrl("AddProductToCart-Catalog", new { productId = productItems.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist, quantity = 1 }); }
+                            <button class="btn btn-icon btn-light btn-xs text-primary rounded-circle" type="button" onclick="AjaxCart.addproducttocart_catalog('@addtowishlistlink2');return false;" data-bs-toggle="tooltip" data-bs-placement="left" title="Add to Wishlist">
+                                <i class="fi-heart"></i>
+                            </button>
+                        </div>
+                        <div class="tns-carousel-inner position-absolute top-0 h-100">
+                            @foreach (var pictureModel in productItems.PictureModels)
+                            {
+                                <div class="bg-size-cover bg-position-center w-100 h-100" style="background-image: url(@pictureModel.ImageUrl);"></div>
+                            }
                         </div>
                     </div>
-                    <h3 class="h6 mb-1">
-                        <a class="nav-link-light" href="car-finder-single.html">Ford Truck Lifted </a>
-                    </h3>
-                    <div class="text-primary fw-bold mb-1">$24,000</div>
-                    <div class="fs-sm text-light opacity-70"><i class="fi-map-pin me-1"></i>Chicago</div>
-                    <div class="border-top border-light mt-3 pt-3">
-                        <div class="row g-2">
-                            <div class="col me-sm-1">
-                                <div class="bg-dark rounded text-center w-100 h-100 p-2">
-                                    <i class="fi-dashboard d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">278K mi</span>
-                                </div>
-                            </div>
-                            <div class="col me-sm-1">
-                                <div class="bg-dark rounded text-center w-100 h-100 p-2">
-                                    <i class="fi-gearbox d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Manual</span>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="bg-dark rounded text-center w-100 h-100 p-2">
-                                    <i class="fi-petrol d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Diesel</span>
-                                </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between pb-1">
+                            <span class="fs-sm text-light me-3">1995</span>
+                            <div class="form-check form-check-light">
+                                <input class="form-check-input" type="checkbox" id="compare2">
+                                <label class="form-check-label fs-sm" for="compare2">Compare</label>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Item-->
-            <div class="card card-light card-hover card-horizontal">
-                <div class="tns-carousel-wrapper card-img-top card-img-hover">
-                    <a class="img-overlay" href="car-finder-single.html"></a>
-                    <div class="position-absolute start-0 top-0 pt-3 ps-3">
-                        <span class="d-table badge bg-danger">New</span>
-                    </div>
-                    <div class="content-overlay end-0 top-0 pt-3 pe-3">
-                        <button class="btn btn-icon btn-light btn-xs text-primary rounded-circle" type="button" data-bs-toggle="tooltip" data-bs-placement="left" title="Add to Wishlist">
-                            <i class="fi-heart"></i>
-                        </button>
-                    </div>
-                    <div class="tns-carousel-inner position-absolute top-0 h-100">
-                        <div class="bg-size-cover bg-position-center w-100 h-100" style="background-image: url(Themes/SaljiDalje/Content/img/car-finder/catalog/13.jpg);"></div>
-                        <div class="bg-size-cover bg-position-center w-100 h-100" style="background-image: url(Themes/SaljiDalje/Content/img/car-finder/catalog/13.jpg);"></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between pb-1">
-                        <span class="fs-sm text-light me-3">2018</span>
-                        <div class="form-check form-check-light">
-                            <input class="form-check-input" type="checkbox" id="compare3">
-                            <label class="form-check-label fs-sm" for="compare3">Compare</label>
-                        </div>
-                    </div>
-                    <h3 class="h6 mb-1">
-                        <a class="nav-link-light" href="car-finder-single.html">BMW 640 XI Gran Turismo</a>
-                    </h3>
-                    <div class="text-primary fw-bold mb-1">$43,500</div>
-                    <div class="fs-sm text-light opacity-70"><i class="fi-map-pin me-1"></i>San Francisco</div>
-                    <div class="border-top border-light mt-3 pt-3">
-                        <div class="row g-2">
-                            <div class="col me-sm-1">
-                                <div class="bg-dark rounded text-center w-100 h-100 p-2">
-                                    <i class="fi-dashboard d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">10K mi</span>
+                        <h3 class="h6 mb-1">
+                            <a class="nav-link-light" href="car-finder-single.html">Ford Truck Lifted </a>
+                        </h3>
+                        <div class="text-primary fw-bold mb-1">$24,000</div>
+                        <div class="fs-sm text-light opacity-70"><i class="fi-map-pin me-1"></i>Chicago</div>
+                        <div class="border-top border-light mt-3 pt-3">
+                            <div class="row g-2">
+                                <div class="col me-sm-1">
+                                    <div class="bg-dark rounded text-center w-100 h-100 p-2">
+                                        <i class="fi-dashboard d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">278K mi</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col me-sm-1">
-                                <div class="bg-dark rounded text-center w-100 h-100 p-2">
-                                    <i class="fi-gearbox d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Automatic</span>
+                                <div class="col me-sm-1">
+                                    <div class="bg-dark rounded text-center w-100 h-100 p-2">
+                                        <i class="fi-gearbox d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Manual</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div class="bg-dark rounded text-center w-100 h-100 p-2">
-                                    <i class="fi-petrol d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Gasoline</span>
+                                <div class="col">
+                                    <div class="bg-dark rounded text-center w-100 h-100 p-2">
+                                        <i class="fi-petrol d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Diesel</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </section>
@@ -1023,7 +993,7 @@
         </div>
     </div>
 </section>
-
+<script src="/Themes/SaljiDalje/Content/js/public.ajaxcart.saljidalje.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/tiny-slider/dist/min/tiny-slider.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/rellax/rellax.min.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/jarallax/dist/jarallax.min.js" asp-exclude-from-bundle="true"></script>

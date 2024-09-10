@@ -1,4 +1,5 @@
 @using Nop.Web.Themes.SaljiDalje.Data
+@model WishlistModel
 <!-- Page content-->
 <div class="container pt-5 pb-lg-4 mt-5 mb-sm-2">
     <!-- Breadcrumb-->
@@ -10,46 +11,48 @@
         <!-- Content-->
         <div class="col-lg-8 col-md-7 mb-5">
             <div class="d-flex align-items-center justify-content-between mb-4 pb-2">
-                <h1 class="h2 text-light mb-0">Wishlist<span class="badge bg-faded-light fs-base align-middle ms-3">4</span></h1><a class="nav-link-light fw-bold" href="#"><i class="fi-x fs-xs mt-n1 me-2"></i>Clear all</a>
+                <h1 class="h2 text-light mb-0">Wishlist<span class="badge bg-faded-light fs-base align-middle ms-3">@Model.Items.Count</span></h1><a class="nav-link-light fw-bold" href="#"><i class="fi-x fs-xs mt-n1 me-2"></i>Clear all</a>
             </div>
             <!-- Item-->
-            <div class="card card-light card-hover card-horizontal mb-4">
-                <div class="tns-carousel-wrapper card-img-top card-img-hover"><a class="img-overlay" href="car-finder-single.html"></a>
-                    <div class="position-absolute start-0 top-0 pt-3 ps-3"><span class="d-table badge bg-info">Used</span></div>
-                    <div class="position-absolute end-0 top-0 pt-3 pe-3 zindex-5">
-                        <button class="btn btn-icon btn-light btn-xs text-primary rounded-circle shadow-sm" type="button" data-bs-toggle="tooltip" data-bs-placement="left" title="Remove from Wishlist"><i class="fi-heart-filled"></i></button>
-                    </div>
-                    <div class="tns-carousel-inner position-absolute top-0 h-100">
-                        <div class="bg-size-cover bg-position-center w-100 h-100" style="background-image: url(/Themes/SaljiDalje/Content/img/car-finder/catalog/09.jpg);"></div>
-                        <div class="bg-size-cover bg-position-center w-100 h-100" style="background-image: url(/Themes/SaljiDalje/Content/img/car-finder/catalog/09.jpg);"></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between pb-1"><span class="fs-sm text-light me-3">1995</span>
-                        <div class="form-check form-check-light">
-                            <input class="form-check-input" type="checkbox" id="compare1">
-                            <label class="form-check-label fs-sm" for="compare1">Compare</label>
+            @foreach (var item in Model.Items)
+            {
+                <div class="card card-light card-hover card-horizontal mb-4">
+                    <div class="tns-carousel-wrapper card-img-top card-img-hover"><a class="img-overlay" href="@item.ProductSeName"></a>
+                        <div class="position-absolute start-0 top-0 pt-3 ps-3"><span class="d-table badge bg-info">Used</span></div>
+                        <div class="position-absolute end-0 top-0 pt-3 pe-3 zindex-5">
+                            <button class="btn btn-icon btn-light btn-xs text-primary rounded-circle shadow-sm" type="button" data-bs-toggle="tooltip" data-bs-placement="left" title="Remove from Wishlist"><i class="fi-heart-filled"></i></button>
+                        </div>
+                        <div class="tns-carousel-inner position-absolute top-0 h-100">
+                            <div class="bg-size-cover bg-position-center w-100 h-100" style="background-image: url(@item.Picture.FullSizeImageUrl);"></div>
                         </div>
                     </div>
-                    <h3 class="h6 mb-1"><a class="nav-link-light" href="car-finder-single.html">Ford Truck Lifted</a></h3>
-                    <div class="text-primary fw-bold mb-1">$24,000</div>
-                    <div class="fs-sm text-light opacity-70"><i class="fi-map-pin me-1"></i>New Jersey</div>
-                    <div class="border-top border-light mt-3 pt-3">
-                        <div class="row g-2">
-                            <div class="col me-sm-1">
-                                <div class="bg-dark rounded text-center w-100 h-100 p-2"><i class="fi-dashboard d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">278K mi</span></div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between pb-1"><span class="fs-sm text-light me-3">1995</span>
+                            <div class="form-check form-check-light">
+                                <input class="form-check-input" type="checkbox" id="compare1">
+                                <label class="form-check-label fs-sm" for="compare1">Compare</label>
                             </div>
-                            <div class="col me-sm-1">
-                                <div class="bg-dark rounded text-center w-100 h-100 p-2"><i class="fi-gearbox d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Manual</span></div>
-                            </div>
-                            <div class="col">
-                                <div class="bg-dark rounded text-center w-100 h-100 p-2"><i class="fi-petrol d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Diesel</span></div>
+                        </div>
+                        <h3 class="h6 mb-1"><a class="nav-link-light" href="car-finder-single.html">@item.ProductName</a></h3>
+                        <div class="text-primary fw-bold mb-1">@item.UnitPrice</div>
+                        <div class="fs-sm text-light opacity-70"><i class="fi-map-pin me-1"></i>New Jersey</div>
+                        <div class="border-top border-light mt-3 pt-3">
+                            <div class="row g-2">
+                                <div class="col me-sm-1">
+                                    <div class="bg-dark rounded text-center w-100 h-100 p-2"><i class="fi-dashboard d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">278K mi</span></div>
+                                </div>
+                                <div class="col me-sm-1">
+                                    <div class="bg-dark rounded text-center w-100 h-100 p-2"><i class="fi-gearbox d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Manual</span></div>
+                                </div>
+                                <div class="col">
+                                    <div class="bg-dark rounded text-center w-100 h-100 p-2"><i class="fi-petrol d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Diesel</span></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- Item-->
+            }
+            @*<!-- Item-->
             <div class="card card-light card-hover card-horizontal mb-4">
                 <div class="tns-carousel-wrapper card-img-top card-img-hover"><a class="img-overlay" href="car-finder-single.html"></a>
                     <div class="position-absolute start-0 top-0 pt-3 ps-3"><span class="d-table badge bg-info mb-1">Used</span><span class="d-table badge bg-success mb-1" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-html="true" data-bs-content="&lt;div class=&quot;d-flex&quot;&gt;&lt;i class=&quot;fi-award mt-1 me-2&quot;&gt;&lt;/i&gt;&lt;div&gt;This car is checked and&lt;br&gt;certified by Finder.&lt;/div&gt;&lt;/div&gt;">Certified</span></div>
@@ -159,7 +162,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>*@
         </div>
     </div>
 </div>

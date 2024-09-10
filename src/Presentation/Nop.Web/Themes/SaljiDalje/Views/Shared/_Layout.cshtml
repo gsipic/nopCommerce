@@ -323,12 +323,12 @@
                     </div>
                     <a class="dropdown-item" asp-controller="Customer" asp-action="Info"><i class="fi-user me-2"></i>Personal Info</a>
                     <a class="dropdown-item" asp-controller="Customer" asp-action="ChangePassword"><i class="fi-lock me-2"></i>Password &amp; Security</a>
-                    <a class="dropdown-item" asp-controller="Customer" asp-action="MyCars"><i class="fi-car me-2"></i>My Cars</a>
-                    <a class="dropdown-item" asp-controller="Customer" asp-action="WishList"><i class="fi-heart me-2"></i>Wishlist<span class="badge bg-faded-light ms-2">4</span></a>
+                    <a class="dropdown-item" asp-controller="CustomCustomer" asp-action="MyCars"><i class="fi-car me-2"></i>My Cars</a>
+                    <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="WishList"><i class="fi-heart me-2"></i>Wishlist<span class="badge bg-faded-light ms-2">4</span></a>
                     <a class="dropdown-item" asp-controller="Product" asp-action="CustomerProductReviews"><i class="fi-star me-2"></i>Reviews</a>
-                    <a class="dropdown-item" asp-controller="Customer" asp-action="Notifications"><i class="fi-bell me-2"></i>Notifications</a>
+                    <a class="dropdown-item" asp-controller="CustomCustomer" asp-action="Notifications"><i class="fi-bell me-2"></i>Notifications</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" asp-controller="Customer" asp-action="HelpCenter">Help</a>
+                    <a class="dropdown-item" asp-controller="CustomCustomer" asp-action="HelpCenter">Help</a>
                     <a class="dropdown-item" href="@Url.RouteUrl("Logout")">Sign Out</a>
                 </div>
             </div>

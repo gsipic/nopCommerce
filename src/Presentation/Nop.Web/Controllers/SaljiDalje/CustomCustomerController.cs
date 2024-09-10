@@ -86,7 +86,7 @@ public class CustomCustomerController(
     MediaSettings mediaSettings,
     MultiFactorAuthenticationSettings multiFactorAuthenticationSettings,
     StoreInformationSettings storeInformationSettings,
-    TaxSettings taxSettings, IStoreService storeService)
+    TaxSettings taxSettings, IStoreService storeService, IProductModelFactory productModelFactory)
     : Web.Controllers.CustomerController(addressSettings,
         captchaSettings, customerSettings, dateTimeSettings, forumSettings, gdprSettings, htmlEncoder,
         addressModelFactory, addressService, addressAttributeParser, customerAttributeParser, customerAttributeService,
@@ -269,7 +269,11 @@ public class CustomCustomerController(
 
     public async Task<IActionResult> MyCars()
     {
-        return View("~/Themes/SaljiDalje/Views/Customer/MyCars.cshtml");
+        var costumer = await workContext.GetCurrentCustomerAsync();
+        var items = await productModelFactory.PrepareProductOverviewModelsAsync(
+            await (productService as CostumeProductService).GetProductsByVendorId(costumer.VendorId));
+        
+        return View("~/Themes/SaljiDalje/Views/Customer/MyCars.cshtml", items);
     }
 
     public async Task<IActionResult> WishList()

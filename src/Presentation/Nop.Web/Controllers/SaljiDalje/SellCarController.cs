@@ -360,7 +360,7 @@ public partial class SellCarController(
     public async Task<IActionResult> StepTwoFinish([FromBody] SellCarModel sellCarModel)
     {
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
+        var costumer = await workContext.GetCurrentCustomerAsync();
         var product = new Product
         {
             Name = sellCarModel.BasicInfo.Title,
@@ -368,8 +368,11 @@ public partial class SellCarController(
             FullDescription = sellCarModel.VehicleInformation.Description,
             CreatedOnUtc = DateTime.UtcNow,
             UpdatedOnUtc = DateTime.UtcNow,
+            ProductType = ProductType.SimpleProduct,
+            OrderMaximumQuantity = 1,
             Published = true,
-            VisibleIndividually = true
+            VisibleIndividually = true,
+            VendorId = costumer.VendorId
         };
         await productService.InsertProductAsync(product);
 
