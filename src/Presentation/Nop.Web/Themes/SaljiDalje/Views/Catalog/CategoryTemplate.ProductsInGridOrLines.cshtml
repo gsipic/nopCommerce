@@ -471,6 +471,8 @@
         
         $(CatalogProducts).on('before', function () {
             var preloader = document.querySelector('.page-loading');
+            preloader.style.opacity = 0.9;
+            preloader.style.display = "block";
             preloader.classList.remove('active');
             preloader.classList.add('active');
             
@@ -479,6 +481,9 @@
         $(CatalogProducts).on('loaded', function () {
             var preloader = document.querySelector('.page-loading');
             preloader.classList.remove('active');
+            setTimeout(function (){
+                preloader.style.display = "none";
+            },200)
             carousel()
             addPagerHandlers();
         });

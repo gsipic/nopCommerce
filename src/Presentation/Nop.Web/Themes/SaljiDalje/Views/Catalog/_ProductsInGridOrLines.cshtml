@@ -10,7 +10,7 @@
 @if (Model.Products.Count > 0)
 {
     
-    <div class="row">
+    <div class="@if (Model.ViewMode == "grid"){ <text> row </text>}">
         @foreach (var product in Model.Products)
         {
             if (Model.ViewMode == "list")
