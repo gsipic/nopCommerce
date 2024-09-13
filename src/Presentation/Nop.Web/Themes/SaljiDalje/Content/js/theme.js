@@ -320,7 +320,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
    * @requires https://github.com/ganlanyuan/tiny-slider
   */
 
-  var carousel = function () {
+  window.carousel = function () {
     // forEach function
     var forEach = function forEach(array, callback, scope) {
       for (var i = 0; i < array.length; i++) {
@@ -378,7 +378,8 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
         carouselCurrentSlide.innerHTML = info.displayIndex;
       });
     });
-  }();
+  };
+  window.carousel();
 
   /**
    * Gallery like styled lightbox component for presenting various types of media

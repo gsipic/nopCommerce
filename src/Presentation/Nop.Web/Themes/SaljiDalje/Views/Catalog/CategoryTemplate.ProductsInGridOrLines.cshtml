@@ -3,9 +3,9 @@
 @using Nop.Core.Domain.Catalog
 @using Nop.Core.Domain.Common
 @using Nop.Core.Domain.Seo
+@using Category = Nop.Core.Domain.Catalog.Category
 
 @inject Nop.Core.IWebHelper webHelper
-@inject IHtmlHelper htmlHelper
 @inject SeoSettings seoSettings
 @inject CommonSettings commonSettings
 
@@ -386,146 +386,66 @@
     <div class="d-sm-flex align-items-center justify-content-between pb-4 mb-2">
         <div class="d-flex align-items-center me-sm-4">
             <label class="fs-sm text-light me-2 pe-1 text-nowrap" for="sorting1"><i class="fi-arrows-sort mt-n1 me-2"></i>Sort by:</label>
-            <select class="form-select form-select-light form-select-sm me-sm-4" id="sorting1">
-                <option>Newest</option>
-                <option>Popular</option>
-                <option>Price: Low - High</option>
-                <option>Price: Hight - Low</option>
-            </select>
+            @Html.DropDownList("products-orderby", Model.CatalogProductsModel.AvailableSortOptions, new { aria_label = T("Catalog.OrderBy.Label"), @class = "form-select form-select-light form-select-sm me-2 me-sm-4" })
+            <script asp-location="Footer">
+                $(function() {
+                    var $orderByEl = $('#products-orderby');
+                    $orderByEl.on('change', function () {
+                        CatalogProducts.getProducts();
+                    });
+
+                    $(CatalogProducts).on('before', function (e) {
+                        e.payload.urlBuilder
+                            .addParameter('orderby', $orderByEl.val());
+                    });
+                });
+            </script>
             <div class="d-none d-md-block border-end border-light" style="height: 1.25rem;"></div>
             <div class="d-none d-sm-block fw-bold text-light opacity-70 text-nowrap ps-md-4">
                 <i class="fi-switch-horizontal me-2"></i><span class="align-middle">Compare (0)</span>
             </div>
         </div>
-        <div class="d-none d-sm-flex">
-            <a class="nav-link nav-link-light px-2 active" href="car-finder-catalog-list.html" data-bs-toggle="tooltip" title="List view">
-                <i class="fi-list"></i>
-            </a>
-            <a class="nav-link nav-link-light px-2" href="car-finder-catalog-grid.html" data-bs-toggle="tooltip" title="Grid view">
-                <i class="fi-grid"></i>
-            </a>
-        </div>
-    </div>
-    @foreach(var products in Model.CatalogProductsModel.Products){
-        <!-- Item-->
-    <div class="card card-light card-hover card-horizontal mb-4">
-        <div class="tns-carousel-wrapper card-img-top card-img-hover">
-            <a class="img-overlay" href="@products.SeName"></a>
-            <div class="position-absolute start-0 top-0 pt-3 ps-3">
-                <span class="d-table badge bg-info">Used</span>
-            </div>
-            <div class="content-overlay end-0 top-0 pt-3 pe-3">
-                <button class="btn btn-icon btn-light btn-xs text-primary rounded-circle" type="button" data-bs-toggle="tooltip" data-bs-placement="left" title="Add to Wishlist">
-                    <i class="fi-heart"></i>
-                </button>
-            </div>
-            <div class="tns-carousel-inner position-absolute top-0 h-100">
-                @foreach (var imageProducts in products.PictureModels)
-                {
-                    <div class="bg-size-cover bg-position-center w-100 h-100" style="background-image: url(@imageProducts.ImageUrl);"></div>
+        @if (Model.CatalogProductsModel.AvailableViewModes.Count > 1)
+        {
+            <div class="d-none d-sm-flex">
+                @{
+                    var gridMode = Model.CatalogProductsModel.AvailableViewModes[0];
+                    var listMode = Model.CatalogProductsModel.AvailableViewModes[1];
                 }
+                <a class="nav-link nav-link-light px-2 @if (gridMode.Selected) { <text>active</text> }" href="#" data-viewmode="@gridMode.Value" data-bs-toggle="tooltip" title="@gridMode.Text">
+                    <i class="fi-grid"></i>
+                </a>
+                <a class="nav-link nav-link-light px-2 @if (listMode.Selected) { <text>active</text> }" href="#" data-viewmode="@listMode.Value" data-bs-toggle="tooltip" title="@listMode.Text">
+                    <i class="fi-list"></i>
+                </a>
+                <script asp-location="Footer">
+            $(function() {
+                var $viewModeEls = $('[data-viewmode]');
+                $viewModeEls.on('click', function () {
+                    if (!$(this).hasClass('active')) {
+                        $viewModeEls.toggleClass('active');
+                        CatalogProducts.getProducts();
+                    }
+                    return false;
+                });
+
+                $(CatalogProducts).on('before', function (e) {
+                    var $viewModeEl = $('[data-viewmode].active');
+                    if ($viewModeEl) {
+                        e.payload.urlBuilder
+                            .addParameter('viewmode', $viewModeEl.data('viewmode'));
+                    }
+                });
+            });
+        </script>
             </div>
-        </div>
-        <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between pb-1">
-                <span class="fs-sm text-light me-3">1995</span>
-                <div class="form-check form-check-light">
-                    <input class="form-check-input" type="checkbox" id="compare1">
-                    <label class="form-check-label fs-sm" for="compare1">Compare</label>
-                </div>
-            </div>
-            <h3 class="h6 mb-1">
-                <a class="nav-link-light" href="@products.SeName">@products.Name</a>
-            </h3>
-            <div class="text-primary fw-bold mb-1">$24,000</div>
-            <div class="fs-sm text-light opacity-70"><i class="fi-map-pin me-1"></i>Chicago</div>
-            <div class="border-top border-light mt-3 pt-3">
-                <div class="row g-2">
-                    <div class="col me-sm-1">
-                        <div class="bg-dark rounded text-center w-100 h-100 p-2">
-                            <i class="fi-dashboard d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">278K mi</span>
-                        </div>
-                    </div>
-                    <div class="col me-sm-1">
-                        <div class="bg-dark rounded text-center w-100 h-100 p-2">
-                            <i class="fi-gearbox d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Manual</span>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="bg-dark rounded text-center w-100 h-100 p-2">
-                            <i class="fi-petrol d-block h4 text-light mb-0 mx-center"></i><span class="fs-xs text-light">Diesel</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    }
-    <!-- Sorting + Pagination-->
-    <div class="d-flex align-items-center justify-content-between py-2">
-        <div class="d-flex align-items-center me-sm-4">
-            <label class="fs-sm text-light me-2 pe-1 text-nowrap" for="sorting2"><i class="fi-arrows-sort mt-n1 me-2"></i>Sort by:</label>
-            <select class="form-select form-select-light form-select-sm me-2 me-sm-4" id="sorting2">
-                <option>Newest</option>
-                <option>Popular</option>
-                <option>Price: Low - High</option>
-                <option>Price: Hight - Low</option>
-            </select>
-            <div class="d-none d-md-block border-end border-light" style="height: 1.25rem;"></div>
-            <div class="d-none d-md-block fw-bold text-light opacity-70 text-nowrap ps-md-4">
-                <i class="fi-switch-horizontal me-2"></i><span class="align-middle">Compare (0)</span>
-            </div>
-        </div>
-        @*<nav aria-label="Pagination">
-            <ul class="pagination pagination-light mb-0">
-                <li class="page-item d-sm-none text-nowrap">
-                    <span class="page-link page-link-static">1 / 5</span>
-                </li>
-                <li class="page-item active d-none d-sm-block" aria-current="page">
-                    <span class="page-link">1<span class="visually-hidden">(current)</span></span>
-                </li>
-                <li class="page-item d-none d-sm-block">
-                    <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item d-none d-sm-block">
-                    <a class="page-link" href="#">3</a>
-                </li>
-                <li class="page-item d-none d-sm-block">...</li>
-                <li class="page-item d-none d-sm-block">
-                    <a class="page-link" href="#">8</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                        <i class="fi-chevron-right"></i>
-                    </a>
-                </li>
-            </ul>
-        </nav>*@
-        @{
-            /*var pager = Html.Pager(Model.CatalogProductsModel)
-                .QueryParam("pagenumber")
-                // for search page
-                .BooleanParameterName("advs")
-                .BooleanParameterName("isc")
-                .BooleanParameterName("sid")
-                .RenderEmptyParameters(true);*/
-            
-            var pager = new Nop.Web.Controllers.SaljiDalje.Core.Pager(Model.CatalogProductsModel, htmlHelper.ViewContext)
-                .QueryParam("pagenumber")
-                .MainUlCssClass("pagination pagination-light mb-0")
-                .IndividualPageCssClass("page-item d-none d-sm-block")
-                .CurrentPageCssClass("page-item active d-none d-sm-block")
-                .PreviousPageCssClass("page-item")
-                .NextPageCssClass("page-item")
-                // for search page
-                .BooleanParameterName("advs")
-                .BooleanParameterName("isc")
-                .BooleanParameterName("sid")
-                .RenderEmptyParameters(true);
         }
-        <nav aria-label="Pagination">
-            @pager
-        </nav>
+    </div>
+    <div>
+        <div class="ajax-products-busy"></div>
+        <div class="products-wrapper">
+            @await Html.PartialAsync("/Themes/SaljiDalje/Views/Catalog/_ProductsInGridOrLines.cshtml", Model.CatalogProductsModel)
+        </div>
     </div>
 </div>
 </div>
@@ -538,5 +458,39 @@
 @* <script src="Themes/SaljiDalje/Content/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js" asp-exclude-from-bundle="true"></script> *@
 <script src="Themes/SaljiDalje/Content/vendor/tiny-slider/dist/min/tiny-slider.js" asp-exclude-from-bundle="true"></script>
 <script src="Themes/SaljiDalje/Content/vendor/nouislider/dist/nouislider.min.js" asp-exclude-from-bundle="true"></script>
+<script src="Themes/SaljiDalje/Content/js/public.catalogproducts.saljidalje.js" asp-exclude-from-bundle="true"></script>
+<script asp-location="Footer">
+    $(function() {
+        CatalogProducts.init({
+            ajax: @Model.CatalogProductsModel.UseAjaxLoading.ToString().ToLowerInvariant(),
+            browserPath: '@Context.Request.Path',
+            fetchUrl: '@Html.Raw(Url.RouteUrl("GetCategoryProducts", new { categoryId = Model.Id }))'
+        });
+
+        addPagerHandlers();
+        
+        $(CatalogProducts).on('before', function () {
+            var preloader = document.querySelector('.page-loading');
+            preloader.classList.remove('active');
+            preloader.classList.add('active');
+            
+            
+        });
+        $(CatalogProducts).on('loaded', function () {
+            var preloader = document.querySelector('.page-loading');
+            preloader.classList.remove('active');
+            carousel()
+            addPagerHandlers();
+        });
+    });
+
+    function addPagerHandlers() {
+        $('[data-page]').on('click', function (e) {
+            e.preventDefault();
+            CatalogProducts.getProducts($(this).data('page'));
+            return false;
+        });
+    }
+</script>
 <!-- Main theme script-->
 @* <script src="Themes/SaljiDalje/Content/js/theme.min.js"></script> *@
