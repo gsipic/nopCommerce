@@ -481,9 +481,7 @@
         $(CatalogProducts).on('loaded', function () {
             var preloader = document.querySelector('.page-loading');
             preloader.classList.remove('active');
-            setTimeout(function (){
-                preloader.style.display = "none";
-            },200)
+            preloader.style.display = "none";
             carousel()
             addPagerHandlers();
         });
