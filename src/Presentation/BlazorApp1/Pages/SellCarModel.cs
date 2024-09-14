@@ -62,7 +62,6 @@ public class VehicleInformation
     public string BodyTypeOption { get; set; } = string.Empty;
     public IList<SpecificationOption> FuelType { get; set; } = new List<SpecificationOption>();
     public string FuelTypeOption { get; set; } = string.Empty;
-    public IList<SpecificationOption> Engine { get; set; } = new List<SpecificationOption>();
     public IList<SpecificationOption> Tranmission { get; set; } = new List<SpecificationOption>();
     public string TranmissionTypeOption { get; set; } = string.Empty;
     public IList<SpecificationOption> DriveTrain { get; set; } = new List<SpecificationOption>();

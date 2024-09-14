@@ -28,8 +28,10 @@
 }
 <!-- Vendor Styles-->
 @* <link rel="stylesheet" media="screen" href="Themes/SaljiDalje/Content/vendor/simplebar/dist/simplebar.min.css" asp-exclude-from-bundle="true"/> *@
-<link rel="stylesheet" media="screen" href="Themes/SaljiDalje/Content/vendor/tiny-slider/dist/tiny-slider.css" asp-exclude-from-bundle="true"/>
-<link rel="stylesheet" media="screen" href="Themes/SaljiDalje/Content/vendor/nouislider/dist/nouislider.min.css" asp-exclude-from-bundle="true"/>
+@{
+    NopHtml.AppendCssFileParts("/Themes/SaljiDalje/Content/vendor/tiny-slider/dist/tiny-slider.css", excludeFromBundle:true);
+    NopHtml.AppendCssFileParts("/Themes/SaljiDalje/Content/vendor/nouislider/dist/nouislider.min.css", excludeFromBundle:true);
+}
 <!-- Main Theme Styles + Bootstrap-->
 @* <link rel="stylesheet" media="screen" href="Themes/SaljiDalje/Content/css/theme.min.css"/> *@
 <!-- Page content-->
@@ -175,6 +177,41 @@
         </select>
     </div>
 </div>
+
+@foreach (var attr in Model.CatalogProductsModel.SpecificationFilter.Attributes)
+{
+    <div class="pb-4 mb-2">
+        <h3 class="h6 text-light">@attr.Name</h3>
+        @foreach (var value in attr.Values)
+        {
+            <div class="form-check form-check-light mr-2">
+                <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id" data-option-id="@value.Id" checked="@value.Selected">
+                <label class="form-check-label fs-sm mr-2" for="attribute-option-@value.Id">@value.Name</label>
+            </div>
+        }
+    </div>
+}
+<script asp-location="Footer">
+        $(document).ready(function () {
+            var $optionEls = $('[data-option-id]');
+            $optionEls.on('change', function () {
+                CatalogProducts.getProducts();
+            });
+
+            $(CatalogProducts).on('before', function (e) {
+                var selectedOptions = $.map($optionEls, function (el) {
+                    var $optionEl = $(el);
+                    if ($optionEl.is(':checked')) return $optionEl.data('option-id');
+                    return null;
+                });
+
+                if (selectedOptions && selectedOptions.length > 0) {
+                    e.payload.urlBuilder
+                        .addParameter('specs', selectedOptions.join(','));
+                }
+            });
+        });
+    </script>
 <div class="pb-4 mb-2">
     <h3 class="h6 text-light">Make &amp; Model</h3>
     <select class="form-select form-select-light mb-2">
@@ -370,16 +407,26 @@
     <nav class="mb-3 pt-md-2 pt-lg-4" aria-label="Breadcrumb">
         <ol class="breadcrumb breadcrumb-light">
             <li class="breadcrumb-item">
-                <a href="/">Home</a>
+                <a href="@Url.RouteUrl("Homepage")" title="@T("Categories.Breadcrumb.Top")">@T("Categories.Breadcrumb.Top")</a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            @foreach (var item in Model.CategoryBreadcrumb.Select((item, index) => (item, index)))
+            {
+                if (item.index < Model.CategoryBreadcrumb.Count - 1)
+                {
+                    <li class="breadcrumb-item"><a href="@item.item.SeName">@item.item.Name</a></li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item active" aria-current="page">@item.item.Name</li>
+                }
+            }
         </ol>
     </nav>
     <!-- Page title-->
     <div class="d-flex align-items-center justify-content-between pb-4 mb-2">
         <h1 class="text-light me-3 mb-0">@Model.Name</h1>
         <div class="text-light">
-            <i class="fi-car fs-lg me-2"></i><span class="align-middle">@Model.CatalogProductsModel.Products.Count</span>
+            <i class="fi-car fs-lg me-2"></i><span class="align-middle">@Model.CatalogProductsModel.Products.Count oglasa</span>
         </div>
     </div>
     <!-- Sorting + View-->

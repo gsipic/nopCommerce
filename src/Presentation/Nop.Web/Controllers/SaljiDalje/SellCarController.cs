@@ -393,6 +393,21 @@ public partial class SellCarController(
 
         //var sawp = await _specificationAttributeService.GetSpecificationAttributesWithOptionsAsync();
         //sawp.First(item => item.Id == 1 )
+        await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.BasicInfo.SpecificationAttributeOptionIdStateOptionId);
+        await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.BasicInfo.SpecificationAttributeAdTypeIdStateOptionId);
+        
+        //await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.VehicleInformation.ModelSpecificationOption);
+        //await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.VehicleInformation.Year);
+        await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.VehicleInformation.ColorTypeOption);
+        //await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.VehicleInformation.ModelSpecificationOption);
+        await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.VehicleInformation.TranmissionTypeOption);
+        await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.VehicleInformation.BodyTypeOption);
+        await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.VehicleInformation.DriveTrainTypeOption);
+        await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.VehicleInformation.FuelTypeOption);
+        
+        await insertSpecificationAttributeOptionsWihoutValueTest(product, sellCarModel.Location.ŽupanijeSpecificationOption);
+        
+        
         await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.SustavPomoći);
         await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.SigurnostPutnika);
         await insertSpecificationAttributeOptionsTest(product,sellCarModel.Features.UdobnostPutnika);
@@ -462,6 +477,22 @@ public partial class SellCarController(
                         });
             }
         }
+    }
+    
+    private async Task insertSpecificationAttributeOptionsWihoutValueTest(Product product, string specificationOptionId)
+    {
+        if (int.TryParse(specificationOptionId, out var numericValue))
+                    await specificationAttributeService.InsertProductSpecificationAttributeAsync(
+                        new ProductSpecificationAttribute()
+                        {
+                            ProductId = product.Id,
+                            AttributeType = SpecificationAttributeType.Option,
+                            AllowFiltering = true,
+                            ShowOnProductPage = true,
+                            SpecificationAttributeOptionId = numericValue
+                        });
+            
+        
     }
 
 
