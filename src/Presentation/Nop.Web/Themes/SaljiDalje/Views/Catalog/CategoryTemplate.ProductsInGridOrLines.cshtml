@@ -182,13 +182,29 @@
 {
     <div class="pb-4 mb-2">
         <h3 class="h6 text-light">@attr.Name</h3>
-        @foreach (var value in attr.Values)
+        @if (attr.Name == "Županija")
         {
-            <div class="form-check form-check-light mr-2">
-                <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id" data-option-id="@value.Id" checked="@value.Selected">
-                <label class="form-check-label fs-sm mr-2" for="attribute-option-@value.Id">@value.Name</label>
-            </div>
+            <select id="zupanije" class="form-select form-select-light mb-2" data-option-id>
+                <option value="" disabled selected>Select location</option>
+                @foreach (var value in attr.Values)
+                {
+                    <option value="@value.Id" selected=@value.Selected>
+                        @value.Name
+                    </option>
+                }
+            </select>
         }
+        else
+        {
+            foreach (var value in attr.Values)
+            {
+                <div class="form-check form-check-light mr-2">
+                    <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id" data-option-id="@value.Id" checked="@value.Selected">
+                    <label class="form-check-label fs-sm mr-2" for="attribute-option-@value.Id">@value.Name</label>
+                </div>
+            }
+        }
+
     </div>
 }
 <script asp-location="Footer">
@@ -202,6 +218,8 @@
                 var selectedOptions = $.map($optionEls, function (el) {
                     var $optionEl = $(el);
                     if ($optionEl.is(':checked')) return $optionEl.data('option-id');
+                    if ($optionEl.attr('id') === "zupanije" && $optionEl.val() != null) return $optionEl.val();
+
                     return null;
                 });
 
@@ -244,11 +262,11 @@
 </div>
 <div class="pb-4 mb-2">
     <h3 class="h6 text-light">Price</h3>
-    <div class="range-slider range-slider-light mb-3" 
-         data-start-min="@Model.CatalogProductsModel.PriceRangeFilter.SelectedPriceRange.From" 
-         data-start-max="@Model.CatalogProductsModel.PriceRangeFilter.SelectedPriceRange.To" 
-         data-min="@Model.CatalogProductsModel.PriceRangeFilter.AvailablePriceRange.From" 
-         data-max="@Model.CatalogProductsModel.PriceRangeFilter.AvailablePriceRange.To" 
+    <div class="range-slider range-slider-light mb-3"
+         data-start-min="@Model.CatalogProductsModel.PriceRangeFilter.SelectedPriceRange.From"
+         data-start-max="@Model.CatalogProductsModel.PriceRangeFilter.SelectedPriceRange.To"
+         data-min="@Model.CatalogProductsModel.PriceRangeFilter.AvailablePriceRange.From"
+         data-max="@Model.CatalogProductsModel.PriceRangeFilter.AvailablePriceRange.To"
          data-step="1">
         <div id="range" class="range-slider-ui"></div>
         <div class="d-flex align-items-center">
