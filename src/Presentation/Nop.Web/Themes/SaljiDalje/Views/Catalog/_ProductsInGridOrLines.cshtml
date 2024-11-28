@@ -45,7 +45,8 @@
                         <h3 class="h6 mb-1">
                             <a class="nav-link-light" href="@product.SeName">@product.Name</a>
                         </h3>
-                        <div class="text-primary fw-bold mb-1">@product.ProductPrice.Price</div>
+                        @{ var price = $"{product.ProductPrice.PriceValue:C0}";}
+                        <div class="text-primary fw-bold mb-1">@price</div>
                         <div class="fs-sm text-light opacity-70"><i class="fi-map-pin me-1"></i>Chicago</div>
                         <div class="border-top border-light mt-3 pt-3">
                             <div class="row g-2">
@@ -101,7 +102,8 @@
                             <h3 class="h6 mb-1">
                                 <a class="nav-link-light" href="@product.SeName">@product.Name</a>
                             </h3>
-                            <div class="text-primary fw-bold mb-1">@product.ProductPrice.Price</div>
+                            @{ var price = $"{product.ProductPrice.PriceValue:C0}";}
+                            <div class="text-primary fw-bold mb-1">@price</div>
                             <div class="fs-sm text-light opacity-70"><i class="fi-map-pin me-1"></i>Chicago</div>
                         </div>
                         <div class="card-footer border-0 pt-0">
