@@ -10,6 +10,63 @@
 @inject CommonSettings commonSettings
 
 @{
+    async Task GenerateItemAttribute(string attrname, bool overflowItem)
+    {
+        var attr = Model.CatalogProductsModel.SpecificationFilter.Attributes.FirstOrDefault(item => attrname == item.Name);
+        if (attr == null)
+        {
+            return;
+        }
+
+        <text>
+            <div class="pb-4 mb-2">
+                <h3 class="h6 text-light">@attr.Name</h3>
+                @if (attr.Name == "Županija")
+                {
+                    <select id="zupanije" class="form-select form-select-light mb-2" data-option-id>
+                        <option value="" disabled selected>Izaberi županiju</option>
+                        @foreach (var value in attr.Values)
+                        {
+                            <option value="@value.Id" selected=@value.Selected>
+                                @value.Name
+                            </option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    if (overflowItem)
+                    {
+                        <div class="overflow-auto" data-simplebar data-simplebar-auto-hide="false"
+                             data-simplebar-inverse style="height: 11rem;">
+                            @foreach (var value in attr.Values)
+                            {
+                                <div class="form-check form-check-light mr-2">
+                                    <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id"
+                                           data-option-id="@value.Id" checked="@value.Selected">
+                                    <label class="form-check-label fs-sm mr-2"
+                                           for="attribute-option-@value.Id">@value.Name</label>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        foreach (var value in attr.Values)
+                        {
+                            <div class="form-check form-check-light mr-2">
+                                <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id"
+                                       data-option-id="@value.Id" checked="@value.Selected">
+                                <label class="form-check-label fs-sm mr-2"
+                                       for="attribute-option-@value.Id">@value.Name</label>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </text>
+    }
+
     //title
     NopHtml.AddTitleParts(!string.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
     //meta
@@ -37,523 +94,374 @@
 <!-- Page content-->
 <!-- Page container-->
 <div class="container mt-5 mb-md-4 py-5">
-<div class="row py-md-1">
-<!-- Filers sidebar (Offcanvas on mobile)-->
-<div class="col-lg-3 pe-xl-4">
-<div class="offcanvas-lg offcanvas-start bg-dark" id="filters-sidebar">
-<div class="offcanvas-header bg-transparent d-flex d-lg-none align-items-center">
-    <h2 class="h5 text-light mb-0">Filters</h2>
-    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="offcanvas" data-bs-target="#filters-sidebar"></button>
-</div>
-<div class="offcanvas-header bg-transparent d-block border-bottom border-light pt-0 pt-lg-4 px-lg-0">
-    <ul class="nav nav-tabs nav-tabs-light mb-0">
-        <li class="nav-item">
-            <a class="nav-link" href="#">Search New</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" href="#">Search Used</a>
-        </li>
-    </ul>
-</div>
-<div class="offcanvas-body py-lg-4">
-<div class="pb-3 mb-4 border-bottom border-light">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <h3 class="h6 text-light mb-0">Selection</h3>
-        <button class="btn btn-link btn-light fw-normal fs-sm p-0" type="button">Clear all</button>
-    </div>
-    <ul class="nav nav-pills nav-pills-light flex-row fs-sm mx-0">
-        <li class="nav-item mb-2 me-2">
-            <button class="nav-link px-3" type="button">Under 2019<i class="fi-x fs-xxs ms-2"></i></button>
-        </li>
-        <li class="nav-item mb-2 me-2">
-            <button class="nav-link px-3">Crossover<i class="fi-x fs-xxs ms-2"></i></button>
-        </li>
-        <li class="nav-item mb-2 me-2">
-            <button class="nav-link px-3" type="button">Sedan<i class="fi-x fs-xxs ms-2"></i></button>
-        </li>
-        <li class="nav-item mb-2 me-2">
-            <button class="nav-link px-3" type="button">SUV<i class="fi-x fs-xxs ms-2"></i></button>
-        </li>
-        <li class="nav-item mb-2 me-2">
-            <button class="nav-link px-3" type="button">Diesel<i class="fi-x fs-xxs ms-2"></i></button>
-        </li>
-        <li class="nav-item mb-2 me-2">
-            <button class="nav-link px-3" type="button">Gasoline<i class="fi-x fs-xxs ms-2"></i></button>
-        </li>
-        <li class="nav-item mb-2 me-2">
-            <button class="nav-link px-3" type="button">Hybrid<i class="fi-x fs-xxs ms-2"></i></button>
-        </li>
-    </ul>
-</div>
-<div class="pb-4 mb-2">
-    <h3 class="h6 text-light">Location</h3>
-    <select class="form-select form-select-light mb-2">
-        <option value="" disabled selected>Select location</option>
-        <option value="Chicago">Chicago</option>
-        <option value="Dallas">Dallas</option>
-        <option value="Los Angeles">Los Angeles</option>
-        <option value="New York">New York</option>
-        <option value="San Diego">San Diego</option>
-    </select>
-</div>
-<div class="pb-4 mb-2">
-    <h3 class="h6 text-light">Body Type</h3>
-    <div class="overflow-auto" data-simplebar data-simplebar-auto-hide="false" data-simplebar-inverse style="height: 11rem;">
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="sedan" checked>
-            <label class="form-check-label fs-sm" for="sedan">Sedan</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="suv" checked>
-            <label class="form-check-label fs-sm" for="suv">SUV</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="wagon">
-            <label class="form-check-label fs-sm" for="wagon">Wagon</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="crossover" checked>
-            <label class="form-check-label fs-sm" for="crossover">Crossover</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="coupe">
-            <label class="form-check-label fs-sm" for="coupe">Coupe</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="pickup">
-            <label class="form-check-label fs-sm" for="pickup">Pickup</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="sport">
-            <label class="form-check-label fs-sm" for="sport">Sport Coupe</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="compact">
-            <label class="form-check-label fs-sm" for="compact">Compact</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="convertible">
-            <label class="form-check-label fs-sm" for="convertible">Convertible</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="mpv">
-            <label class="form-check-label fs-sm" for="mpv">Family MPV</label>
-        </div>
-    </div>
-</div>
-<div class="pb-4 mb-2">
-    <h3 class="h6 text-light pt-1">Year</h3>
-    <div class="d-flex align-items-center">
-        <select class="form-select form-select-light w-100">
-            <option value="" disabled selected>From</option>
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-            <option value="2019">2019</option>
-            <option value="2018">2018</option>
-            <option value="2017">2017</option>
-            <option value="2016">2016</option>
-            <option value="2015">2015</option>
-            <option value="2014">2014</option>
-            <option value="2013">2013</option>
-            <option value="2012">2012</option>
-            <option value="2011">2011</option>
-            <option value="2010">2010</option>
-        </select>
-        <div class="mx-2">&mdash;</div>
-        <select class="form-select form-select-light w-100">
-            <option value="" disabled>To</option>
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-            <option value="2019" selected>2019</option>
-            <option value="2018">2018</option>
-            <option value="2017">2017</option>
-            <option value="2016">2016</option>
-            <option value="2015">2015</option>
-            <option value="2014">2014</option>
-            <option value="2013">2013</option>
-            <option value="2012">2012</option>
-            <option value="2011">2011</option>
-            <option value="2010">2010</option>
-        </select>
-    </div>
-</div>
-
-@foreach (var attr in Model.CatalogProductsModel.SpecificationFilter.Attributes)
-{
-    <div class="pb-4 mb-2">
-        <h3 class="h6 text-light">@attr.Name</h3>
-        @if (attr.Name == "Županija")
-        {
-            <select id="zupanije" class="form-select form-select-light mb-2" data-option-id>
-                <option value="" disabled selected>Select location</option>
-                @foreach (var value in attr.Values)
-                {
-                    <option value="@value.Id" selected=@value.Selected>
-                        @value.Name
-                    </option>
-                }
-            </select>
-        }
-        else
-        {
-            foreach (var value in attr.Values)
-            {
-                <div class="form-check form-check-light mr-2">
-                    <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id" data-option-id="@value.Id" checked="@value.Selected">
-                    <label class="form-check-label fs-sm mr-2" for="attribute-option-@value.Id">@value.Name</label>
+    <div class="row py-md-1">
+        <!-- Filers sidebar (Offcanvas on mobile)-->
+        <div class="col-lg-3 pe-xl-4">
+            <div class="offcanvas-lg offcanvas-start bg-dark" id="filters-sidebar">
+                <div class="offcanvas-header bg-transparent d-flex d-lg-none align-items-center">
+                    <h2 class="h5 text-light mb-0">Filters</h2>
+                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="offcanvas"
+                            data-bs-target="#filters-sidebar"></button>
                 </div>
-            }
-        }
+                <div class="offcanvas-header bg-transparent d-block border-bottom border-light pt-0 pt-lg-4 px-lg-0">
+                    <ul class="nav nav-tabs nav-tabs-light mb-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Search New</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Search Used</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="offcanvas-body py-lg-4">
+                    <div class="pb-3 mb-4 border-bottom border-light">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h3 class="h6 text-light mb-0">Selection</h3>
+                            <button class="btn btn-link btn-light fw-normal fs-sm p-0" type="button">Clear all</button>
+                        </div>
+                        <ul class="nav nav-pills nav-pills-light flex-row fs-sm mx-0">
+                            <li class="nav-item mb-2 me-2">
+                                <button class="nav-link px-3" type="button">Under 2019<i class="fi-x fs-xxs ms-2"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item mb-2 me-2">
+                                <button class="nav-link px-3">Crossover<i class="fi-x fs-xxs ms-2"></i></button>
+                            </li>
+                            <li class="nav-item mb-2 me-2">
+                                <button class="nav-link px-3" type="button">Sedan<i class="fi-x fs-xxs ms-2"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item mb-2 me-2">
+                                <button class="nav-link px-3" type="button">SUV<i class="fi-x fs-xxs ms-2"></i></button>
+                            </li>
+                            <li class="nav-item mb-2 me-2">
+                                <button class="nav-link px-3" type="button">Diesel<i class="fi-x fs-xxs ms-2"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item mb-2 me-2">
+                                <button class="nav-link px-3" type="button">Gasoline<i class="fi-x fs-xxs ms-2"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item mb-2 me-2">
+                                <button class="nav-link px-3" type="button">Hybrid<i class="fi-x fs-xxs ms-2"></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    @{ await GenerateItemAttribute("Županija", overflowItem: false); }
+                    <div class="pb-4 mb-2">
+                        <h3 class="h6 text-light">Make &amp; Model</h3>
+                        <select class="form-select form-select-light mb-2">
+                            <option value="" disabled selected>Any make</option>
+                            <option value="Audi">Audi</option>
+                            <option value="Infiniti">Infiniti</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Hyundai">Hyundai</option>
+                            <option value="Lexus">Lexus</option>
+                            <option value="Mazda">Mazda</option>
+                            <option value="Mitsubishi">Mitsubishi</option>
+                            <option value="Mercedes-Benz">Mercedes-Benz</option>
+                            <option value="Nissan">Nissan</option>
+                            <option value="Opel">Opel</option>
+                            <option value="Renault">Renault</option>
+                            <option value="Toyota">Toyota</option>
+                        </select>
+                        <select class="form-select form-select-light mb-1">
+                            <option value="" disabled selected>Any model</option>
+                            <option value="Altima">Altima</option>
+                            <option value="Juke">Juke</option>
+                            <option value="Leaf">Leaf</option>
+                            <option value="Maxima">Maxima</option>
+                            <option value="Micra">Micra</option>
+                            <option value="Murano">Murano</option>
+                            <option value="Note">Note</option>
+                            <option value="Pathfinder">Pathfinder</option>
+                            <option value="Patrol">Patrol</option>
+                        </select>
+                    </div>
+                    <div class="pb-4 mb-2">
+                        <h3 class="h6 text-light pt-1">Year</h3>
+                        <div class="d-flex align-items-center">
+                            <select class="form-select form-select-light w-100">
+                                <option value="" disabled selected>From</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="2014">2014</option>
+                                <option value="2013">2013</option>
+                                <option value="2012">2012</option>
+                                <option value="2011">2011</option>
+                                <option value="2010">2010</option>
+                            </select>
+                            <div class="mx-2">&mdash;</div>
+                            <select class="form-select form-select-light w-100">
+                                <option value="" disabled>To</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019" selected>2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="2014">2014</option>
+                                <option value="2013">2013</option>
+                                <option value="2012">2012</option>
+                                <option value="2011">2011</option>
+                                <option value="2010">2010</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pb-4 mb-2">
+                        <h3 class="h6 text-light pt-1">Mileage</h3>
+                        <div class="d-flex align-items-center">
+                            <input class="form-control form-control-light w-100" type="number" min="0" step="500"
+                                   placeholder="From">
+                            <div class="mx-2">&mdash;</div>
+                            <input class="form-control form-control-light w-100" type="number" min="0" step="500"
+                                   placeholder="To">
+                        </div>
+                    </div>
+                    
+                    <div class="pb-4 mb-2">
+                        <h3 class="h6 text-light">Price</h3>
+                        <div class="range-slider range-slider-light mb-3"
+                             data-start-min="@Model.CatalogProductsModel.PriceRangeFilter.SelectedPriceRange.From"
+                             data-start-max="@Model.CatalogProductsModel.PriceRangeFilter.SelectedPriceRange.To"
+                             data-min="@Model.CatalogProductsModel.PriceRangeFilter.AvailablePriceRange.From"
+                             data-max="@Model.CatalogProductsModel.PriceRangeFilter.AvailablePriceRange.To"
+                             data-step="1">
+                            <div id="range" class="range-slider-ui"></div>
+                            <div class="d-flex align-items-center">
+                                <div class="w-50 pe-2">
+                                    <input class="form-control form-control-light range-slider-value-min" type="text">
+                                </div>
+                                <div class="text-muted">&mdash;</div>
+                                <div class="w-50 ps-2">
+                                    <input class="form-control form-control-light range-slider-value-max" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <script asp-location="Footer">
+                            $(document).ready(function () {
+                                let range = document.getElementById('range');
 
-    </div>
-}
-<script asp-location="Footer">
-        $(document).ready(function () {
-            var $optionEls = $('[data-option-id]');
-            $optionEls.on('change', function () {
-                CatalogProducts.getProducts();
-            });
+                                range.noUiSlider.on('end', function (values, handle) {
+                                    CatalogProducts.getProducts();
+                                });
 
-            $(CatalogProducts).on('before', function (e) {
-                var selectedOptions = $.map($optionEls, function (el) {
-                    var $optionEl = $(el);
-                    if ($optionEl.is(':checked')) return $optionEl.data('option-id');
-                    if ($optionEl.attr('id') === "zupanije" && $optionEl.val() != null) return $optionEl.val();
+                                range.noUiSlider.on('set', function (values, handle) {
+                                    CatalogProducts.getProducts();
+                                });
 
-                    return null;
-                });
+                                $(CatalogProducts).on('before', function (e) {
+                                    var priceRange = range.noUiSlider.get(true);
+                                    if (priceRange && priceRange.length > 0) {
+                                        e.payload.urlBuilder
+                                            .addParameter('price', priceRange.join('-'));
+                                    }
+                                });
+                            });
+                        </script>
+                        <div class="form-check form-switch form-switch-light">
+                            <input class="form-check-input" type="checkbox" id="negotiated-price">
+                            <label class="form-check-label fs-sm" for="negotiated-price">Negotiated price</label>
+                        </div>
+                    </div>
+                    @{ await GenerateItemAttribute("BodyType", overflowItem: false); }
+                    @{ await GenerateItemAttribute("DriveTrain", overflowItem: false); }
+                    @{ await GenerateItemAttribute("FuelType", overflowItem: false); }
+                    @{ await GenerateItemAttribute("Tranmission", overflowItem: false); }
+                    @{ await GenerateItemAttribute("Color", overflowItem: false); }
+                    <div class="pb-2">
+                        <h3 class="h6 text-light">Sellers</h3>
+                        <div class="form-check form-check-light">
+                            <input class="form-check-input" type="checkbox" id="dealers">
+                            <label class="form-check-label fs-sm" for="dealers">Dealers Only</label>
+                        </div>
+                        <div class="form-check form-check-light">
+                            <input class="form-check-input" type="checkbox" id="private-sellers">
+                            <label class="form-check-label fs-sm" for="private-sellers">Private Sellers Only</label>
+                        </div>
+                    </div>
+                    @*@foreach (var attr in Model.CatalogProductsModel.SpecificationFilter.Attributes)
+                    {
+                        <div class="pb-4 mb-2">
+                            <h3 class="h6 text-light">@attr.Name</h3>
+                            @if (attr.Name == "Županija")
+                            {
+                                <select id="zupanije" class="form-select form-select-light mb-2" data-option-id>
+                                    <option value="" disabled selected>Select location</option>
+                                    @foreach (var value in attr.Values)
+                                    {
+                                        <option value="@value.Id" selected=@value.Selected>
+                                            @value.Name
+                                        </option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                foreach (var value in attr.Values)
+                                {
+                                    <div class="form-check form-check-light mr-2">
+                                        <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id"
+                                               data-option-id="@value.Id" checked="@value.Selected">
+                                        <label class="form-check-label fs-sm mr-2"
+                                               for="attribute-option-@value.Id">@value.Name</label>
+                                    </div>
+                                }
+                            }
 
-                if (selectedOptions && selectedOptions.length > 0) {
-                    e.payload.urlBuilder
-                        .addParameter('specs', selectedOptions.join(','));
-                }
-            });
-        });
-    </script>
-<div class="pb-4 mb-2">
-    <h3 class="h6 text-light">Make &amp; Model</h3>
-    <select class="form-select form-select-light mb-2">
-        <option value="" disabled selected>Any make</option>
-        <option value="Audi">Audi</option>
-        <option value="Infiniti">Infiniti</option>
-        <option value="Honda">Honda</option>
-        <option value="Hyundai">Hyundai</option>
-        <option value="Lexus">Lexus</option>
-        <option value="Mazda">Mazda</option>
-        <option value="Mitsubishi">Mitsubishi</option>
-        <option value="Mercedes-Benz">Mercedes-Benz</option>
-        <option value="Nissan">Nissan</option>
-        <option value="Opel">Opel</option>
-        <option value="Renault">Renault</option>
-        <option value="Toyota">Toyota</option>
-    </select>
-    <select class="form-select form-select-light mb-1">
-        <option value="" disabled selected>Any model</option>
-        <option value="Altima">Altima</option>
-        <option value="Juke">Juke</option>
-        <option value="Leaf">Leaf</option>
-        <option value="Maxima">Maxima</option>
-        <option value="Micra">Micra</option>
-        <option value="Murano">Murano</option>
-        <option value="Note">Note</option>
-        <option value="Pathfinder">Pathfinder</option>
-        <option value="Patrol">Patrol</option>
-    </select>
-</div>
-<div class="pb-4 mb-2">
-    <h3 class="h6 text-light">Price</h3>
-    <div class="range-slider range-slider-light mb-3"
-         data-start-min="@Model.CatalogProductsModel.PriceRangeFilter.SelectedPriceRange.From"
-         data-start-max="@Model.CatalogProductsModel.PriceRangeFilter.SelectedPriceRange.To"
-         data-min="@Model.CatalogProductsModel.PriceRangeFilter.AvailablePriceRange.From"
-         data-max="@Model.CatalogProductsModel.PriceRangeFilter.AvailablePriceRange.To"
-         data-step="1">
-        <div id="range" class="range-slider-ui"></div>
-        <div class="d-flex align-items-center">
-            <div class="w-50 pe-2">
-                <input class="form-control form-control-light range-slider-value-min" type="text">
+                        </div>
+                    }*@
+                    <script asp-location="Footer">
+                        $(document).ready(function () {
+                            var $optionEls = $('[data-option-id]');
+                            $optionEls.on('change', function () {
+                                CatalogProducts.getProducts();
+                            });
+
+                            $(CatalogProducts).on('before', function (e) {
+                                var selectedOptions = $.map($optionEls, function (el) {
+                                    var $optionEl = $(el);
+                                    if ($optionEl.is(':checked')) return $optionEl.data('option-id');
+                                    if ($optionEl.attr('id') === "zupanije" && $optionEl.val() != null) return $optionEl.val();
+
+                                    return null;
+                                });
+
+                                if (selectedOptions && selectedOptions.length > 0) {
+                                    e.payload.urlBuilder
+                                        .addParameter('specs', selectedOptions.join(','));
+                                }
+                            });
+                        });
+                    </script>
+                </div>
             </div>
-            <div class="text-muted">&mdash;</div>
-            <div class="w-50 ps-2">
-                <input class="form-control form-control-light range-slider-value-max" type="text">
-            </div>
         </div>
-    </div>
-    <script asp-location="Footer">
-        $(document).ready(function () {
-            let range = document.getElementById('range');
-
-            range.noUiSlider.on('end', function( values, handle ) {
-                CatalogProducts.getProducts();
-            });
-
-            range.noUiSlider.on('set', function( values, handle ) {
-                CatalogProducts.getProducts();
-            });
-
-            $(CatalogProducts).on('before', function (e) {
-                var priceRange = range.noUiSlider.get(true);
-                if (priceRange && priceRange.length > 0) {
-                    e.payload.urlBuilder
-                        .addParameter('price', priceRange.join('-'));
-                }
-            });
-        });
-    </script>
-    <div class="form-check form-switch form-switch-light">
-        <input class="form-check-input" type="checkbox" id="negotiated-price">
-        <label class="form-check-label fs-sm" for="negotiated-price">Negotiated price</label>
-    </div>
-</div>
-<div class="pb-4 mb-2">
-    <h3 class="h6 text-light">Drivetrain</h3>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="awd">
-        <label class="form-check-label fs-sm" for="awd">AWD/4WD</label>
-    </div>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="front-wheel">
-        <label class="form-check-label fs-sm" for="front-wheel">Front Wheel Drive</label>
-    </div>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="rear-wheel">
-        <label class="form-check-label fs-sm" for="rear-wheel">Rear Wheel Drive</label>
-    </div>
-</div>
-<div class="pb-4 mb-2">
-    <h3 class="h6 text-light">Fuel Type</h3>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="diesel" checked>
-        <label class="form-check-label fs-sm" for="diesel">Diesel</label>
-    </div>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="electric">
-        <label class="form-check-label fs-sm" for="electric">Electric</label>
-    </div>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="gasoline" checked>
-        <label class="form-check-label fs-sm" for="gasoline">Gasoline</label>
-    </div>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="hybrid" checked>
-        <label class="form-check-label fs-sm" for="hybrid">Hybrid</label>
-    </div>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="hydrogen">
-        <label class="form-check-label fs-sm" for="hydrogen">Hydrogen</label>
-    </div>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="plugin">
-        <label class="form-check-label fs-sm" for="plugin">Plug-in Hybrid</label>
-    </div>
-</div>
-<div class="pb-4 mb-1">
-    <h3 class="h6 text-light">Transmission</h3>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="auto">
-        <label class="form-check-label fs-sm" for="auto">Automatic</label>
-    </div>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="manual">
-        <label class="form-check-label fs-sm" for="manual">Manual</label>
-    </div>
-</div>
-<div class="pb-4 mb-2">
-    <h3 class="h6 text-light pt-1">Mileage</h3>
-    <div class="d-flex align-items-center">
-        <input class="form-control form-control-light w-100" type="number" min="0" step="500" placeholder="From">
-        <div class="mx-2">&mdash;</div>
-        <input class="form-control form-control-light w-100" type="number" min="0" step="500" placeholder="To">
-    </div>
-</div>
-<div class="pb-4 mb-2">
-    <h3 class="h6 text-light">Color</h3>
-    <div class="overflow-auto" data-simplebar data-simplebar-auto-hide="false" data-simplebar-inverse style="height: 11rem;">
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="amber">
-            <label class="form-check-label fs-sm" for="amber">Amber</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="azure">
-            <label class="form-check-label fs-sm" for="azure">Azure</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="beige">
-            <label class="form-check-label fs-sm" for="beige">Beige</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="black">
-            <label class="form-check-label fs-sm" for="black">Black</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="blue">
-            <label class="form-check-label fs-sm" for="blue">Blue</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="brown">
-            <label class="form-check-label fs-sm" for="brown">Brown</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="camouflage">
-            <label class="form-check-label fs-sm" for="camouflage">Camouflage green</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="charcoal">
-            <label class="form-check-label fs-sm" for="charcoal">Charcoal</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="gray">
-            <label class="form-check-label fs-sm" for="gray">Gray</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="green">
-            <label class="form-check-label fs-sm" for="green">Green</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="gold">
-            <label class="form-check-label fs-sm" for="gold">Gold</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="purple">
-            <label class="form-check-label fs-sm" for="purple">Purple</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="red">
-            <label class="form-check-label fs-sm" for="red">Red</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="white">
-            <label class="form-check-label fs-sm" for="white">White</label>
-        </div>
-        <div class="form-check form-check-light">
-            <input class="form-check-input" type="checkbox" id="yellow">
-            <label class="form-check-label fs-sm" for="yellow">Yellow</label>
-        </div>
-    </div>
-</div>
-<div class="pb-2">
-    <h3 class="h6 text-light">Sellers</h3>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="dealers">
-        <label class="form-check-label fs-sm" for="dealers">Dealers Only</label>
-    </div>
-    <div class="form-check form-check-light">
-        <input class="form-check-input" type="checkbox" id="private-sellers">
-        <label class="form-check-label fs-sm" for="private-sellers">Private Sellers Only</label>
-    </div>
-</div>
-</div>
-</div>
-</div>
-<!-- Catalog list view-->
-<div class="col-lg-9">
-    <!-- Breadcrumb-->
-    <nav class="mb-3 pt-md-2 pt-lg-4" aria-label="Breadcrumb">
-        <ol class="breadcrumb breadcrumb-light">
-            <li class="breadcrumb-item">
-                <a href="@Url.RouteUrl("Homepage")" title="@T("Categories.Breadcrumb.Top")">@T("Categories.Breadcrumb.Top")</a>
-            </li>
-            @foreach (var item in Model.CategoryBreadcrumb.Select((item, index) => (item, index)))
-            {
-                if (item.index < Model.CategoryBreadcrumb.Count - 1)
-                {
+        <!-- Catalog list view-->
+        <div class="col-lg-9">
+            <!-- Breadcrumb-->
+            <nav class="mb-3 pt-md-2 pt-lg-4" aria-label="Breadcrumb">
+                <ol class="breadcrumb breadcrumb-light">
                     <li class="breadcrumb-item">
-                        <a href="@item.item.SeName">@item.item.Name</a>
+                        <a href="@Url.RouteUrl("Homepage")"
+                           title="@T("Categories.Breadcrumb.Top")">@T("Categories.Breadcrumb.Top")</a>
                     </li>
-                }
-                else
+                    @foreach (var item in Model.CategoryBreadcrumb.Select((item, index) => (item, index)))
+                    {
+                        if (item.index < Model.CategoryBreadcrumb.Count - 1)
+                        {
+                            <li class="breadcrumb-item">
+                                <a href="@item.item.SeName">@item.item.Name</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item active" aria-current="page">@item.item.Name</li>
+                        }
+                    }
+                </ol>
+            </nav>
+            <!-- Page title-->
+            <div class="d-flex align-items-center justify-content-between pb-4 mb-2">
+                <h1 class="text-light me-3 mb-0">@Model.Name</h1>
+                <div class="text-light">
+                    <i class="fi-car fs-lg me-2"></i><span
+                        class="align-middle">@Model.CatalogProductsModel.Products.Count oglasa</span>
+                </div>
+            </div>
+            <!-- Sorting + View-->
+            <div class="d-sm-flex align-items-center justify-content-between pb-4 mb-2">
+                <div class="d-flex align-items-center me-sm-4">
+                    <label class="fs-sm text-light me-2 pe-1 text-nowrap" for="sorting1"><i
+                            class="fi-arrows-sort mt-n1 me-2"></i>Sort by:</label>
+                    @Html.DropDownList("products-orderby", Model.CatalogProductsModel.AvailableSortOptions, new { aria_label = T("Catalog.OrderBy.Label"), @class = "form-select form-select-light form-select-sm me-2 me-sm-4" })
+                    <script asp-location="Footer">
+                        $(function () {
+                            var $orderByEl = $('#products-orderby');
+                            $orderByEl.on('change', function () {
+                                CatalogProducts.getProducts();
+                            });
+
+                            $(CatalogProducts).on('before', function (e) {
+                                e.payload.urlBuilder
+                                    .addParameter('orderby', $orderByEl.val());
+                            });
+                        });
+                    </script>
+                    <div class="d-none d-md-block border-end border-light" style="height: 1.25rem;"></div>
+                    <div class="d-none d-sm-block fw-bold text-light opacity-70 text-nowrap ps-md-4">
+                        <i class="fi-switch-horizontal me-2"></i><span class="align-middle">Compare (0)</span>
+                    </div>
+                </div>
+                @if (Model.CatalogProductsModel.AvailableViewModes.Count > 1)
                 {
-                    <li class="breadcrumb-item active" aria-current="page">@item.item.Name</li>
-                }
-            }
-        </ol>
-    </nav>
-    <!-- Page title-->
-    <div class="d-flex align-items-center justify-content-between pb-4 mb-2">
-        <h1 class="text-light me-3 mb-0">@Model.Name</h1>
-        <div class="text-light">
-            <i class="fi-car fs-lg me-2"></i><span class="align-middle">@Model.CatalogProductsModel.Products.Count oglasa</span>
-        </div>
-    </div>
-    <!-- Sorting + View-->
-    <div class="d-sm-flex align-items-center justify-content-between pb-4 mb-2">
-        <div class="d-flex align-items-center me-sm-4">
-            <label class="fs-sm text-light me-2 pe-1 text-nowrap" for="sorting1"><i class="fi-arrows-sort mt-n1 me-2"></i>Sort by:</label>
-            @Html.DropDownList("products-orderby", Model.CatalogProductsModel.AvailableSortOptions, new { aria_label = T("Catalog.OrderBy.Label"), @class = "form-select form-select-light form-select-sm me-2 me-sm-4" })
-            <script asp-location="Footer">
-                $(function() {
-                    var $orderByEl = $('#products-orderby');
-                    $orderByEl.on('change', function () {
-                        CatalogProducts.getProducts();
-                    });
+                    <div class="d-none d-sm-flex">
+                        @{
+                            var gridMode = Model.CatalogProductsModel.AvailableViewModes[0];
+                            var listMode = Model.CatalogProductsModel.AvailableViewModes[1];
+                        }
+                        <a class="nav-link nav-link-light px-2 @if (gridMode.Selected) { <text>active</text> }" href="#"
+                           data-viewmode="@gridMode.Value" data-bs-toggle="tooltip" title="@gridMode.Text">
+                            <i class="fi-grid"></i>
+                        </a>
+                        <a class="nav-link nav-link-light px-2 @if (listMode.Selected) { <text>active</text> }" href="#"
+                           data-viewmode="@listMode.Value" data-bs-toggle="tooltip" title="@listMode.Text">
+                            <i class="fi-list"></i>
+                        </a>
+                        <script asp-location="Footer">
+                            $(function () {
+                                var $viewModeEls = $('[data-viewmode]');
+                                $viewModeEls.on('click', function () {
+                                    if (!$(this).hasClass('active')) {
+                                        $viewModeEls.toggleClass('active');
+                                        CatalogProducts.getProducts();
+                                    }
+                                    return false;
+                                });
 
-                    $(CatalogProducts).on('before', function (e) {
-                        e.payload.urlBuilder
-                            .addParameter('orderby', $orderByEl.val());
-                    });
-                });
-            </script>
-            <div class="d-none d-md-block border-end border-light" style="height: 1.25rem;"></div>
-            <div class="d-none d-sm-block fw-bold text-light opacity-70 text-nowrap ps-md-4">
-                <i class="fi-switch-horizontal me-2"></i><span class="align-middle">Compare (0)</span>
+                                $(CatalogProducts).on('before', function (e) {
+                                    var $viewModeEl = $('[data-viewmode].active');
+                                    if ($viewModeEl) {
+                                        e.payload.urlBuilder
+                                            .addParameter('viewmode', $viewModeEl.data('viewmode'));
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                }
+            </div>
+            <div>
+                <div class="ajax-products-busy"></div>
+                <div class="products-wrapper">
+                    @await Html.PartialAsync("/Themes/SaljiDalje/Views/Catalog/_ProductsInGridOrLines.cshtml", Model.CatalogProductsModel)
+                </div>
             </div>
         </div>
-        @if (Model.CatalogProductsModel.AvailableViewModes.Count > 1)
-        {
-            <div class="d-none d-sm-flex">
-                @{
-                    var gridMode = Model.CatalogProductsModel.AvailableViewModes[0];
-                    var listMode = Model.CatalogProductsModel.AvailableViewModes[1];
-                }
-                <a class="nav-link nav-link-light px-2 @if (gridMode.Selected) { <text>active</text> }" href="#" data-viewmode="@gridMode.Value" data-bs-toggle="tooltip" title="@gridMode.Text">
-                    <i class="fi-grid"></i>
-                </a>
-                <a class="nav-link nav-link-light px-2 @if (listMode.Selected) { <text>active</text> }" href="#" data-viewmode="@listMode.Value" data-bs-toggle="tooltip" title="@listMode.Text">
-                    <i class="fi-list"></i>
-                </a>
-                <script asp-location="Footer">
-            $(function() {
-                var $viewModeEls = $('[data-viewmode]');
-                $viewModeEls.on('click', function () {
-                    if (!$(this).hasClass('active')) {
-                        $viewModeEls.toggleClass('active');
-                        CatalogProducts.getProducts();
-                    }
-                    return false;
-                });
-
-                $(CatalogProducts).on('before', function (e) {
-                    var $viewModeEl = $('[data-viewmode].active');
-                    if ($viewModeEl) {
-                        e.payload.urlBuilder
-                            .addParameter('viewmode', $viewModeEl.data('viewmode'));
-                    }
-                });
-            });
-        </script>
-            </div>
-        }
     </div>
-    <div>
-        <div class="ajax-products-busy"></div>
-        <div class="products-wrapper">
-            @await Html.PartialAsync("/Themes/SaljiDalje/Views/Catalog/_ProductsInGridOrLines.cshtml", Model.CatalogProductsModel)
-        </div>
-    </div>
-</div>
-</div>
 </div>
 <!-- Filters sidebar toggle button (mobile)-->
-<button class="btn btn-primary btn-sm w-100 rounded-0 fixed-bottom d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#filters-sidebar"><i class="fi-filter me-2"></i>Filters</button>
+<button class="btn btn-primary btn-sm w-100 rounded-0 fixed-bottom d-lg-none" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#filters-sidebar"><i class="fi-filter me-2"></i>Filters
+</button>
 <!-- Vendor scrits: js libraries and plugins-->
 @* <script src="Themes/SaljiDalje/Content/vendor/bootstrap/dist/js/bootstrap.bundle.min.js" asp-exclude-from-bundle="true"></script> *@
 @* <script src="Themes/SaljiDalje/Content/vendor/simplebar/dist/simplebar.min.js" asp-exclude-from-bundle="true"></script> *@
 @* <script src="Themes/SaljiDalje/Content/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js" asp-exclude-from-bundle="true"></script> *@
-<script src="Themes/SaljiDalje/Content/vendor/tiny-slider/dist/min/tiny-slider.js" asp-exclude-from-bundle="true"></script>
-<script src="Themes/SaljiDalje/Content/vendor/nouislider/dist/nouislider.min.js" asp-exclude-from-bundle="true"></script>
+<script src="Themes/SaljiDalje/Content/vendor/tiny-slider/dist/min/tiny-slider.js"
+        asp-exclude-from-bundle="true"></script>
+<script src="Themes/SaljiDalje/Content/vendor/nouislider/dist/nouislider.min.js"
+        asp-exclude-from-bundle="true"></script>
 <script src="Themes/SaljiDalje/Content/js/public.catalogproducts.saljidalje.js" asp-exclude-from-bundle="true"></script>
 <script asp-location="Footer">
-    $(function() {
+    $(function () {
         CatalogProducts.init({
             ajax: @Model.CatalogProductsModel.UseAjaxLoading.ToString().ToLowerInvariant(),
             browserPath: '@Context.Request.Path',
@@ -561,15 +469,15 @@
         });
 
         addPagerHandlers();
-        
+
         $(CatalogProducts).on('before', function () {
             var preloader = document.querySelector('.page-loading');
             preloader.style.opacity = 0.9;
             preloader.style.display = "block";
             preloader.classList.remove('active');
             preloader.classList.add('active');
-            
-            
+
+
         });
         $(CatalogProducts).on('loaded', function () {
             var preloader = document.querySelector('.page-loading');
