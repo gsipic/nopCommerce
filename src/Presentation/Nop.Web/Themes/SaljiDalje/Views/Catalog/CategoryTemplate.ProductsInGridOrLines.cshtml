@@ -182,48 +182,82 @@
                     <div class="pb-4 mb-2">
                         <h3 class="h6 text-light pt-1">Year</h3>
                         <div class="d-flex align-items-center">
-                            <select class="form-select form-select-light w-100">
-                                <option value="" disabled selected>From</option>
-                                <option value="2021">2021</option>
-                                <option value="2020">2020</option>
-                                <option value="2019">2019</option>
-                                <option value="2018">2018</option>
-                                <option value="2017">2017</option>
-                                <option value="2016">2016</option>
-                                <option value="2015">2015</option>
-                                <option value="2014">2014</option>
-                                <option value="2013">2013</option>
-                                <option value="2012">2012</option>
-                                <option value="2011">2011</option>
-                                <option value="2010">2010</option>
+                            <select id="yearFrom" class="form-select form-select-light w-100" asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.From">
+                                <option value="null" selected>From</option>
+                                @foreach (var item in Model.CatalogProductsModel.YearRangeFilter.AvailableYearRange)
+                                {
+                                    <option value="@item.ToString()">@item.ToString()</option>
+                                }
                             </select>
                             <div class="mx-2">&mdash;</div>
-                            <select class="form-select form-select-light w-100">
-                                <option value="" disabled>To</option>
-                                <option value="2021">2021</option>
-                                <option value="2020">2020</option>
-                                <option value="2019" selected>2019</option>
-                                <option value="2018">2018</option>
-                                <option value="2017">2017</option>
-                                <option value="2016">2016</option>
-                                <option value="2015">2015</option>
-                                <option value="2014">2014</option>
-                                <option value="2013">2013</option>
-                                <option value="2012">2012</option>
-                                <option value="2011">2011</option>
-                                <option value="2010">2010</option>
+                            <select id="yearTo" class="form-select form-select-light w-100" asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.To">
+                                <option value="null" selected>To</option>
+                                @foreach (var item in Model.CatalogProductsModel.YearRangeFilter.AvailableYearRange)
+                                {
+                                    <option value="@item.ToString()">@item.ToString()</option>
+                                }
                             </select>
                         </div>
+                        <script asp-location="Footer">
+                            $(document).ready(function () {
+                                let yearFrom = document.getElementById('yearFrom');
+                                let yearTo = document.getElementById('yearTo');
+                                let selectedValueFrom = yearFrom.value;
+                                let selectedValueTo = yearTo.value;
+                                
+                                yearFrom.addEventListener("change", function() {
+                                    selectedValueFrom = this.value;
+                                    CatalogProducts.getProducts();
+                                });
+                                yearTo.addEventListener("change", function() {
+                                    selectedValueTo = this.value;
+                                    CatalogProducts.getProducts();
+                                });
+
+                                $(CatalogProducts).on('before', function (e) {
+                                    const yearRange = selectedValueFrom + '-' + selectedValueTo;
+                                    if (yearRange && yearRange.length > 0) {
+                                        e.payload.urlBuilder
+                                            .addParameter('year', yearRange);
+                                    }
+                                });
+                            });
+                        </script>
                     </div>
                     <div class="pb-4 mb-2">
                         <h3 class="h6 text-light pt-1">Mileage</h3>
                         <div class="d-flex align-items-center">
-                            <input class="form-control form-control-light w-100" type="number" min="0" step="500"
-                                   placeholder="From">
+                            <input id="mileageFrom" class="form-control form-control-light w-100" type="number" min="0" step="500"
+                                   placeholder="From" asp-for="@Model.CatalogProductsModel.MileageRangeModel.From"/>
                             <div class="mx-2">&mdash;</div>
-                            <input class="form-control form-control-light w-100" type="number" min="0" step="500"
-                                   placeholder="To">
+                            <input id="mileageTo" class="form-control form-control-light w-100" type="number" min="0" step="500"
+                                   placeholder="To" asp-for="@Model.CatalogProductsModel.MileageRangeModel.To"/>
                         </div>
+                        <script asp-location="Footer">
+                            $(document).ready(function () {
+                                let mileageFrom = document.getElementById('mileageFrom');
+                                let mileageTo = document.getElementById('mileageTo');
+                                let inputValueFrom = mileageFrom.value ?? "null";
+                                let inputValueTo = mileageTo.value ?? "null";
+
+                                mileageFrom.addEventListener("input", function() {
+                                    inputValueFrom = this.value ?? "null";
+                                    CatalogProducts.getProducts();
+                                });
+                                mileageTo.addEventListener("input", function() {
+                                    inputValueTo = this.value ?? "null";
+                                    CatalogProducts.getProducts();
+                                });
+
+                                $(CatalogProducts).on('before', function (e) {
+                                    const mileageRange = inputValueFrom + '-' + inputValueTo;
+                                    if (mileageRange && mileageRange.length > 0) {
+                                        e.payload.urlBuilder
+                                            .addParameter('mileage', mileageRange);
+                                    }
+                                });
+                            });
+                        </script>
                     </div>
                     
                     <div class="pb-4 mb-2">
@@ -266,10 +300,17 @@
                                 });
                             });
                         </script>
-                        <div class="form-check form-switch form-switch-light">
-                            <input class="form-check-input" type="checkbox" id="negotiated-price">
-                            <label class="form-check-label fs-sm" for="negotiated-price">Negotiated price</label>
-                        </div>
+                        @{ var attr = Model.CatalogProductsModel.SpecificationFilter.Attributes.FirstOrDefault(item => "Pregovaranje za cijenu" == item.Name); }
+                        @if (attr != null)
+                        {
+                            foreach (var value in attr.Values)
+                            {
+                                <div class="form-check form-switch form-switch-light">
+                                    <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id" data-option-id="@value.Id" checked="@value.Selected">
+                                    <label class="form-check-label fs-sm" for="attribute-option-@value.Id">@attr.Name</label>
+                                </div>
+                            }
+                        }
                     </div>
                     @{ await GenerateItemAttribute("BodyType", overflowItem: false); }
                     @{ await GenerateItemAttribute("DriveTrain", overflowItem: false); }

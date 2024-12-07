@@ -52,8 +52,8 @@ public class CostumeCatalogController(
     {
         var category = await _categoryService.GetCategoryByIdAsync(categoryId);
 
-        if (!await CheckCategoryAvailabilityAsync(category))
-            return NotFound();
+        //if (!await CheckCategoryAvailabilityAsync(category))
+        //    return NotFound();
 
         var model = await _catalogModelFactory.PrepareCategoryProductsModelAsync(category, command);
 

@@ -153,7 +153,7 @@ public partial class SellCarController(
                 {
                     Make = Make,
                     Model = Model,
-                    Year = Int32.Parse(listYears.Last().Value),
+                    Year = 0,
                     YearOptions = listYears,
                     Mileage = null,
                     VIN = string.Empty,
@@ -365,6 +365,8 @@ public partial class SellCarController(
         {
             Name = sellCarModel.BasicInfo.Title,
             Price = sellCarModel.Price.SellCarPrice,
+            CostumeYear = sellCarModel.VehicleInformation.Year,
+            CostumeMileage = sellCarModel.VehicleInformation.Mileage ?? 0,
             FullDescription = sellCarModel.VehicleInformation.Description,
             CreatedOnUtc = DateTime.UtcNow,
             UpdatedOnUtc = DateTime.UtcNow,

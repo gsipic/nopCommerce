@@ -71,7 +71,7 @@
         </div>
         <div class="col-sm-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Model)">Model <span class="text-danger">*</span></label>
-            <InputSelect class="form-select form-select-light" for="@nameof(SellCarModel.VehicleInformation.Model)" @bind-Value="SellCarModel.VehicleInformation.ModelSpecificationOption">
+            <InputSelect class="form-select form-select-light" id="@nameof(SellCarModel.VehicleInformation.Model)" @bind-Value="SellCarModel.VehicleInformation.ModelSpecificationOption">
                 <option value="" disabled>Select model</option>
                 @foreach (var item in model)
                 {
@@ -82,7 +82,7 @@
         <div class="col-md-3 col-sm-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Year)">Year <span class="text-danger">*</span></label>
             <InputSelect class="form-select form-select-light" id="@nameof(SellCarModel.VehicleInformation.Year)" @bind-Value="SellCarModel.VehicleInformation.Year">
-                <option value="" disabled>Select year</option>
+                <option value="0" disabled>Select year</option>
                 @foreach (var item in SellCarModel.VehicleInformation.YearOptions)
                 {
                     <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.Year.ToString() == item.Value)">@item.Text</option>
@@ -91,7 +91,7 @@
         </div>
         <div class="col-md-3 col-sm-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Mileage)">Mileage <span class="text-danger">*</span></label>
-            <InputNumber class="form-control form-control-light" type="number" id="@(SellCarModel.VehicleInformation.Mileage)" @bind-Value="SellCarModel.VehicleInformation.Mileage" placeholder="Enter mileage"/>
+            <InputNumber class="form-control form-control-light" type="number" id="@(SellCarModel.VehicleInformation.Mileage)" @bind-Value="SellCarModel.VehicleInformation.Mileage" min="0" placeholder="Enter mileage"/>
         </div>
         <div class="col-md-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.VIN)">VIN</label>
