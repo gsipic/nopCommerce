@@ -287,7 +287,7 @@ namespace SaljiDalje.Core.Data
             void GenerateSeoName(Category category)
             {
                 var SeName = urlRecordService.ValidateSeNameAsync(category, null, category.Name, true).Result;
-                urlRecordService.SaveSlugAsync(category, SeName, _workContext.GetWorkingLanguageAsync().Result.Id).Wait();
+                urlRecordService.SaveSlugAsync(category, SeName, 0).Wait();
             }
 
             int InsertCategoryPicture(string categoryName, string pictureLocalUri)

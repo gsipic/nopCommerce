@@ -103,21 +103,26 @@
                     <button class="btn-close btn-close-white" type="button" data-bs-dismiss="offcanvas"
                             data-bs-target="#filters-sidebar"></button>
                 </div>
-                <div class="offcanvas-header bg-transparent d-block border-bottom border-light pt-0 pt-lg-4 px-lg-0">
-                    @{ var carStateAttr = Model.CatalogProductsModel.SpecificationFilter.Attributes.FirstOrDefault(item => "Stanje vozila" == item.Name); }
-                    <div class="pb-1 mb-1">
-                        <h3 class="h6 text-light">@carStateAttr.Name</h3>
-                        <select id="car-state" class="form-select form-select-light mb-2" data-option-id>
-                            <option value="" selected>Stanje vozila</option>
-                            @foreach (var value in carStateAttr.Values)
-                            {
-                                <option value="@value.Id" selected=@value.Selected>
-                                    @value.Name
-                                </option>
-                            }
-                        </select>
+                @{ var carStateAttr = Model.CatalogProductsModel.SpecificationFilter.Attributes.FirstOrDefault(item => "Stanje vozila" == item.Name); }
+                @if (carStateAttr != null)
+                {
+                    <div
+                        class="offcanvas-header bg-transparent d-block border-bottom border-light pt-0 pt-lg-4 px-lg-0">
+                        <div class="pb-1 mb-1">
+                            <h3 class="h6 text-light">@carStateAttr.Name</h3>
+                            <select id="car-state" class="form-select form-select-light mb-2" data-option-id>
+                                <option value="" selected>Stanje vozila</option>
+                                @foreach (var value in carStateAttr.Values)
+                                {
+                                    <option value="@value.Id" selected=@value.Selected>
+                                        @value.Name
+                                    </option>
+                                }
+                            </select>
+                        </div>
                     </div>
-                </div>
+                }
+
                 <div class="offcanvas-body py-lg-4">
                     <div class="pb-3 mb-4 border-bottom border-light">
                         <div class="d-flex align-items-center justify-content-between mb-3">
@@ -187,7 +192,8 @@
                     <div class="pb-4 mb-2">
                         <h3 class="h6 text-light pt-1">Year</h3>
                         <div class="d-flex align-items-center">
-                            <select id="yearFrom" class="form-select form-select-light w-100" asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.From">
+                            <select id="yearFrom" class="form-select form-select-light w-100"
+                                    asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.From">
                                 <option value="null" selected>From</option>
                                 @foreach (var item in Model.CatalogProductsModel.YearRangeFilter.AvailableYearRange)
                                 {
@@ -195,7 +201,8 @@
                                 }
                             </select>
                             <div class="mx-2">&mdash;</div>
-                            <select id="yearTo" class="form-select form-select-light w-100" asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.To">
+                            <select id="yearTo" class="form-select form-select-light w-100"
+                                    asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.To">
                                 <option value="null" selected>To</option>
                                 @foreach (var item in Model.CatalogProductsModel.YearRangeFilter.AvailableYearRange)
                                 {
@@ -209,12 +216,12 @@
                                 let yearTo = document.getElementById('yearTo');
                                 let selectedValueFrom = yearFrom.value;
                                 let selectedValueTo = yearTo.value;
-                                
-                                yearFrom.addEventListener("change", function() {
+
+                                yearFrom.addEventListener("change", function () {
                                     selectedValueFrom = this.value;
                                     CatalogProducts.getProducts();
                                 });
-                                yearTo.addEventListener("change", function() {
+                                yearTo.addEventListener("change", function () {
                                     selectedValueTo = this.value;
                                     CatalogProducts.getProducts();
                                 });
@@ -232,10 +239,12 @@
                     <div class="pb-4 mb-2">
                         <h3 class="h6 text-light pt-1">Mileage</h3>
                         <div class="d-flex align-items-center">
-                            <input id="mileageFrom" class="form-control form-control-light w-100" type="number" min="0" step="500"
+                            <input id="mileageFrom" class="form-control form-control-light w-100" type="number" min="0"
+                                   step="500"
                                    placeholder="From" asp-for="@Model.CatalogProductsModel.MileageRangeModel.From"/>
                             <div class="mx-2">&mdash;</div>
-                            <input id="mileageTo" class="form-control form-control-light w-100" type="number" min="0" step="500"
+                            <input id="mileageTo" class="form-control form-control-light w-100" type="number" min="0"
+                                   step="500"
                                    placeholder="To" asp-for="@Model.CatalogProductsModel.MileageRangeModel.To"/>
                         </div>
                         <script asp-location="Footer">
@@ -245,11 +254,11 @@
                                 let inputValueFrom = mileageFrom.value ?? "null";
                                 let inputValueTo = mileageTo.value ?? "null";
 
-                                mileageFrom.addEventListener("input", function() {
+                                mileageFrom.addEventListener("input", function () {
                                     inputValueFrom = this.value ?? "null";
                                     CatalogProducts.getProducts();
                                 });
-                                mileageTo.addEventListener("input", function() {
+                                mileageTo.addEventListener("input", function () {
                                     inputValueTo = this.value ?? "null";
                                     CatalogProducts.getProducts();
                                 });
@@ -264,7 +273,7 @@
                             });
                         </script>
                     </div>
-                    
+
                     <div class="pb-4 mb-2">
                         <h3 class="h6 text-light">Price</h3>
                         <div class="range-slider range-slider-light mb-3"
@@ -311,8 +320,10 @@
                             foreach (var value in attr.Values)
                             {
                                 <div class="form-check form-switch form-switch-light">
-                                    <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id" data-option-id="@value.Id" checked="@value.Selected">
-                                    <label class="form-check-label fs-sm" for="attribute-option-@value.Id">@attr.Name</label>
+                                    <input class="form-check-input" type="checkbox" id="attribute-option-@value.Id"
+                                           data-option-id="@value.Id" checked="@value.Selected">
+                                    <label class="form-check-label fs-sm"
+                                           for="attribute-option-@value.Id">@attr.Name</label>
                                 </div>
                             }
                         }
@@ -423,6 +434,20 @@
                         class="align-middle" id="total-number">@Model.CatalogProductsModel.TotalItems oglasa</span>
                 </div>
             </div>
+            @if (Model.SubCategories.Count > 0)
+            {
+                <ul class="nav nav-pills nav-pills-light flex-row fs-sm mx-0 mb-4">
+                    @foreach (var item in Model.SubCategories)
+                    {
+                        <li class="nav-item mb-2 me-2">
+                            <a class="nav-link px-3" href="@(Url.RouteUrl<Category>(new { SeName = item.SeName }))"
+                               title="@item.PictureModel.Title">
+                                @item.Name
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
             <!-- Sorting + View-->
             <div class="d-sm-flex align-items-center justify-content-between pb-4 mb-2">
                 <div class="d-flex align-items-center me-sm-4">
@@ -534,13 +559,13 @@
             addPagerHandlers();
 
             const element = document.querySelector('[data-total-number]');
-            if (element != null){
+            if (element != null) {
                 const totalNumber = document.getElementById('total-number');
                 totalNumber.textContent = element.dataset.totalNumber + " oglasa";
-            }else {
+            } else {
                 document.getElementById('total-number').textContent = 0 + " oglasa";
             }
-            
+
         });
     });
 
