@@ -141,7 +141,7 @@ public class CostumeCatalogModelFactory(
                     excludeFeaturedProducts: !_catalogSettings.IgnoreFeaturedProducts &&
                                              !_catalogSettings.IncludeFeaturedProductsInNormalLists,
                     orderBy: orderBy);
-                return products?.DistinctBy( t=> t.CostumeYear).OrderBy(t=> t.CostumeYear).Select(t=> t.CostumeYear);
+                return products?.DistinctBy( t=> t.CostumeYear).OrderByDescending(t=> t.CostumeYear).Select(t=> t.CostumeYear);
             }
 
             var foo = await getProductYearAsync(ProductSortingEnum.Position);

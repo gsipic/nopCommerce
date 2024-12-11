@@ -9,8 +9,8 @@
 
 @if (Model.Products.Count > 0)
 {
-    
-    <div class="@if (Model.ViewMode == "grid"){ <text> row </text>}">
+    <div class="d-none" data-total-number="@Model.TotalItems"></div>
+    <div class="@if (Model.ViewMode == "grid"){ <text>row</text>}">
         @foreach (var product in Model.Products)
         {
             if (Model.ViewMode == "list")
