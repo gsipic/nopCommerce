@@ -129,33 +129,22 @@
                             <h3 class="h6 text-light mb-0">Selection</h3>
                             <button class="btn btn-link btn-light fw-normal fs-sm p-0" type="button">Clear all</button>
                         </div>
+                        @{ var allAttr = Model.CatalogProductsModel.SpecificationFilter.Attributes; }
                         <ul class="nav nav-pills nav-pills-light flex-row fs-sm mx-0">
-                            <li class="nav-item mb-2 me-2">
-                                <button class="nav-link px-3" type="button">Under 2019<i class="fi-x fs-xxs ms-2"></i>
-                                </button>
-                            </li>
-                            <li class="nav-item mb-2 me-2">
-                                <button class="nav-link px-3">Crossover<i class="fi-x fs-xxs ms-2"></i></button>
-                            </li>
-                            <li class="nav-item mb-2 me-2">
-                                <button class="nav-link px-3" type="button">Sedan<i class="fi-x fs-xxs ms-2"></i>
-                                </button>
-                            </li>
-                            <li class="nav-item mb-2 me-2">
-                                <button class="nav-link px-3" type="button">SUV<i class="fi-x fs-xxs ms-2"></i></button>
-                            </li>
-                            <li class="nav-item mb-2 me-2">
-                                <button class="nav-link px-3" type="button">Diesel<i class="fi-x fs-xxs ms-2"></i>
-                                </button>
-                            </li>
-                            <li class="nav-item mb-2 me-2">
-                                <button class="nav-link px-3" type="button">Gasoline<i class="fi-x fs-xxs ms-2"></i>
-                                </button>
-                            </li>
-                            <li class="nav-item mb-2 me-2">
-                                <button class="nav-link px-3" type="button">Hybrid<i class="fi-x fs-xxs ms-2"></i>
-                                </button>
-                            </li>
+                            @foreach (var item in allAttr)
+                            {
+                                foreach (var itemInnner in item.Values)
+                                {
+                                    if (itemInnner.Selected)
+                                    {
+                                        <li class="nav-item mb-2 me-2">
+                                            <button class="nav-link px-3" type="button">@itemInnner.Name<i
+                                                    class="fi-x fs-xxs ms-2"></i>
+                                            </button>
+                                        </li>
+                                    }
+                                }
+                            }
                         </ul>
                     </div>
                     @{ await GenerateItemAttribute("Županija", overflowItem: false); }
