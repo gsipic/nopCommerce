@@ -24,7 +24,7 @@
                 @if (attr.Name == "Županija")
                 {
                     <select id="zupanije" class="form-select form-select-light mb-2" data-option-id>
-                        <option value="" disabled selected>Izaberi županiju</option>
+                        <option value="" selected>Izaberi županiju</option>
                         @foreach (var value in attr.Values)
                         {
                             <option value="@value.Id" selected=@value.Selected>
@@ -104,14 +104,19 @@
                             data-bs-target="#filters-sidebar"></button>
                 </div>
                 <div class="offcanvas-header bg-transparent d-block border-bottom border-light pt-0 pt-lg-4 px-lg-0">
-                    <ul class="nav nav-tabs nav-tabs-light mb-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Search New</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">Search Used</a>
-                        </li>
-                    </ul>
+                    @{ var carStateAttr = Model.CatalogProductsModel.SpecificationFilter.Attributes.FirstOrDefault(item => "Stanje vozila" == item.Name); }
+                    <div class="pb-1 mb-1">
+                        <h3 class="h6 text-light">@carStateAttr.Name</h3>
+                        <select id="car-state" class="form-select form-select-light mb-2" data-option-id>
+                            <option value="" selected>Stanje vozila</option>
+                            @foreach (var value in carStateAttr.Values)
+                            {
+                                <option value="@value.Id" selected=@value.Selected>
+                                    @value.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
                 </div>
                 <div class="offcanvas-body py-lg-4">
                     <div class="pb-3 mb-4 border-bottom border-light">
@@ -370,7 +375,8 @@
                                 var selectedOptions = $.map($optionEls, function (el) {
                                     var $optionEl = $(el);
                                     if ($optionEl.is(':checked')) return $optionEl.data('option-id');
-                                    if ($optionEl.attr('id') === "zupanije" && $optionEl.val() != null) return $optionEl.val();
+                                    if ($optionEl.attr('id') === "zupanije" && $optionEl.val() != null && $optionEl.val() !== "") return $optionEl.val();
+                                    if ($optionEl.attr('id') === "car-state" && $optionEl.val() != null && $optionEl.val() !== "") return $optionEl.val();
 
                                     return null;
                                 });
