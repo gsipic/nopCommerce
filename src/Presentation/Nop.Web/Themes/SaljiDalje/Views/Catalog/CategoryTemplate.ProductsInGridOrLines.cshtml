@@ -105,27 +105,28 @@
                 </div>
                 @{ var allAttr = Model.CatalogProductsModel.SpecificationFilter.Attributes; }
                 @if (allAttr != null && allAttr.Select(item => item.Values)
-                         .Select(item => item)
-                         .SelectMany(item => item)
-                         .Any(item => item.Selected))
+                             .Select(item => item)
+                             .SelectMany(item => item)
+                             .Any(item => item.Selected))
                 {
-                    <div
-                        class="offcanvas-header bg-transparent d-block border-bottom border-light pt-4 pt-lg-4 px-lg-0">
+                    <div id="selection-group"
+                         class="offcanvas-header bg-transparent d-block border-bottom border-light pt-4 pt-lg-4 px-lg-0">
+
                         <div class="pb-0 mb-0">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <h3 class="h6 text-light mb-0">Selection</h3>
                                 <button class="btn btn-link btn-light fw-normal fs-sm p-0" type="button">Clear all
                                 </button>
                             </div>
-
-                            <ul class="nav nav-pills nav-pills-light flex-row fs-sm mx-0">
+                            <ul id="selected-list" class="nav nav-pills nav-pills-light flex-row fs-sm mx-0">
                                 @foreach (var item in allAttr)
                                 {
                                     foreach (var itemInnner in item.Values)
                                     {
                                         if (itemInnner.Selected)
                                         {
-                                            <li class="nav-item mb-2 me-2">
+                                            <li class="nav-item mb-2 me-2" onclick="handleClick(this)"
+                                                data-option-id-selected="@itemInnner.Id">
                                                 <button class="nav-link px-3" type="button">@itemInnner.Name
                                                     <i
                                                         class="fi-x fs-xxs ms-2"></i>
@@ -376,7 +377,21 @@
                     <script asp-location="Footer">
                         $(document).ready(function () {
                             var $optionEls = $('[data-option-id]');
-                            $optionEls.on('change', function () {
+                            $optionEls.on('change', function (e) {
+                                const id = e.target.getAttribute('data-option-id');
+
+                                const labelElement = document.querySelector(`label[for="attribute-option-${id}"]`);
+                                const elementWithValue = document.querySelector(`[data-option-id-selected="${id}"]`);
+                                const itemInnner = {Id: id, Name: labelElement.textContent};
+
+                                if (elementWithValue !== null) {
+                                    if (document.getElementById('selected-list').children.length === 1){
+                                        document.getElementById('selection-group').remove()
+                                    }
+                                    elementWithValue.remove();
+                                } else {
+                                    addLiElementAsHtml(itemInnner)
+                                }
                                 CatalogProducts.getProducts();
                             });
 
@@ -396,6 +411,64 @@
                                 }
                             });
                         });
+
+                        function addLiElementAsHtml(itemInnner) {
+                            const ulElement = document.getElementById('filters-sidebar');
+                            const selectedList = document.getElementById('selected-list');
+                            const ulString = `
+                                            <li class="nav-item mb-2 me-2" onclick="handleClick(this)" data-option-id-selected="${itemInnner.Id}">
+                                                    <button class="nav-link px-3" type="button">${itemInnner.Name}
+                                                        <i class="fi-x fs-xxs ms-2"></i>
+                                                    </button>
+                                            </li>
+                                            `
+                            const htmlString = `<div id="selection-group" class="offcanvas-header bg-transparent d-block border-bottom border-light pt-4 pt-lg-4 px-lg-0">
+                                                    <div class="pb-0 mb-0">
+                                                        <div  class="d-flex align-items-center justify-content-between mb-3">
+                                                          <h3 class="h6 text-light mb-0">Selection</h3>
+                                                          <button onclick="clearAllElements()" class="btn btn-link btn-light fw-normal fs-sm px-1 py-2" type="button">Clear all</button>
+                                                        </div>
+                                                        <ul id="selected-list" class="nav nav-pills nav-pills-light flex-row fs-sm mx-0">
+                                                            ${ulString}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                              `;
+                            if (selectedList !== null) {
+                                document.getElementById('selected-list').innerHTML += ulString;
+                            } else {
+                                // Get the first child of the parent
+                                const firstChild = ulElement.firstElementChild;
+                                firstChild.insertAdjacentHTML('afterend', htmlString);
+                            }
+                        }
+                    </script>
+                    <script asp-location="Footer">
+                        function handleClick(clickedElement) {
+                            const id = clickedElement.getAttribute('data-option-id-selected');
+                            const elementWithValue = document.querySelector(`[data-option-id="${id}"]`);
+                            elementWithValue.checked = false;
+                            CatalogProducts.getProducts()
+                            
+                            if (document.querySelectorAll('[data-option-id-selected]').length === 1) {
+                                document.getElementById('selection-group').remove();
+                                return
+                            }
+                            clickedElement.remove();
+                        }
+
+                        function clearAllElements(){
+                            const parent = document.getElementById('selected-list')
+                            for (let i = 0; i < parent.children.length; i++) {
+                                const child = parent.children[i];
+                                const id = child.getAttribute('data-option-id-selected')
+                                const elementWithValue = document.querySelector(`[data-option-id="${id}"]`);
+                                elementWithValue.checked = false;
+                            }
+                            document.getElementById('selection-group').remove()
+
+                            CatalogProducts.getProducts()
+                        }
                     </script>
                 </div>
             </div>
