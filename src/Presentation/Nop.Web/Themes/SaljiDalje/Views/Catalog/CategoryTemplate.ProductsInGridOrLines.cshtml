@@ -192,8 +192,8 @@
                         <h3 class="h6 text-light pt-1">Year</h3>
                         <div class="d-flex align-items-center">
                             <select id="yearFrom" class="form-select form-select-light w-100"
-                                    asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.From">
-                                <option value="null" selected>From</option>
+                                    asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.From" data-option-id>
+                                <option value="" selected>From</option>
                                 @foreach (var item in Model.CatalogProductsModel.YearRangeFilter.AvailableYearRange)
                                 {
                                     <option value="@item.ToString()">@item.ToString()</option>
@@ -201,8 +201,8 @@
                             </select>
                             <div class="mx-2">&mdash;</div>
                             <select id="yearTo" class="form-select form-select-light w-100"
-                                    asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.To">
-                                <option value="null" selected>To</option>
+                                    asp-for="@Model.CatalogProductsModel.YearRangeFilter.SelectedYearRange.To" data-option-id>
+                                <option value="" selected>To</option>
                                 @foreach (var item in Model.CatalogProductsModel.YearRangeFilter.AvailableYearRange)
                                 {
                                     <option value="@item.ToString()">@item.ToString()</option>
@@ -218,16 +218,18 @@
 
                                 yearFrom.addEventListener("change", function () {
                                     selectedValueFrom = this.value;
-                                    CatalogProducts.getProducts();
+                                    //CatalogProducts.getProducts();
                                 });
                                 yearTo.addEventListener("change", function () {
                                     selectedValueTo = this.value;
-                                    CatalogProducts.getProducts();
+                                    //CatalogProducts.getProducts();
                                 });
 
                                 $(CatalogProducts).on('before', function (e) {
-                                    const yearRange = selectedValueFrom + '-' + selectedValueTo;
-                                    if (yearRange && yearRange.length > 0) {
+                                    const yearFrom = selectedValueFrom ? selectedValueFrom : null
+                                    const yearTo = selectedValueTo ? selectedValueTo : null
+                                    const yearRange = yearFrom + '-' + yearTo;
+                                    if ((yearFrom || yearTo) && yearRange.length > 0) {
                                         e.payload.urlBuilder
                                             .addParameter('year', yearRange);
                                     }
@@ -240,31 +242,33 @@
                         <div class="d-flex align-items-center">
                             <input id="mileageFrom" class="form-control form-control-light w-100" type="number" min="0"
                                    step="500"
-                                   placeholder="From" asp-for="@Model.CatalogProductsModel.MileageRangeModel.From"/>
+                                   placeholder="From" asp-for="@Model.CatalogProductsModel.MileageRangeModel.From" data-option-id />
                             <div class="mx-2">&mdash;</div>
                             <input id="mileageTo" class="form-control form-control-light w-100" type="number" min="0"
                                    step="500"
-                                   placeholder="To" asp-for="@Model.CatalogProductsModel.MileageRangeModel.To"/>
+                                   placeholder="To" asp-for="@Model.CatalogProductsModel.MileageRangeModel.To" data-option-id />
                         </div>
                         <script asp-location="Footer">
                             $(document).ready(function () {
                                 let mileageFrom = document.getElementById('mileageFrom');
                                 let mileageTo = document.getElementById('mileageTo');
-                                let inputValueFrom = mileageFrom.value ?? "null";
-                                let inputValueTo = mileageTo.value ?? "null";
+                                let inputValueFrom = mileageFrom.value
+                                let inputValueTo = mileageTo.value
 
                                 mileageFrom.addEventListener("input", function () {
-                                    inputValueFrom = this.value ?? "null";
-                                    CatalogProducts.getProducts();
+                                    inputValueFrom = this.value;
+                                    //CatalogProducts.getProducts();
                                 });
                                 mileageTo.addEventListener("input", function () {
-                                    inputValueTo = this.value ?? "null";
-                                    CatalogProducts.getProducts();
+                                    inputValueTo = this.value;
+                                    //CatalogProducts.getProducts();
                                 });
 
                                 $(CatalogProducts).on('before', function (e) {
-                                    const mileageRange = inputValueFrom + '-' + inputValueTo;
-                                    if (mileageRange && mileageRange.length > 0) {
+                                    const inputValueFrom2 = inputValueFrom ? inputValueFrom : null
+                                    const inputValueTo2 = inputValueTo ? inputValueTo : null
+                                    const mileageRange = inputValueFrom2 + '-' + inputValueTo2;
+                                    if ((inputValueFrom2 || inputValueTo2) && mileageRange.length > 0) {
                                         e.payload.urlBuilder
                                             .addParameter('mileage', mileageRange);
                                     }
@@ -378,11 +382,32 @@
                         $(document).ready(function () {
                             var $optionEls = $('[data-option-id]');
                             $optionEls.on('change', function (e) {
-                                const id = e.target.getAttribute('data-option-id');
-
-                                const labelElement = document.querySelector(`label[for="attribute-option-${id}"]`);
+                                const id = e.target.tagName === "INPUT" ? e.target.getAttribute('data-option-id') : e.target.value;
                                 const elementWithValue = document.querySelector(`[data-option-id-selected="${id}"]`);
-                                const itemInnner = {Id: id, Name: labelElement.textContent};
+
+                                const selectedOptions = Array.from(document.querySelectorAll('[data-option-id]')).reduce((acc, el) => {
+                                    if (el.checked) {
+                                        const id = el.getAttribute('data-option-id');
+                                        const name = document.querySelector(`label[for="attribute-option-${id}"]`).textContent;
+                                        acc.push({ Id: id, Name: name });
+                                    } else if (el.id === 'zupanije' && el.value && el.value !== '') {
+                                        acc.push({ Id: el.value, Name: el.options[el.selectedIndex].text });
+                                    } else if (el.id === 'car-state' && el.value && el.value !== '') {
+                                        acc.push({ Id: el.value, Name: el.options[el.selectedIndex].text });
+                                    } else if (el.id === 'yearFrom' && el.value && el.value !== '') {
+                                        acc.push({ Id: el.value, Name: el.options[el.selectedIndex].text });
+                                    }
+                                    else if (el.id === 'yearTo' && el.value && el.value !== '') {
+                                        acc.push({ Id: el.value, Name: el.options[el.selectedIndex].text });
+                                    }
+                                    else if (el.id === 'mileageFrom' && el.value && el.value !== '') {
+                                        acc.push({ Id: el.value, Name: el.value});
+                                    }
+                                    else if (el.id === 'mileageTo' && el.value && el.value !== '') {
+                                        acc.push({ Id: el.value, Name: el.value});
+                                    }
+                                    return acc;
+                                }, []);
 
                                 if (elementWithValue !== null) {
                                     if (document.getElementById('selected-list').children.length === 1){
@@ -390,7 +415,7 @@
                                     }
                                     elementWithValue.remove();
                                 } else {
-                                    addLiElementAsHtml(itemInnner)
+                                    addLiElementAsHtml(selectedOptions)
                                 }
                                 CatalogProducts.getProducts();
                             });
@@ -412,16 +437,20 @@
                             });
                         });
 
-                        function addLiElementAsHtml(itemInnner) {
+                        function addLiElementAsHtml(elements) {
                             const ulElement = document.getElementById('filters-sidebar');
                             const selectedList = document.getElementById('selected-list');
-                            const ulString = `
-                                            <li class="nav-item mb-2 me-2" onclick="handleClick(this)" data-option-id-selected="${itemInnner.Id}">
-                                                    <button class="nav-link px-3" type="button">${itemInnner.Name}
+
+                            const items = elements.map(function(item) { 
+                              return  `
+                                            <li class="nav-item mb-2 me-2" onclick="handleClick(this)" data-option-id-selected="${item.Id}">
+                                                    <button class="nav-link px-3" type="button">${item.Name}
                                                         <i class="fi-x fs-xxs ms-2"></i>
                                                     </button>
                                             </li>
                                             `
+                            });
+                            
                             const htmlString = `<div id="selection-group" class="offcanvas-header bg-transparent d-block border-bottom border-light pt-4 pt-lg-4 px-lg-0">
                                                     <div class="pb-0 mb-0">
                                                         <div  class="d-flex align-items-center justify-content-between mb-3">
@@ -429,13 +458,13 @@
                                                           <button onclick="clearAllElements()" class="btn btn-link btn-light fw-normal fs-sm px-1 py-2" type="button">Clear all</button>
                                                         </div>
                                                         <ul id="selected-list" class="nav nav-pills nav-pills-light flex-row fs-sm mx-0">
-                                                            ${ulString}
+                                                            ${items}
                                                         </ul>
                                                     </div>
                                                 </div>
                                               `;
                             if (selectedList !== null) {
-                                document.getElementById('selected-list').innerHTML += ulString;
+                                document.getElementById('selected-list').innerHTML = items.join("");
                             } else {
                                 // Get the first child of the parent
                                 const firstChild = ulElement.firstElementChild;
@@ -444,10 +473,21 @@
                         }
                     </script>
                     <script asp-location="Footer">
+                        function resetElement(id) {
+                            const elementSelect = document.querySelector(`select option[value="${id}"]:checked`);
+                            const elementWithValue = document.querySelector(`[data-option-id="${id}"]`);
+                            if (elementWithValue !== null) {
+                                elementWithValue.checked = false;
+                            }
+                            if (elementSelect !== null) {
+                                elementSelect.parentElement.selectedIndex = 0;
+                            }
+                        }
+
                         function handleClick(clickedElement) {
                             const id = clickedElement.getAttribute('data-option-id-selected');
-                            const elementWithValue = document.querySelector(`[data-option-id="${id}"]`);
-                            elementWithValue.checked = false;
+                            resetElement(id);
+
                             CatalogProducts.getProducts()
                             
                             if (document.querySelectorAll('[data-option-id-selected]').length === 1) {
@@ -462,8 +502,7 @@
                             for (let i = 0; i < parent.children.length; i++) {
                                 const child = parent.children[i];
                                 const id = child.getAttribute('data-option-id-selected')
-                                const elementWithValue = document.querySelector(`[data-option-id="${id}"]`);
-                                elementWithValue.checked = false;
+                                resetElement(id)
                             }
                             document.getElementById('selection-group').remove()
 
