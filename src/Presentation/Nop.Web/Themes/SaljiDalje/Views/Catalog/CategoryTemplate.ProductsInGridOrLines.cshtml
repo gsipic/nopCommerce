@@ -216,11 +216,11 @@
                                 let selectedValueFrom = yearFrom.value;
                                 let selectedValueTo = yearTo.value;
 
-                                yearFrom.addEventListener("change", function () {
+                                yearFrom.addEventListener("input", function () {
                                     selectedValueFrom = this.value;
                                     //CatalogProducts.getProducts();
                                 });
-                                yearTo.addEventListener("change", function () {
+                                yearTo.addEventListener("input", function () {
                                     selectedValueTo = this.value;
                                     //CatalogProducts.getProducts();
                                 });
@@ -381,7 +381,7 @@
                     <script asp-location="Footer">
                         $(document).ready(function () {
                             var $optionEls = $('[data-option-id]');
-                            $optionEls.on('change', function (e) {
+                            $optionEls.on('input', function (e) {
                                 const id = e.target.tagName === "INPUT" ? e.target.getAttribute('data-option-id') : e.target.value;
                                 const elementWithValue = document.querySelector(`[data-option-id-selected="${id}"]`);
 
@@ -395,16 +395,16 @@
                                     } else if (el.id === 'car-state' && el.value && el.value !== '') {
                                         acc.push({ Id: el.value, Name: el.options[el.selectedIndex].text });
                                     } else if (el.id === 'yearFrom' && el.value && el.value !== '') {
-                                        acc.push({ Id: el.value, Name: el.options[el.selectedIndex].text });
+                                        acc.push({ Id: el.id, Name: el.options[el.selectedIndex].text });
                                     }
                                     else if (el.id === 'yearTo' && el.value && el.value !== '') {
-                                        acc.push({ Id: el.value, Name: el.options[el.selectedIndex].text });
+                                        acc.push({ Id: el.id, Name: el.options[el.selectedIndex].text });
                                     }
                                     else if (el.id === 'mileageFrom' && el.value && el.value !== '') {
-                                        acc.push({ Id: el.value, Name: el.value});
+                                        acc.push({ Id: el.id, Name: el.value});
                                     }
                                     else if (el.id === 'mileageTo' && el.value && el.value !== '') {
-                                        acc.push({ Id: el.value, Name: el.value});
+                                        acc.push({ Id: el.id, Name: el.value});
                                     }
                                     return acc;
                                 }, []);
@@ -473,14 +473,26 @@
                         }
                     </script>
                     <script asp-location="Footer">
-                        function resetElement(id) {
-                            const elementSelect = document.querySelector(`select option[value="${id}"]:checked`);
-                            const elementWithValue = document.querySelector(`[data-option-id="${id}"]`);
-                            if (elementWithValue !== null) {
-                                elementWithValue.checked = false;
+                        function resetElement(id) { // id can be for example "123" or "yearFrom"
+                            const elementIsSelect = document.querySelector(`select option[value="${id}"]:checked`);
+                            const elementIsCheckBox = document.querySelector(`[data-option-id="${id}"]`);
+                            const elementIsInputNumberOrSelect = document.getElementById(id);
+                            
+                            if (elementIsCheckBox !== null) {
+                                elementIsCheckBox.checked = false;
+                                return
                             }
-                            if (elementSelect !== null) {
-                                elementSelect.parentElement.selectedIndex = 0;
+                            if (elementIsSelect !== null) {
+                                elementIsSelect.parentElement.selectedIndex = 0;
+                                return
+                            }
+                            if (elementIsInputNumberOrSelect.type === "number") {
+                                elementIsInputNumberOrSelect.value = null
+                                return
+                            }
+                            if (elementIsInputNumberOrSelect.nodeName === "SELECT") {
+                                elementIsInputNumberOrSelect.selectedIndex = 0
+                                return
                             }
                         }
 
