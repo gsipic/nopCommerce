@@ -104,11 +104,11 @@
                             data-bs-target="#filters-sidebar"></button>
                 </div>
                 @{ var allAttr = Model.CatalogProductsModel.SpecificationFilter.Attributes; }
-                @if (allAttr != null && allAttr.Select(item => item.Values)
+                @*@if (allAttr != null && allAttr.Select(item => item.Values)
                              .Select(item => item)
                              .SelectMany(item => item)
                              .Any(item => item.Selected))
-                {
+                {*@
                     <div id="selection-group"
                          class="offcanvas-header bg-transparent d-block border-bottom border-light pt-4 pt-lg-4 px-lg-0">
 
@@ -138,7 +138,7 @@
                             </ul>
                         </div>
                     </div>
-                }
+                @*}*@
                 <div class="offcanvas-body py-lg-4">
                     @{ var carStateAttr = Model.CatalogProductsModel.SpecificationFilter.Attributes.FirstOrDefault(item => "Stanje vozila" == item.Name); }
                     @if (carStateAttr != null)
@@ -160,33 +160,47 @@
                     @{ await GenerateItemAttribute("Županija", overflowItem: false); }
                     <div class="pb-4 mb-2">
                         <h3 class="h6 text-light">Make &amp; Model</h3>
-                        <select class="form-select form-select-light mb-2">
+                        <select id="selectMake" class="form-select form-select-light mb-2">
                             <option value="" disabled selected>Any make</option>
-                            <option value="Audi">Audi</option>
-                            <option value="Infiniti">Infiniti</option>
-                            <option value="Honda">Honda</option>
-                            <option value="Hyundai">Hyundai</option>
-                            <option value="Lexus">Lexus</option>
-                            <option value="Mazda">Mazda</option>
-                            <option value="Mitsubishi">Mitsubishi</option>
-                            <option value="Mercedes-Benz">Mercedes-Benz</option>
-                            <option value="Nissan">Nissan</option>
-                            <option value="Opel">Opel</option>
-                            <option value="Renault">Renault</option>
-                            <option value="Toyota">Toyota</option>
+                            @foreach (var item in Model.CatalogProductsModel.Make)
+                            {
+                                <option selected="@(item.Text == Model.Name)" value="@item.Value">@item.Text</option>
+                            }
                         </select>
-                        <select class="form-select form-select-light mb-1">
-                            <option value="" disabled selected>Any model</option>
-                            <option value="Altima">Altima</option>
-                            <option value="Juke">Juke</option>
-                            <option value="Leaf">Leaf</option>
-                            <option value="Maxima">Maxima</option>
-                            <option value="Micra">Micra</option>
-                            <option value="Murano">Murano</option>
-                            <option value="Note">Note</option>
-                            <option value="Pathfinder">Pathfinder</option>
-                            <option value="Patrol">Patrol</option>
+                        <script asp-location="Footer">
+                            document.getElementById("selectMake").addEventListener("change", function () {
+                                const selectedValue = this.value;
+                                // Perform any action based on the selected value
+                                if (selectedValue) {
+                                    window.location.href = "/" + selectedValue;
+                                }
+                            });
+                            
+                        </script>
+                        <select id="selectModel" class="form-select form-select-light mb-1" data-option-id>
+                            <option value="" selected>Any model</option>
+                            @foreach (var item in Model.CatalogProductsModel.Model)
+                            {
+                                <option selected="@(item.Text == Model.CatalogProductsModel.ChildCategory)" value="@item.Value">@item.Text</option>
+                            }
                         </select>
+                        <script asp-location="Footer">
+                            (function () {
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    let selectModel;
+                                    document.getElementById("selectModel").addEventListener("input", function () {
+                                        selectModel = this.value;
+                                    });
+
+                                    $(CatalogProducts).on('before', function (e) {
+                                        if (selectModel) {
+                                            e.payload.urlBuilder
+                                                .addParameter('childcategory', selectModel);
+                                        }
+                                    });
+                                });
+                            })();
+                        </script>
                     </div>
                     <div class="pb-4 mb-2">
                         <h3 class="h6 text-light pt-1">Year</h3>
@@ -288,11 +302,11 @@
                             <div id="range" class="range-slider-ui"></div>
                             <div class="d-flex align-items-center">
                                 <div class="w-50 pe-2">
-                                    <input class="form-control form-control-light range-slider-value-min" type="text">
+                                    <input id="priceFrom" class="form-control form-control-light range-slider-value-min" type="number" data-option-id />
                                 </div>
                                 <div class="text-muted">&mdash;</div>
                                 <div class="w-50 ps-2">
-                                    <input class="form-control form-control-light range-slider-value-max" type="text">
+                                    <input id="priceTo" class="form-control form-control-light range-slider-value-max" type="number" data-option-id />
                                 </div>
                             </div>
                         </div>
@@ -301,19 +315,32 @@
                                 let range = document.getElementById('range');
 
                                 range.noUiSlider.on('end', function (values, handle) {
-                                    CatalogProducts.getProducts();
+                                    var priceRange = range.noUiSlider.get(true);
+                                    if (priceRange && priceRange.length > 0) {
+                                        const event = new Event('input', { bubbles: true });
+                                        if (handle === 0){
+                                            let priceFrom = document.getElementById('priceFrom');
+                                            priceFrom.dispatchEvent(event);
+                                        }
+                                        if (handle === 1){
+                                            let priceTo = document.getElementById('priceTo');
+                                            priceTo.dispatchEvent(event);
+                                        }
+                                    }
                                 });
 
                                 range.noUiSlider.on('set', function (values, handle) {
-                                    CatalogProducts.getProducts();
+                                    //CatalogProducts.getProducts();
                                 });
 
                                 $(CatalogProducts).on('before', function (e) {
-                                    var priceRange = range.noUiSlider.get(true);
-                                    if (priceRange && priceRange.length > 0) {
+                                    let priceFrom = document.getElementById('priceFrom');
+                                    let priceTo = document.getElementById('priceTo');
+                                    //var priceRange = range.noUiSlider.get(true);
+                                    //if (priceRange && priceRange.length > 0) {
                                         e.payload.urlBuilder
-                                            .addParameter('price', priceRange.join('-'));
-                                    }
+                                            .addParameter('price', priceFrom.value + '-' + priceTo.value);
+                                    //}
                                 });
                             });
                         </script>
@@ -395,16 +422,27 @@
                                     } else if (el.id === 'car-state' && el.value && el.value !== '') {
                                         acc.push({ Id: el.value, Name: el.options[el.selectedIndex].text });
                                     } else if (el.id === 'yearFrom' && el.value && el.value !== '') {
-                                        acc.push({ Id: el.id, Name: el.options[el.selectedIndex].text });
+                                        acc.push({ Id: el.id, Name: "godine > " +  el.options[el.selectedIndex].text });
                                     }
                                     else if (el.id === 'yearTo' && el.value && el.value !== '') {
-                                        acc.push({ Id: el.id, Name: el.options[el.selectedIndex].text });
+                                        acc.push({ Id: el.id, Name: "godine < " + el.options[el.selectedIndex].text });
                                     }
                                     else if (el.id === 'mileageFrom' && el.value && el.value !== '') {
-                                        acc.push({ Id: el.id, Name: el.value});
+                                        acc.push({ Id: el.id, Name: "kilometri > " + el.value});
                                     }
                                     else if (el.id === 'mileageTo' && el.value && el.value !== '') {
-                                        acc.push({ Id: el.id, Name: el.value});
+                                        acc.push({ Id: el.id, Name: "kilometri < " + el.value});
+                                    }
+                                    else if (el.id === 'priceFrom' && el.value && el.value !== '') {
+                                        let range = document.getElementById('range');
+                                        let rangeMin = range.noUiSlider.options.range.min;
+                                        
+                                        acc.push({ Id: el.id, Name: "cijena > " + Math.max(el.value,rangeMin) });
+                                    }
+                                    else if (el.id === 'priceTo' && el.value && el.value !== '') {
+                                        let range = document.getElementById('range');
+                                        let rangeMax = range.noUiSlider.options.range.max;
+                                        acc.push({ Id: el.id, Name: "cijena < " + Math.min(el.value,rangeMax)});
                                     }
                                     return acc;
                                 }, []);
@@ -458,7 +496,7 @@
                                                           <button onclick="clearAllElements()" class="btn btn-link btn-light fw-normal fs-sm px-1 py-2" type="button">Clear all</button>
                                                         </div>
                                                         <ul id="selected-list" class="nav nav-pills nav-pills-light flex-row fs-sm mx-0">
-                                                            ${items}
+                                                            ${items.join("")}
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -487,7 +525,19 @@
                                 return
                             }
                             if (elementIsInputNumberOrSelect.type === "number") {
-                                elementIsInputNumberOrSelect.value = null
+                                if(id === "priceFrom") {
+                                    let range = document.getElementById('range');
+                                    let value = range.noUiSlider.options.range;
+                                    range.noUiSlider.set([value.min,null]);
+                                    //elementIsInputNumberOrSelect.value = value[0];
+                                }
+                                else if(id === "priceTo") {
+                                    let range = document.getElementById('range');
+                                    let value = range.noUiSlider.options.range;
+                                    range.noUiSlider.set([null,value.max]);
+                                }else {
+                                    elementIsInputNumberOrSelect.value = null
+                                }
                                 return
                             }
                             if (elementIsInputNumberOrSelect.nodeName === "SELECT") {
@@ -562,7 +612,7 @@
                     @foreach (var item in Model.SubCategories)
                     {
                         <li class="nav-item mb-2 me-2">
-                            <a class="nav-link px-3" href="@(Url.RouteUrl<Category>(new { SeName = item.SeName }))"
+                            <a class="nav-link px-3" href="@(Url.RouteUrl<Category>(new { SeName = Model.SeName, childcategory=item.Id }))"
                                title="@item.PictureModel.Title">
                                 @item.Name
                             </a>

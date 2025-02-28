@@ -1,4 +1,6 @@
-﻿using Nop.Core;
+﻿using BlazorApp1.Pages;
+using Newtonsoft.Json;
+using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Blogs;
 using Nop.Core.Domain.Catalog;
@@ -73,24 +75,32 @@ public class CostumeCatalogModelFactory(
         var model = new CatalogProductsModel { UseAjaxLoading = _catalogSettings.UseAjaxCatalogProductsLoading };
 
         var currentStore = await _storeContext.GetCurrentStoreAsync();
+        var localCategory = category;
+        if (command.ChildCategory != null)
+        {
+          localCategory =  await categoryService.GetCategoryByIdAsync(command.ChildCategory.Value);
+        }
+        
 
         //sorting
         await PrepareSortingOptionsAsync(model, command);
         //view mode
         await PrepareViewModesAsync(model, command);
         //page size
-        await PreparePageSizeOptionsAsync(model, command, category.AllowCustomersToSelectPageSize,
-            category.PageSizeOptions, category.PageSize);
-
-        var categoryIds = new List<int> { category.Id };
+        await PreparePageSizeOptionsAsync(model, command, localCategory.AllowCustomersToSelectPageSize,
+            localCategory.PageSizeOptions, localCategory.PageSize);
+        
+    
+        var selectedCategory =  command.ChildCategory ?? category.Id;
+        var categoryIds = new List<int> { selectedCategory };
 
         //include subcategories
         if (_catalogSettings.ShowProductsFromSubcategories)
-            categoryIds.AddRange(await _categoryService.GetChildCategoryIdsAsync(category.Id, currentStore.Id));
+            categoryIds.AddRange(await _categoryService.GetChildCategoryIdsAsync(selectedCategory, currentStore.Id));
 
         //price range
         PriceRangeModel selectedPriceRange = null;
-        if (_catalogSettings.EnablePriceRangeFiltering && category.PriceRangeFiltering)
+        if (_catalogSettings.EnablePriceRangeFiltering && localCategory.PriceRangeFiltering)
         {
             selectedPriceRange = await GetConvertedPriceRangeAsync(command);
 
@@ -118,11 +128,37 @@ public class CostumeCatalogModelFactory(
             }
             else
             {
-                availablePriceRange = new PriceRangeModel { From = category.PriceFrom, To = category.PriceTo };
+                availablePriceRange = new PriceRangeModel { From = localCategory.PriceFrom, To = localCategory.PriceTo };
             }
 
             model.PriceRangeFilter = await PreparePriceRangeFilterAsync(selectedPriceRange, availablePriceRange);
         }
+        
+        // Get all make and models 
+        
+        var allCategories = await categoryService.GetAllCategoriesByParentCategoryIdAsync(1);
+        
+        var specificationOptionsMake = new List<SpecificationOption>();
+
+        foreach (var option in allCategories ?? Enumerable.Empty<Category>())
+        {
+            var seName = await _urlRecordService.GetSeNameAsync(option);
+            specificationOptionsMake.Add(new SpecificationOption { Text = option.Name, Value = seName });
+        }
+
+        var allCategoriesByParentCategoryId = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(category.Id));
+
+        var specificationOptionsModel = new List<SpecificationOption>(); 
+        
+        foreach (var option in allCategoriesByParentCategoryId ?? Enumerable.Empty<Category>())
+        {
+            specificationOptionsModel.Add(new SpecificationOption { Text = option.Name, Value = option.Id.ToString() });
+        }
+        
+        model.Make = specificationOptionsMake;
+        model.Model = specificationOptionsModel;
+
+        model.ChildCategory = localCategory.Name;
         
         //year range
         YearRangeModel selectedYearRange = null;
@@ -160,7 +196,7 @@ public class CostumeCatalogModelFactory(
         
         //filterable options
         var filterableOptions = await _specificationAttributeService
-            .GetFiltrableSpecificationAttributeOptionsByCategoryIdAsync(category.Id);
+            .GetFiltrableSpecificationAttributeOptionsByCategoryIdAsync(localCategory.Id);
 
         if (_catalogSettings.EnableSpecificationAttributeFiltering)
         {
@@ -171,7 +207,7 @@ public class CostumeCatalogModelFactory(
         //filterable manufacturers
         if (_catalogSettings.EnableManufacturerFiltering)
         {
-            var manufacturers = await _manufacturerService.GetManufacturersByCategoryIdAsync(category.Id);
+            var manufacturers = await _manufacturerService.GetManufacturersByCategoryIdAsync(localCategory.Id);
 
             model.ManufacturerFilter = await PrepareManufacturerFilterModel(command.ManufacturerIds, manufacturers);
         }

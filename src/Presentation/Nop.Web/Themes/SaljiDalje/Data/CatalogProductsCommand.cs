@@ -11,4 +11,6 @@ public partial record CatalogProductsCommand
     /// Gets or sets the milage ('min-max' format)
     /// </summary>
     public string Mileage { get; set; }
+    
+    public int? ChildCategory { get; set; }   
 }
