@@ -92,6 +92,8 @@ public class CostumeProductService(
         int? yearMax = null,
         int? mileageMin = null,
         int? mileageMax = null,
+        int? horsePowerMin = null,
+        int? horsePowerMax = null,
         int productTagId = 0,
         string keywords = null,
         bool searchDescriptions = false,
@@ -168,6 +170,16 @@ public class CostumeProductService(
         if (mileageMax != null)
         {
             productsQuery =  productsQuery.Where( item=> item.CostumeMileage <= mileageMax && item.CostumeMileage != 0);
+        }
+        
+        if (horsePowerMin != null)
+        {
+            productsQuery =  productsQuery.Where( item=> item.CostumeHorsePower >= horsePowerMin && item.CostumeHorsePower != 0);
+        }
+        
+        if (horsePowerMax != null)
+        {
+            productsQuery =  productsQuery.Where( item=> item.CostumeHorsePower <= horsePowerMax && item.CostumeHorsePower != 0);
         }
 
         var activeSearchProvider = await _searchPluginManager.LoadPrimaryPluginAsync(customer, storeId);

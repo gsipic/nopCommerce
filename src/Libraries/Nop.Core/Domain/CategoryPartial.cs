@@ -4,4 +4,5 @@ public partial class Product
 {
     public int CostumeYear { get; set; }
     public int CostumeMileage { get; set; }
+    public int CostumeHorsePower { get; set; }
 }

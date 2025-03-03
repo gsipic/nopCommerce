@@ -12,5 +12,8 @@ public partial record CatalogProductsCommand
     /// </summary>
     public string Mileage { get; set; }
     
-    public int? ChildCategory { get; set; }   
+    /// <summary>
+    /// Gets or sets the milage ('min-max' format)
+    /// </summary>
+    public string HorsePower { get; set; }   
 }

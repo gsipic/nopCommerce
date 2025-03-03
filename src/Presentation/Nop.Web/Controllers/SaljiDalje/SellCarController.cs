@@ -366,6 +366,7 @@ public partial class SellCarController(
             Name = sellCarModel.BasicInfo.Title,
             Price = sellCarModel.Price.SellCarPrice,
             CostumeYear = sellCarModel.VehicleInformation.Year,
+            CostumeHorsePower = sellCarModel.VehicleInformation.HorsePower,
             CostumeMileage = sellCarModel.VehicleInformation.Mileage ?? 0,
             FullDescription = sellCarModel.VehicleInformation.Description,
             CreatedOnUtc = DateTime.UtcNow,

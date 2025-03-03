@@ -90,6 +90,17 @@
             </InputSelect>
         </div>
         <div class="col-md-3 col-sm-6 mb-3">
+            <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.HorsePower)">HorsePower <span class="text-danger">*</span></label>
+            <InputSelect class="form-select form-select-light" id="@nameof(SellCarModel.VehicleInformation.HorsePower)" @bind-Value="SellCarModel.VehicleInformation.HorsePower">
+                <option value="0" disabled>Select horsepower</option>
+                @foreach (var item in SellCarModel.VehicleInformation.HorsePowerOptions)
+                {
+                    <option value="@item.Value" selected="@(SellCarModel.VehicleInformation.Year.ToString() == item.Value)">@item.Text</option>
+                }
+            </InputSelect>
+        </div>
+        
+        <div class="col-md-3 col-sm-6 mb-3">
             <label class="form-label text-light" for="@nameof(SellCarModel.VehicleInformation.Mileage)">Mileage <span class="text-danger">*</span></label>
             <InputNumber class="form-control form-control-light" type="number" id="@(SellCarModel.VehicleInformation.Mileage)" @bind-Value="SellCarModel.VehicleInformation.Mileage" min="0" placeholder="Enter mileage"/>
         </div>

@@ -164,7 +164,7 @@
                             <option value="" disabled selected>Any make</option>
                             @foreach (var item in Model.CatalogProductsModel.Make)
                             {
-                                <option selected="@(item.Text == Model.Name)" value="@item.Value">@item.Text</option>
+                                <option selected="@(item.Text == Model.CatalogProductsModel.ParentCategory)" value="@item.Value">@item.Text</option>
                             }
                         </select>
                         <script asp-location="Footer">
@@ -177,7 +177,7 @@
                             });
                             
                         </script>
-                        <select id="selectModel" class="form-select form-select-light mb-1" data-option-id>
+                        <select id="selectModel" class="form-select form-select-light mb-1">
                             <option value="" selected>Any model</option>
                             @foreach (var item in Model.CatalogProductsModel.Model)
                             {
@@ -185,21 +185,38 @@
                             }
                         </select>
                         <script asp-location="Footer">
-                            (function () {
-                                document.addEventListener("DOMContentLoaded", function () {
+                            document.addEventListener("DOMContentLoaded", function () {
+                                document.getElementById("selectModel").addEventListener("change", function () {
                                     let selectModel;
-                                    document.getElementById("selectModel").addEventListener("input", function () {
-                                        selectModel = this.value;
-                                    });
+                                    selectModel = this.value;
+                                    if (selectModel) {
+                                        const url = new URL(window.location.href);
+                                        const pathSegments = url.pathname.split('/'); // Split path into parts
+                                        pathSegments[1] = selectModel; // Replace the second part (token)
+                                        url.pathname = pathSegments.join('/'); // Reconstruct the URL
+                                        window.location.href = url.toString(); // Redirect to new URL
+                                       
+                                    }else {
+                                        const url = new URL(window.location.href);
+                                        const pathSegments = url.pathname.split('/'); // Split path into parts
+                                        pathSegments[1] = document.getElementById("selectMake").value; // Replace the second part (token)
+                                        url.pathname = pathSegments.join('/'); // Reconstruct the URL
+                                        window.location.href = url.toString(); // Redirect to new URL
+                                    }
 
-                                    $(CatalogProducts).on('before', function (e) {
-                                        if (selectModel) {
-                                            e.payload.urlBuilder
-                                                .addParameter('childcategory', selectModel);
-                                        }
-                                    });
                                 });
-                            })();
+
+                                /*$(CatalogProducts).on('before', function (e) {
+                                    if (selectModel) {
+                                        e.payload.urlBuilder
+                                            .addParameter('childcategory', selectModel);
+                                    }
+                                });*/
+                            })
+                                   
+                                
+                            
+                        
                         </script>
                     </div>
                     <div class="pb-4 mb-2">
@@ -285,6 +302,55 @@
                                     if ((inputValueFrom2 || inputValueTo2) && mileageRange.length > 0) {
                                         e.payload.urlBuilder
                                             .addParameter('mileage', mileageRange);
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                    <div class="pb-4 mb-2">
+                        <h3 class="h6 text-light pt-1">Horse Power</h3>
+                        <div class="d-flex align-items-center">
+                            <select id="horsePowerFrom" class="form-select form-select-light w-100"
+                                    asp-for="@Model.CatalogProductsModel.HorsePowerRangeFilter.SelectedHorsePowerRange.From" data-option-id>
+                                <option value="" selected>From</option>
+                                @foreach (var item in Model.CatalogProductsModel.HorsePowerRangeFilter.AvailableHorsePowerRange)
+                                {
+                                    <option value="@item.ToString()">@item.ToString()</option>
+                                }
+                            </select>
+                            <div class="mx-2">&mdash;</div>
+                            <select id="horsePowerTo" class="form-select form-select-light w-100"
+                                    asp-for="@Model.CatalogProductsModel.HorsePowerRangeFilter.SelectedHorsePowerRange.To" data-option-id>
+                                <option value="" selected>To</option>
+                                @foreach (var item in Model.CatalogProductsModel.HorsePowerRangeFilter.AvailableHorsePowerRange)
+                                {
+                                    <option value="@item.ToString()">@item.ToString()</option>
+                                }
+                            </select>
+                        </div>
+                        <script asp-location="Footer">
+                            $(document).ready(function () {
+                                let yearFrom = document.getElementById('horsePowerFrom');
+                                let yearTo = document.getElementById('horsePowerFromTo');
+                                let selectedValueFrom = yearFrom.value;
+                                let selectedValueTo = yearTo.value;
+
+                                yearFrom.addEventListener("input", function () {
+                                    selectedValueFrom = this.value;
+                                    //CatalogProducts.getProducts();
+                                });
+                                yearTo.addEventListener("input", function () {
+                                    selectedValueTo = this.value;
+                                    //CatalogProducts.getProducts();
+                                });
+
+                                $(CatalogProducts).on('before', function (e) {
+                                    const yearFrom = selectedValueFrom ? selectedValueFrom : null
+                                    const yearTo = selectedValueTo ? selectedValueTo : null
+                                    const yearRange = yearFrom + '-' + yearTo;
+                                    if ((yearFrom || yearTo) && yearRange.length > 0) {
+                                        e.payload.urlBuilder
+                                            .addParameter('horsePower', yearRange);
                                     }
                                 });
                             });
@@ -600,9 +666,13 @@
             </nav>
             <!-- Page title-->
             <div class="d-flex align-items-center justify-content-between pb-4 mb-2">
-                <h1 class="text-light me-3 mb-0">@Model.Name</h1>
+                @{
+                    var name = Model.CatalogProductsModel.ChildCategory ?? Model.CatalogProductsModel.ParentCategory;
+                }
+                <h1 class="text-light me-3 mb-0">@name</h1>
                 <div class="text-light">
-                    <i class="fi-car fs-lg me-2"></i><span
+                    <i class="fi-car fs-lg me-2"></i>
+                    <span
                         class="align-middle" id="total-number">@Model.CatalogProductsModel.TotalItems oglasa</span>
                 </div>
             </div>
@@ -612,7 +682,7 @@
                     @foreach (var item in Model.SubCategories)
                     {
                         <li class="nav-item mb-2 me-2">
-                            <a class="nav-link px-3" href="@(Url.RouteUrl<Category>(new { SeName = Model.SeName, childcategory=item.Id }))"
+                            <a class="nav-link px-3" href="@(Url.RouteUrl<Category>(new { SeName = item.SeName}))"
                                title="@item.PictureModel.Title">
                                 @item.Name
                             </a>

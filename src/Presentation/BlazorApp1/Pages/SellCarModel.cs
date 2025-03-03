@@ -56,6 +56,8 @@ public class VehicleInformation
     public string ModelSpecificationOption { get; set; } = string.Empty;
     public int Year { get; set; } = 0;
     public IList<SpecificationOption> YearOptions { get; set; } = new List<SpecificationOption>();
+    public int HorsePower { get; set; } = 0;
+    public IList<SpecificationOption> HorsePowerOptions { get; set; } = new List<SpecificationOption>();
     public int? Mileage { get; set; }
     public string VIN { get; set; } = string.Empty;
     public IList<SpecificationOption> BodyType { get; set; } = new List<SpecificationOption>();

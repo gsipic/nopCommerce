@@ -8,9 +8,11 @@ public partial record CatalogProductsModel
 {
     public YearRangeFilterModel YearRangeFilter { get; set; }
     public MileageRangeModel MileageRangeModel { get; set; }
+    public HorsePowerFilterModel HorsePowerRangeFilter { get; set; }
     
     public IList<SpecificationOption> Make { get; set; }
     public IList<SpecificationOption> Model { get; set; }
     
+    public string ParentCategory { get; set; }
     public string ChildCategory { get; set; }
 }

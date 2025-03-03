@@ -1,4 +1,5 @@
 ﻿using BlazorApp1.Pages;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Nop.Core;
 using Nop.Core.Caching;
@@ -75,32 +76,24 @@ public class CostumeCatalogModelFactory(
         var model = new CatalogProductsModel { UseAjaxLoading = _catalogSettings.UseAjaxCatalogProductsLoading };
 
         var currentStore = await _storeContext.GetCurrentStoreAsync();
-        var localCategory = category;
-        if (command.ChildCategory != null)
-        {
-          localCategory =  await categoryService.GetCategoryByIdAsync(command.ChildCategory.Value);
-        }
         
-
         //sorting
         await PrepareSortingOptionsAsync(model, command);
         //view mode
         await PrepareViewModesAsync(model, command);
         //page size
-        await PreparePageSizeOptionsAsync(model, command, localCategory.AllowCustomersToSelectPageSize,
-            localCategory.PageSizeOptions, localCategory.PageSize);
+        await PreparePageSizeOptionsAsync(model, command, category.AllowCustomersToSelectPageSize,
+            category.PageSizeOptions, category.PageSize);
         
-    
-        var selectedCategory =  command.ChildCategory ?? category.Id;
-        var categoryIds = new List<int> { selectedCategory };
+        var categoryIds = new List<int> { category.Id };
 
         //include subcategories
         if (_catalogSettings.ShowProductsFromSubcategories)
-            categoryIds.AddRange(await _categoryService.GetChildCategoryIdsAsync(selectedCategory, currentStore.Id));
+            categoryIds.AddRange(await _categoryService.GetChildCategoryIdsAsync(category.Id, currentStore.Id));
 
         //price range
         PriceRangeModel selectedPriceRange = null;
-        if (_catalogSettings.EnablePriceRangeFiltering && localCategory.PriceRangeFiltering)
+        if (_catalogSettings.EnablePriceRangeFiltering && category.PriceRangeFiltering)
         {
             selectedPriceRange = await GetConvertedPriceRangeAsync(command);
 
@@ -128,7 +121,7 @@ public class CostumeCatalogModelFactory(
             }
             else
             {
-                availablePriceRange = new PriceRangeModel { From = localCategory.PriceFrom, To = localCategory.PriceTo };
+                availablePriceRange = new PriceRangeModel { From = category.PriceFrom, To = category.PriceTo };
             }
 
             model.PriceRangeFilter = await PreparePriceRangeFilterAsync(selectedPriceRange, availablePriceRange);
@@ -147,56 +140,42 @@ public class CostumeCatalogModelFactory(
         }
 
         var allCategoriesByParentCategoryId = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(category.Id));
+        var parentCategory = category.Name;
+        if (allCategoriesByParentCategoryId.IsNullOrEmpty())
+        {
+            allCategoriesByParentCategoryId = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(category.ParentCategoryId));
+            parentCategory = (await categoryService.GetCategoryByIdAsync(category.ParentCategoryId)).Name;
+        }
 
         var specificationOptionsModel = new List<SpecificationOption>(); 
         
         foreach (var option in allCategoriesByParentCategoryId ?? Enumerable.Empty<Category>())
         {
-            specificationOptionsModel.Add(new SpecificationOption { Text = option.Name, Value = option.Id.ToString() });
+            var seName = await _urlRecordService.GetSeNameAsync(option);
+            specificationOptionsModel.Add(new SpecificationOption { Text = option.Name, Value = seName });
         }
         
         model.Make = specificationOptionsMake;
         model.Model = specificationOptionsModel;
 
-        model.ChildCategory = localCategory.Name;
-        
-        //year range
-        YearRangeModel selectedYearRange = null;
-        
-        selectedYearRange = GetConvertedYearRangeAsync(command);
-        
-        YearRangeModel availableYearRange = null;
-        if (!category.ManuallyPriceRange)
-        {
-            async Task<IEnumerable<int>> getProductYearAsync(ProductSortingEnum orderBy)
-            {
-                var products = await (_productService as CostumeProductService).SearchProductsAsync(
-                    categoryIds: categoryIds,
-                    storeId: currentStore.Id,
-                    visibleIndividuallyOnly: true,
-                    excludeFeaturedProducts: !_catalogSettings.IgnoreFeaturedProducts &&
-                                             !_catalogSettings.IncludeFeaturedProductsInNormalLists,
-                    orderBy: orderBy);
-                return products?.DistinctBy( t=> t.CostumeYear).OrderByDescending(t=> t.CostumeYear).Select(t=> t.CostumeYear);
-            }
-
-            var foo = await getProductYearAsync(ProductSortingEnum.Position);
-            model.YearRangeFilter = new YearRangeFilterModel
-            {
-                SelectedYearRange = selectedYearRange, AvailableYearRange = foo
-            };
-        }
+        model.ChildCategory = category.Name;
+        model.ParentCategory = parentCategory;
         
         //mileage range
         MileageRangeModel selectedMileageRange = null;
-        
         selectedMileageRange = GetConvertedMileageRangeAsync(command);
-
-        model.MileageRangeModel = selectedMileageRange;
+        
+        //year range
+        YearRangeModel selectedYearRange = null;
+        selectedYearRange = GetConvertedYearRangeAsync(command);
+        
+        //horse power range
+        HorsePowerRangeModel horsePowerRangeModel = null;
+        horsePowerRangeModel = GetConvertedHorsePowerRangeAsync(command);
         
         //filterable options
         var filterableOptions = await _specificationAttributeService
-            .GetFiltrableSpecificationAttributeOptionsByCategoryIdAsync(localCategory.Id);
+            .GetFiltrableSpecificationAttributeOptionsByCategoryIdAsync(category.Id);
 
         if (_catalogSettings.EnableSpecificationAttributeFiltering)
         {
@@ -207,7 +186,7 @@ public class CostumeCatalogModelFactory(
         //filterable manufacturers
         if (_catalogSettings.EnableManufacturerFiltering)
         {
-            var manufacturers = await _manufacturerService.GetManufacturersByCategoryIdAsync(localCategory.Id);
+            var manufacturers = await _manufacturerService.GetManufacturersByCategoryIdAsync(category.Id);
 
             model.ManufacturerFilter = await PrepareManufacturerFilterModel(command.ManufacturerIds, manufacturers);
         }
@@ -231,9 +210,29 @@ public class CostumeCatalogModelFactory(
             yearMax: selectedYearRange?.To,
             mileageMin: selectedMileageRange?.From,
             mileageMax: selectedMileageRange?.To,
+            horsePowerMin: horsePowerRangeModel?.From,
+            horsePowerMax: horsePowerRangeModel?.To,
             manufacturerIds: command.ManufacturerIds,
             filteredSpecOptions: filteredSpecs,
             orderBy: (ProductSortingEnum)command.OrderBy);
+        
+        // mileage filter
+        model.MileageRangeModel = selectedMileageRange;
+        
+        //horsePower filter
+        model.HorsePowerRangeFilter = new HorsePowerFilterModel
+        {
+            SelectedHorsePowerRange = horsePowerRangeModel, AvailableHorsePowerRange = products?.DistinctBy( t=> t.CostumeHorsePower).OrderByDescending(t=> t.CostumeHorsePower).Select(t=> t.CostumeHorsePower)
+        };
+        
+        //year filter
+        if (!category.ManuallyPriceRange)
+        {
+            model.YearRangeFilter = new YearRangeFilterModel
+            {
+                SelectedYearRange = selectedYearRange, AvailableYearRange = products?.DistinctBy( t=> t.CostumeYear).OrderByDescending(t=> t.CostumeYear).Select(t=> t.CostumeYear)
+            };
+        }
 
         var isFiltering = filterableOptions.Any() || selectedPriceRange?.From is not null;
         await PrepareCatalogProductsAsync(model, products, isFiltering);
@@ -274,6 +273,30 @@ public class CostumeCatalogModelFactory(
             return result;
 
         var fromTo = command.Mileage.Trim().Split(['-']);
+        if (fromTo.Length == 2)
+        {
+            var rawFrom = fromTo[0]?.Trim();
+            if (!string.IsNullOrEmpty(rawFrom) && int.TryParse(rawFrom, out var from))
+                result.From = from;
+
+            var rawTo = fromTo[1]?.Trim();
+            if (!string.IsNullOrEmpty(rawTo) && int.TryParse(rawTo, out var to))
+                result.To = to;
+
+            if (result.From > result.To)
+                result.From = result.To;
+        }
+
+        return result;
+    }
+    protected HorsePowerRangeModel GetConvertedHorsePowerRangeAsync(CatalogProductsCommand command)
+    {
+        var result = new HorsePowerRangeModel();
+
+        if (string.IsNullOrWhiteSpace(command.HorsePower))
+            return result;
+
+        var fromTo = command.HorsePower.Trim().Split(['-']);
         if (fromTo.Length == 2)
         {
             var rawFrom = fromTo[0]?.Trim();
