@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Autofac.Extensions.DependencyInjection;
-using BlazorApp1;
+// using BlazorApp1;
 using Nop.Core.Configuration;
 using Nop.Core.Infrastructure;
 using Nop.Data;
@@ -43,10 +43,10 @@ public partial class Program
 
         //add services to the application and configure service provider
         builder.Services.ConfigureApplicationServices(builder);
-        builder.Services
+        /*builder.Services
             .AddRazorComponents()
             .AddInteractiveServerComponents()
-            .AddInteractiveWebAssemblyComponents();
+            .AddInteractiveWebAssemblyComponents();*/
             
         builder.Services.AddLiveReload(config =>
         {
@@ -56,10 +56,10 @@ public partial class Program
         });
 
         var app = builder.Build();
-        app.MapRazorComponents<App>()
+        /*app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
-            //.AddAdditionalAssemblies(typeof(BlazorApp1._Imports).Assembly);
+            //.AddAdditionalAssemblies(typeof(BlazorApp1._Imports).Assembly);*/
         ;
         //configure the application HTTP request pipeline
         app.ConfigureRequestPipeline();
