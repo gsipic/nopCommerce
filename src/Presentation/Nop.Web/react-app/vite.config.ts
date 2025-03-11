@@ -54,6 +54,16 @@ export default defineConfig(async ()=> {
         build: {
             outDir: path.resolve(__dirname, '../wwwroot/dist'), // Output React build to wwwroot
             emptyOutDir: true,
+            rollupOptions: {
+                input: {
+                    main: path.resolve(__dirname, 'src/main.tsx') // Entry point without index.html
+                },
+                output: {
+                    entryFileNames: 'assets/[name].js', // Customize file structure
+                    chunkFileNames: 'assets/[name]-[hash].js',
+                    assetFileNames: 'assets/[name]-[hash][extname]'
+                }
+            }
         },
         server: {
             strictPort: true,

@@ -73,7 +73,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.7" />
-    <PackageReference Include="Vite.AspNetCore" Version="2.4.0" />
   </ItemGroup>
 
   <!-- This target execute after "Build" target.
@@ -97,24 +96,6 @@
       At the moment you can't disable this behavior. That's why we have to manually delete all unnecessary libraries from plugin output directories. -->
     <MSBuild Projects="@(ClearPluginAssemblies)" Properties="PluginPath=$(PluginsFolders)" Targets="NopClear" />
 
-  </Target>
-
-  <!-- Ensure Node environment on Build -->
-  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build;PublishBuildAssets" Condition=" !Exists('node_modules') ">
-    <!-- Ensure Node.js is installed -->
-    <Exec Command="node --version" ContinueOnError="true">
-      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-    </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
-    <!-- Install Node packages -->
-    <Exec Command="npm install" />
-  </Target>
-
-  <!-- Build the final assets -->
-  <Target Name="PublishBuildAssets" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Release' ">
-    <!-- Build the final assets -->
-    <Exec Command="npm run build" />
   </Target>
 
   <PropertyGroup>

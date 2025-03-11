@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nop.Core.Infrastructure;
 using Nop.Web.Framework.Infrastructure.Extensions;
+using Vite.AspNetCore;
 
 namespace Nop.Web.Framework.Infrastructure;
 
@@ -18,6 +19,13 @@ public partial class NopStaticFilesStartup : INopStartup
     /// <param name="configuration">Configuration of the application</param>
     public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
+        services.AddViteServices(options =>
+        {
+            options.Server.AutoRun = true;
+            options.Server.Https = true;
+            options.Server.UseReactRefresh = true;
+            options.Server.PackageDirectory = "react-app";
+        });
         //compression
         services.AddResponseCompression();
 
@@ -31,6 +39,8 @@ public partial class NopStaticFilesStartup : INopStartup
     /// <param name="application">Builder for configuring an application's request pipeline</param>
     public void Configure(IApplicationBuilder application)
     {
+        application.UseWebSockets();
+        application.UseViteDevelopmentServer(true);
         //use response compression before UseNopStaticFiles to support compress for it
         //application.UseNopResponseCompression();
 

@@ -45,13 +45,7 @@ public partial class Program
         //add services to the application and configure service provider
         builder.Services.ConfigureApplicationServices(builder);
         // Add the Vite services.
-        builder.Services.AddViteServices(options =>
-        {
-            options.Server.AutoRun = true;
-            options.Server.Https = true;
-            options.Server.UseReactRefresh = true;
-            options.Server.PackageDirectory = "react-app";
-        });
+        
         /*builder.Services
             .AddRazorComponents()
             .AddInteractiveServerComponents()
@@ -84,12 +78,7 @@ public partial class Program
             migrationManager.ApplyUpMigrations(assembly, MigrationProcessType.Update);
         }
         
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseWebSockets();
-            // Use Vite Dev Server as middleware.
-            app.UseViteDevelopmentServer(true);
-        }
+        
 
         await app.RunAsync();
     }
