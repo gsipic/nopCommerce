@@ -4,9 +4,11 @@
 @using Nop.Web.Factories;
 @using Nop.Services.Catalog
 @using Nop.Web.Framework.TagHelpers.Shared
+@using Vite.AspNetCore
 @inject IProductService productService
 @inject IProductModelFactory productModelFactory
 @inject ICatalogModelFactory _catalogModelFactory
+@inject IViteManifest Manifest
 @{
     Layout = "_Layout";
 
@@ -920,5 +922,46 @@
         asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/rellax/rellax.min.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/jarallax/dist/jarallax.min.js" asp-exclude-from-bundle="true"></script>
+<script src="/Themes/SaljiDalje/Content/vendor/jarallax/dist/jarallax.min.js" asp-exclude-from-bundle="true"></script>
+@{
+    var dropdowns = new List<Dictionary<string, object>>
+    {
+        new()
+        {
+            { "name", "Make" },
+            { "icon", "fi-list" },
+            { "options", rootCategories.Categories.SelectMany(item => item.SubCategories).Select(item => item.Name) }
+        },
+        new()
+        {
+            { "name", "Model" },
+            { "icon", "fi-list" },
+            { "options", new List<string> { "Altima", "Juke", "Leaf", "Maxima", "Micra", "Murano", "Note", "Patrol" } }
+        },
+        new()
+        {
+            { "name", "Body type" },
+            { "icon", "fi-car fs-lg" },
+            { "options", new List<string> { "Compact", "Crossover", "Coupe", "Family MPV", "Pickup", "Sedan", "SUV", "Wagon" } }
+        },
+        new()
+        {
+            { "name", "Location" },
+            { "icon", "fi-map-pin" },
+            { "options", new List<string> { "Dallas", "Chicago", "Houston", "Las Vegas", "Los Angeles", "New York", "San Francisco" } }
+        }
+    };
+}
+@section Scripts {
+    <!script>window.carSearchData = @Html.Raw(Json.Serialize(dropdowns));</!script>
+    <environment include="Development">
+        <!script type="module" src="https://localhost:5173/src/main.tsx"></!script>
+    </environment>
+
+    <environment include="Production">
+        <!script type="module" src="~/@Manifest["main.tsx"]!.File" asp-append-version="true"></!script>
+    </environment>
+}
+
 
     
