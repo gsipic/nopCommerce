@@ -6,7 +6,7 @@ export interface DropdownProps {
     options: string[];
 }
 
-const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (dropdowns) => {
+const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
     const [activeTab, setActiveTab] = useState("New");
     const [make, setMake] = useState("");
     const handleClick = (tab: string) => {
@@ -45,7 +45,7 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (dropdowns) => {
 
                     {/* Dropdowns */}
                     {
-                        dropdowns.dropdowns
+                        props.dropdowns
                             .map((dropdown, index) => (
                                 <div key={index} className="col-lg-2 col-md-3 col-sm-6">
                                     <div className="dropdown border-end-sm border-light" data-bs-toggle="select">

@@ -5,6 +5,7 @@ import {DropdownProps} from './App.tsx'
 
 const App = lazy(() => import("./App"));
 
+// @ts-ignore
 var foo = window.carSearchData as [DropdownProps];
 
 hydrateRoot(document.getElementById('root')!,
