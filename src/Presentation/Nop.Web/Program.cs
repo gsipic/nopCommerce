@@ -6,6 +6,7 @@ using Nop.Core.Infrastructure;
 using Nop.Data;
 using Nop.Data.Migrations;
 using Nop.Web.Framework.Infrastructure.Extensions;
+using Vite.AspNetCore;
 using Westwind.AspNetCore.LiveReload;
 
 namespace Nop.Web;
@@ -43,6 +44,14 @@ public partial class Program
 
         //add services to the application and configure service provider
         builder.Services.ConfigureApplicationServices(builder);
+        // Add the Vite services.
+        builder.Services.AddViteServices(options =>
+        {
+            options.Server.AutoRun = true;
+            options.Server.Https = true;
+            options.Server.UseReactRefresh = true;
+            options.Server.PackageDirectory = "react-app";
+        });
         /*builder.Services
             .AddRazorComponents()
             .AddInteractiveServerComponents()
@@ -73,6 +82,13 @@ public partial class Program
             var migrationManager = engine.Resolve<IMigrationManager>();
             var assembly = Assembly.GetAssembly(typeof(Program));
             migrationManager.ApplyUpMigrations(assembly, MigrationProcessType.Update);
+        }
+        
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseWebSockets();
+            // Use Vite Dev Server as middleware.
+            app.UseViteDevelopmentServer(true);
         }
 
         await app.RunAsync();

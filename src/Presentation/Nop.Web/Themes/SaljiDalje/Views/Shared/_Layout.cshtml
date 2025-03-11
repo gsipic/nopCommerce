@@ -583,6 +583,47 @@
 }
 @NopHtml.GenerateScripts(ResourceLocation.Footer)
 @NopHtml.GenerateInlineScripts(ResourceLocation.Footer)
-<!script src="/_framework/blazor.web.js"></!script>
+@* <!script src="/_framework/blazor.web.js"></!script> *@
+<!script type="module">
+    import RefreshRuntime from "https://localhost:5173/@@react-refresh";
+    RefreshRuntime.injectIntoGlobalHook(window);
+    window.$RefreshReg$ = () => { };
+    window.$RefreshSig$ = () => (type) => type;
+    window.__vite_plugin_react_preamble_installed__ = true;
+</!script>
+<!script type="module" src="https://localhost:5173/@@vite/client"></!script>
+@{
+    var dropdowns = new List<Dictionary<string, object>>
+    {
+        new Dictionary<string, object>
+        {
+            { "name", "Make" },
+            { "icon", "fi-list" },
+            { "options", rootCategories.Categories.SelectMany(item => item.SubCategories).Select(item => item.Name) }
+        },
+        new Dictionary<string, object>
+        {
+            { "name", "Model" },
+            { "icon", "fi-list" },
+            { "options", new List<string> { "Altima", "Juke", "Leaf", "Maxima", "Micra", "Murano", "Note", "Patrol" } }
+        },
+        new Dictionary<string, object>
+        {
+            { "name", "Body type" },
+            { "icon", "fi-car fs-lg" },
+            { "options", new List<string> { "Compact", "Crossover", "Coupe", "Family MPV", "Pickup", "Sedan", "SUV", "Wagon" } }
+        },
+        new Dictionary<string, object>
+        {
+            { "name", "Location" },
+            { "icon", "fi-map-pin" },
+            { "options", new List<string> { "Dallas", "Chicago", "Houston", "Las Vegas", "Los Angeles", "New York", "San Francisco" } }
+        }
+    };
+}
+<!script>
+    window.carSearchData = @Html.Raw(Json.Serialize(dropdowns));
+</!script>
+<!script type="module" src="https://localhost:5173/src/main.tsx"></!script>
 </body>
 </html>
