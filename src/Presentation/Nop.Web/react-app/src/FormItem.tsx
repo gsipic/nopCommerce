@@ -4,10 +4,11 @@ import { DropdownProps } from "./App"; // Import the type
 interface FormItemProps {
     item: DropdownProps;
     style: string;
+    isLast?: boolean;
     onPress: (Option : { Name: string; SeoName: string | null; Id: number; }) => void;
 }
 
-const FormItem: React.FC<FormItemProps> = ({ item, style, onPress }) => {
+const FormItem: React.FC<FormItemProps> = ({ item, style, isLast ,onPress }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [name, setName] = useState(item.Name);
     
@@ -42,7 +43,7 @@ const FormItem: React.FC<FormItemProps> = ({ item, style, onPress }) => {
 
     return (
         <div className="col-lg-2 col-md-3 col-sm-6">
-            <div className="dropdown border-end-sm border-light">
+            <div className={`dropdown ${isLast ? "" : "border-end-sm"} border-light`}>
                 <button className="btn btn-link dropdown-toggle ps-2 ps-sm-3" type="button" onClick={toggleDropdown}>
                     <i className={`${style} me-2`}></i>
                     <span className="dropdown-toggle-label">{name}</span>

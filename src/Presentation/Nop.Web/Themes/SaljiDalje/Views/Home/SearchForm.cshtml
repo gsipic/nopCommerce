@@ -17,17 +17,18 @@
                 </div>
             </div>
             <hr class="hr-light d-lg-none my-2">
-            @foreach (dynamic dropdown in Model) // Use dynamic
+            @foreach (dynamic dropdown in Model.Select((item, index) => new { item, index }))
             {
+                bool isLast = dropdown.index == Model.Count - 1; // Check if last item
                 <div class="col-lg-2 col-md-3 col-sm-6">
-                    <div class="dropdown border-end-sm border-light">
+                    <div class="dropdown @(isLast ? "" : "border-end-sm") border-light">
                         <button class="btn btn-link dropdown-toggle ps-2 ps-sm-3" type="button">
-                            <i class="@dropdown.Icon me-2"></i>
-                            <span class="dropdown-toggle-label">@dropdown.Name</span>
+                            <i class="@dropdown.item.Icon me-2"></i>
+                            <span class="dropdown-toggle-label">@dropdown.item.Name</span>
                         </button>
-                        <input type="hidden" name="@dropdown.Name.ToLower()">
+                        <input type="hidden" name="@dropdown.item.Name.ToLower()">
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            @foreach (var option in dropdown.Options)
+                            @foreach (var option in dropdown.item.Options)
                             {
                                 <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">@option.Name</span></a></li>
                             }
@@ -35,7 +36,7 @@
                     </div>
                 </div>
             }
-            <hr class="hr-light d-lg-none my-2">
+            
             <div class="col-lg-2">
                 <button class="btn btn-primary w-100" type="button">Search</button>
             </div>

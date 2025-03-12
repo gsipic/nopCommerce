@@ -105,11 +105,11 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                     <FormItem item={make} style={"fi-list"} onPress={handleMakeSelect}/>
                     <FormItem item={model} style={"fi-list"} onPress={handleModelSelect}/>
                     <FormItem item={bodyType} style={"fi-car fs-lg"} onPress={useCallback(() => {}, [])}/>
-                    <FormItem item={location} style={"fi-map-pin"} onPress={useCallback(() => {}, [])}/>
-                    <hr className="hr-light d-lg-none my-2"/>
+                    <FormItem item={location} style={"fi-map-pin"} isLast={true} onPress={useCallback(() => {}, [])}/>
+                    
                     {/* Search Button */}
                     <div className="col-lg-2">
-                        <button className="btn btn-primary w-100" type="button" disabled={!seoName} onClick={() => window.location.href = `https://localhost:5001/${seoName}`}>
+                        <button className="btn btn-primary w-100" type="button"  onClick={() => window.location.href = `https://localhost:5001/${seoName}`}>
                             Search
                         </button>
                     </div>
