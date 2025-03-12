@@ -339,7 +339,7 @@ public partial class SellCarController(
     [AllowAnonymous]
     public async Task<IActionResult> ChildrenCategories([FromBody] PostExample test)
     {
-        Console.WriteLine(test);
+        //Console.WriteLine(test);
         var model = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(test.id))
             .Select(option => new SpecificationOption { Text = option.Name, Value = option.Id.ToString() }).ToList();
         if (model.Count == 0)

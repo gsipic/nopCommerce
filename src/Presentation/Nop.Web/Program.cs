@@ -54,7 +54,7 @@ public partial class Program
         builder.Services.AddLiveReload(config =>
         {
             config.LiveReloadEnabled = builder.Environment.IsDevelopment();
-            config.ClientFileExtensions = ".cshtml,.css,.js,.htm,.html,.ts,.razor,.cs"; // track also cs file
+            config.ClientFileExtensions = ".cshtml,.css,.js,.htm,.html,.ts,.tsx,.razor,.cs"; // track also cs file
             config.FolderToMonitor = "/Users/goransipic/Developer/RiderProjects/nopCommerce/src";
         });
 

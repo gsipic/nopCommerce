@@ -1,4 +1,5 @@
-﻿@using System.Text.RegularExpressions
+﻿@using System.Dynamic
+@using System.Text.RegularExpressions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Nop.Core.Domain.Orders
 @using Nop.Web.Factories;
@@ -15,6 +16,54 @@
     var products = await productService.GetAllProductsDisplayedOnHomepageAsync();
     var productsModel = (await productModelFactory.PrepareProductOverviewModelsAsync(products, true, true)).ToList();
     var rootCategories = await _catalogModelFactory.PrepareTopMenuModelAsync();
+    var items = rootCategories.Categories.First(item => item.Name == "Osnovni automobili").SubCategories.Select(item => item);
+    
+    var dropdowns = new List<ExpandoObject>();
+
+    // Helper function to create dropdown with ExpandoObject
+    ExpandoObject CreateDropdown(string name, string icon, List<ExpandoObject> options)
+    {
+        dynamic dropdown = new ExpandoObject();
+        dropdown.Name = name;
+        dropdown.Icon = icon;
+        dropdown.Options = options;
+        return dropdown;
+    }
+
+    // Helper function to create an option as ExpandoObject
+    ExpandoObject CreateOption(string name, string seoName, int? id = 0)
+    {
+        dynamic option = new ExpandoObject();
+        option.Name = name;
+        option.SeoName = seoName;
+        option.Id = id;
+        return option;
+    }
+
+    // Populate dropdown list with ExpandoObject-based options
+    dropdowns.Add(CreateDropdown("Make", "fi-list", items.Select(item => CreateOption(item.Name, item.SeName, item.Id)).ToList()));
+    dropdowns.Add(CreateDropdown("Model", "fi-list", new List<ExpandoObject>
+    {
+        CreateOption("Altima", "altima",1),
+        CreateOption("Juke", "juke",2),
+        CreateOption("Leaf", "leaf",3),
+        CreateOption("Maxima", "maxima",4)
+    }));
+    dropdowns.Add(CreateDropdown("Body type", "fi-car fs-lg", new List<ExpandoObject>
+    {
+        CreateOption("Compact", "compact",1),
+        CreateOption("Crossover", "crossover",2),
+        CreateOption("Coupe", "coupe",3)
+    }));
+    dropdowns.Add(CreateDropdown("Location", "fi-map-pin", new List<ExpandoObject>
+    {
+        CreateOption("Dallas", "dallas",1),
+        CreateOption("Chicago", "chicago",2),
+        CreateOption("Houston", "houston",3)
+    }));
+
+
+
 }
 <!-- Vendor Styles-->
 <link rel="stylesheet" media="screen" href="/Themes/SaljiDalje/Content/vendor/tiny-slider/dist/tiny-slider.css"
@@ -38,7 +87,7 @@
     </div>
     <div class="container mt-4 mt-sm-3 mt-lg-n3 pb-5 mb-md-4">
         @{
-            var html = await (await Html.PartialAsync("/Themes/SaljiDalje/Views/Home/SearchForm.cshtml", rootCategories.Categories.SelectMany(item => item.SubCategories).Select(item => item.Name))).RenderHtmlContentAsync();
+            var html = await (await Html.PartialAsync("/Themes/SaljiDalje/Views/Home/SearchForm.cshtml", dropdowns)).RenderHtmlContentAsync();
             var f00 = Regex.Replace(html, @">\s+<", "><").Trim();
         }
         @Html.Raw(f00)
@@ -924,42 +973,18 @@
 <script src="/Themes/SaljiDalje/Content/vendor/jarallax/dist/jarallax.min.js" asp-exclude-from-bundle="true"></script>
 <script src="/Themes/SaljiDalje/Content/vendor/jarallax/dist/jarallax.min.js" asp-exclude-from-bundle="true"></script>
 @{
-    var dropdowns = new List<Dictionary<string, object>>
-    {
-        new()
-        {
-            { "name", "Make" },
-            { "icon", "fi-list" },
-            { "options", rootCategories.Categories.SelectMany(item => item.SubCategories).Select(item => item.Name) }
-        },
-        new()
-        {
-            { "name", "Model" },
-            { "icon", "fi-list" },
-            { "options", new List<string> { "Altima", "Juke", "Leaf", "Maxima", "Micra", "Murano", "Note", "Patrol" } }
-        },
-        new()
-        {
-            { "name", "Body type" },
-            { "icon", "fi-car fs-lg" },
-            { "options", new List<string> { "Compact", "Crossover", "Coupe", "Family MPV", "Pickup", "Sedan", "SUV", "Wagon" } }
-        },
-        new()
-        {
-            { "name", "Location" },
-            { "icon", "fi-map-pin" },
-            { "options", new List<string> { "Dallas", "Chicago", "Houston", "Las Vegas", "Los Angeles", "New York", "San Francisco" } }
-        }
-    };
 }
+
 @section Scripts {
     <!script>window.carSearchData = @Html.Raw(Json.Serialize(dropdowns));</!script>
     <environment include="Development">
-        <!script type="module" src="https://localhost:5173/src/main.tsx"></!script>
+        <!script type="module" src="https://localhost:5173/src/main.tsx">
+    </!script>
     </environment>
 
     <environment include="Production">
-        <!script type="module" src="~/@Manifest["main.tsx"]!.File" asp-append-version="true"></!script>
+        <!script type="module" src="~/@Manifest["main.tsx"]!.File" asp-append-version="true">
+    </!script>
     </environment>
 }
 

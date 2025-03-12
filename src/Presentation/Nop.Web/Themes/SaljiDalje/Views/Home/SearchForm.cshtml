@@ -1,4 +1,5 @@
-@model IEnumerable<string>
+@using System.Dynamic
+@model List<ExpandoObject>
 
 <div id="root">
     <ul class="nav nav-tabs nav-tabs-light mb-4">
@@ -8,83 +9,32 @@
     <form class="form-group form-group-light d-block">
         <div class="row g-0 ms-lg-n2">
             <div class="col-lg-2">
-                <div class="input-group border-end-lg border-light"><span
-                        class="input-group-text text-muted ps-2 ps-sm-3"><i class="fi-search"></i></span><input
-                        class="form-control" placeholder="Keywords..." type="text" name="keywords"></div>
+                <div class="input-group border-end-lg border-light">
+                    <span class="input-group-text text-muted ps-2 ps-sm-3">
+                        <i class="fi-search"></i>
+                    </span>
+                    <input class="form-control" placeholder="Keywords..." type="text" name="keywords">
+                </div>
             </div>
             <hr class="hr-light d-lg-none my-2">
-            <div class="col-lg-2 col-md-3 col-sm-6">
-                <div class="dropdown border-end-sm border-light" data-bs-toggle="select">
-                    <button class="btn btn-link dropdown-toggle ps-2 ps-sm-3" type="button" data-bs-toggle="dropdown"
-                            ><i class="fi-list me-2"></i><span
-                            class="dropdown-toggle-label">Make</span></button>
-                    <input type="hidden" name="make">
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        @foreach (var result in Model)
-                        {
-                            <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">@result</span></a></li>
-                        }
-                    </ul>
+            @foreach (dynamic dropdown in Model) // Use dynamic
+            {
+                <div class="col-lg-2 col-md-3 col-sm-6">
+                    <div class="dropdown border-end-sm border-light">
+                        <button class="btn btn-link dropdown-toggle ps-2 ps-sm-3" type="button">
+                            <i class="@dropdown.Icon me-2"></i>
+                            <span class="dropdown-toggle-label">@dropdown.Name</span>
+                        </button>
+                        <input type="hidden" name="@dropdown.Name.ToLower()">
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            @foreach (var option in dropdown.Options)
+                            {
+                                <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">@option.Name</span></a></li>
+                            }
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-2 col-md-3 col-sm-6">
-                <div class="dropdown border-end-sm border-light" data-bs-toggle="select">
-                    <button class="btn btn-link dropdown-toggle ps-2 ps-sm-3" type="button" data-bs-toggle="dropdown"
-                            ><i class="fi-list me-2"></i><span
-                            class="dropdown-toggle-label">Model</span></button>
-                    <input type="hidden" name="model">
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Altima</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Juke</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Leaf</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Maxima</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Micra</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Murano</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Note</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Patrol</span></a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-2 col-md-3 col-sm-6">
-                <div class="dropdown border-end-sm border-light" data-bs-toggle="select">
-                    <button class="btn btn-link dropdown-toggle ps-2 ps-sm-3" type="button" data-bs-toggle="dropdown"
-                            ><i class="fi-car fs-lg me-2"></i><span class="dropdown-toggle-label">Body type</span>
-                    </button>
-                    <input type="hidden" name="body type">
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Compact</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Crossover</span></a>
-                        </li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Coupe</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Family MPV</span></a>
-                        </li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Pickup</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Sedan</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">SUV</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Wagon</span></a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-2 col-md-3 col-sm-6">
-                <div class="dropdown border-end-sm border-light" data-bs-toggle="select">
-                    <button class="btn btn-link dropdown-toggle ps-2 ps-sm-3" type="button" data-bs-toggle="dropdown"
-                            ><i class="fi-map-pin me-2"></i><span class="dropdown-toggle-label">Location</span>
-                    </button>
-                    <input type="hidden" name="location">
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Dallas</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Chicago</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Houston</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Las Vegas</span></a>
-                        </li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">Los Angeles</span></a>
-                        </li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">New York</span></a></li>
-                        <li><a class="dropdown-item" href="#"><span class="dropdown-item-label">San Francisco</span></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            }
             <hr class="hr-light d-lg-none my-2">
             <div class="col-lg-2">
                 <button class="btn btn-primary w-100" type="button">Search</button>
