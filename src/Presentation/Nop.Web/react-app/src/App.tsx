@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from "react";
 import FormItem from "./FormItem.tsx";
-
+const API_URL = import.meta.env.VITE_API_URL as string;
 export interface Option {
     Name: string; 
     SeoName?: string; 
@@ -30,7 +30,7 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
         (async () => {
             if (makeId === undefined) return; // ✅ Prevent API call when make is null
             try {
-                const response = await fetch("https://localhost:5001/SellCar/ChildrenCategories", {
+                const response = await fetch(`${API_URL}/SellCar/ChildrenCategories`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

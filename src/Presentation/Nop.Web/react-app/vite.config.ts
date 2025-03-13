@@ -10,6 +10,8 @@ const baseFolder =
         ? `${process.env.APPDATA}/ASP.NET/https`
         : `${process.env.HOME}/.aspnet/https`;
 
+const API_URL = `${process.env.ASPNETCORE_URLS}`
+
 // Generate the certificate name using the NPM package name
 const certificateName = process.env.npm_package_name;
 
@@ -49,6 +51,9 @@ export default defineConfig(async ()=> {
     const config: UserConfig = {
         plugins: [react()],
         appType: 'custom',
+        define: {
+            "import.meta.env.VITE_API_URL": JSON.stringify(API_URL), // Inject API URL
+        },
         root: path.resolve(__dirname),
         
         build: {
