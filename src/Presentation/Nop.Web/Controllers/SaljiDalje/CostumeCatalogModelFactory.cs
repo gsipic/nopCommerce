@@ -1,4 +1,5 @@
-﻿using BlazorApp1.Pages;
+﻿using System.Dynamic;
+using BlazorApp1.Pages;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Nop.Core;
@@ -312,5 +313,31 @@ public class CostumeCatalogModelFactory(
         }
 
         return result;
+    }
+
+
+    public async Task<ExpandoObject> FormCategoryFilterAsync()
+    {
+        var županije =
+            await SellCarController.getSpecificationOptions(specificationAttributeService, "Location", "Županija");
+        var bodyType =
+            await SellCarController.getSpecificationOptions(specificationAttributeService, "Vehicle information",
+                "BodyType");
+
+        dynamic response = new ExpandoObject();
+        response.BodyTypes = bodyType.Select(item => CreateOption(item.Text, item.Value));
+        response.Locations = županije.Select(item => CreateOption(item.Text, item.Value));
+
+
+        return response;
+    }
+
+    // Helper function to create an option as ExpandoObject
+    ExpandoObject CreateOption(string name, string? id )
+    {
+        dynamic option = new ExpandoObject();
+        option.Name = name;
+        option.Id = id;
+        return option;
     }
 }

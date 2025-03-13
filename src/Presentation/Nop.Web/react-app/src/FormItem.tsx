@@ -26,8 +26,10 @@ const FormItem: React.FC<FormItemProps> = ({ item, style, isLast ,onPress }) => 
         : undefined;
 
     // ✅ Memoize toggle function
-    const toggleDropdown = useCallback(() => {
-        setIsVisible((prev) => !prev);
+    const toggleDropdown = useCallback((item : DropdownProps) => {
+        if (item.Options.length > 0){
+            setIsVisible((prev) => !prev);
+        }
     }, []);
 
     // ✅ Memoize option selection function
@@ -44,7 +46,7 @@ const FormItem: React.FC<FormItemProps> = ({ item, style, isLast ,onPress }) => 
     return (
         <div className="col-lg-2 col-md-3 col-sm-6">
             <div className={`dropdown ${isLast ? "" : "border-end-sm"} border-light`}>
-                <button className="btn btn-link dropdown-toggle ps-2 ps-sm-3" type="button" onClick={toggleDropdown}>
+                <button className="btn btn-link dropdown-toggle ps-2 ps-sm-3" type="button" onClick={() => toggleDropdown(item)}>
                     <i className={`${style} me-2`}></i>
                     <span className="dropdown-toggle-label">{name}</span>
                 </button>

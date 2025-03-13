@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Dynamic;
 using System.Net.Mime;
 using System.Text;
 using System.Transactions;
@@ -340,14 +341,23 @@ public partial class SellCarController(
     public async Task<IActionResult> ChildrenCategories([FromBody] PostExample test)
     {
         //Console.WriteLine(test);
-        var model = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(test.id))
-            .Select(option => new SpecificationOption { Text = option.Name, Value = option.Id.ToString() }).ToList();
+        var model = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(test.id));
+        var tasks = model.Select(async option => 
+        {
+            dynamic obj = new ExpandoObject();
+            obj.Text = option.Name;
+            obj.Value = option.Id;
+            obj.SeoName = await urlRecordService.GetSeNameAsync(option);
+            return obj;
+        });
+
         if (model.Count == 0)
         {
             return NoContent();
         }
 
-        return Json(model);
+        var foo = await Task.WhenAll(tasks);
+        return Json(foo);
     }
 
     [HttpPost]

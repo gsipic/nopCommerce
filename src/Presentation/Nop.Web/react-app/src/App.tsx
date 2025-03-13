@@ -41,11 +41,12 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                const result: { Text: string; Value: string }[] = await response.json(); // Ensure correct API response type
+                const result: { Text: string; Value: string, SeoName: string }[] = await response.json(); // Ensure correct API response type
 
                 // ✅ Convert API response to match `Options` type
                 const options: Option[] = result.map((item) => ({
                     Name: item.Text, // Use API's "Text" as "Name"
+                    SeoName: item.SeoName,
                     Id: Number(item.Value) // Ensure `Id` is a number
                 }));
 
@@ -108,8 +109,12 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                     {/* Dynamic Dropdowns */}
                     <FormItem item={make} style={"fi-list"} onPress={handleMakeSelect}/>
                     <FormItem item={model} style={"fi-list"} onPress={handleModelSelect}/>
-                    <FormItem item={bodyType} style={"fi-car fs-lg"} onPress={useCallback(() => {}, [])}/>
-                    <FormItem item={location} style={"fi-map-pin"} isLast={true} onPress={useCallback(() => {}, [])}/>
+                    <FormItem item={bodyType} style={"fi-car fs-lg"} onPress={useCallback((option) => {
+                        console.log(option)
+                    }, [])}/>
+                    <FormItem item={location} style={"fi-map-pin"} isLast={true} onPress={useCallback((option) => {
+                        console.log(option)
+                    }, [])}/>
                     
                     {/* Search Button */}
                     <div className="col-lg-2">

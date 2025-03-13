@@ -5,6 +5,7 @@
 @using Nop.Web.Factories;
 @using Nop.Services.Catalog
 @using Nop.Web.Framework.TagHelpers.Shared
+@using Nop.Web.Themes.SaljiDalje.Controllers
 @using Vite.AspNetCore
 @inject IProductService productService
 @inject IProductModelFactory productModelFactory
@@ -17,6 +18,9 @@
     var productsModel = (await productModelFactory.PrepareProductOverviewModelsAsync(products, true, true)).ToList();
     var rootCategories = await _catalogModelFactory.PrepareTopMenuModelAsync();
     var items = rootCategories.Categories.First(item => item.Name == "Osnovni automobili").SubCategories.Select(item => item);
+    var foo = await (_catalogModelFactory as CostumeCatalogModelFactory).FormCategoryFilterAsync();
+    
+    
     
     var dropdowns = new List<ExpandoObject>();
 
@@ -31,7 +35,7 @@
     }
 
     // Helper function to create an option as ExpandoObject
-    ExpandoObject CreateOption(string name, string seoName, int? id = 0)
+    ExpandoObject CreateOption(string name, string? seoName = null, string? id = null)
     {
         dynamic option = new ExpandoObject();
         option.Name = name;
@@ -39,31 +43,28 @@
         option.Id = id;
         return option;
     }
+    
+    // Convert foo.BodyTypes and foo.Locations to ExpandoObject lists
+    var bodyTypes = new List<ExpandoObject>();
+    foreach (var item in ((dynamic)foo).BodyTypes)
+    {
+        bodyTypes.Add(CreateOption(item.Name, null, item.Id)); 
+    }
+
+    var locations = new List<ExpandoObject>();
+    foreach (var item in ((dynamic)foo).Locations)
+    {
+        locations.Add(CreateOption(item.Name, null, item.Id)); 
+    }
 
     // Populate dropdown list with ExpandoObject-based options
-    dropdowns.Add(CreateDropdown("Make", "fi-list", items.Select(item => CreateOption(item.Name, item.SeName, item.Id)).ToList()));
+    dropdowns.Add(CreateDropdown("Make", "fi-list", items.Select(item => CreateOption(item.Name, item.SeName, item.Id.ToString())).ToList()));
     dropdowns.Add(CreateDropdown("Model", "fi-list", new List<ExpandoObject>
     {
-        CreateOption("Altima", "altima",1),
-        CreateOption("Juke", "juke",2),
-        CreateOption("Leaf", "leaf",3),
-        CreateOption("Maxima", "maxima",4)
+        
     }));
-    dropdowns.Add(CreateDropdown("Body type", "fi-car fs-lg", new List<ExpandoObject>
-    {
-        CreateOption("Compact", "compact",1),
-        CreateOption("Crossover", "crossover",2),
-        CreateOption("Coupe", "coupe",3)
-    }));
-    dropdowns.Add(CreateDropdown("Location", "fi-map-pin", new List<ExpandoObject>
-    {
-        CreateOption("Dallas", "dallas",1),
-        CreateOption("Chicago", "chicago",2),
-        CreateOption("Houston", "houston",3)
-    }));
-
-
-
+    dropdowns.Add(CreateDropdown("Body type", "fi-car fs-lg", bodyTypes));
+    dropdowns.Add(CreateDropdown("Location", "fi-map-pin", locations));
 }
 <!-- Vendor Styles-->
 <link rel="stylesheet" media="screen" href="/Themes/SaljiDalje/Content/vendor/tiny-slider/dist/tiny-slider.css"
