@@ -1,15 +1,20 @@
-import {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import FormItem from "./FormItem.tsx";
 
-export interface DropdownProps {
+export interface Option {
+    Name: string; 
+    SeoName?: string; 
+    Id: number; 
+}
+export interface DropdownProps{
     Name: string;
     Icon: string;
-    Options: { Name: string; SeoName: string | null; Id: number; }[];
+    Options: Option[];
 }
 
 const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
     const [activeTab, setActiveTab] = useState("New");
-    const [seoName, setSeoName] = useState<string | null>(null);
+    const [seoName, setSeoName] = useState<string | undefined>();
     const [makeId, setMakeId] = useState<number>();
     const [make] = useState<DropdownProps>(props.dropdowns[0]);
     //const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -39,9 +44,8 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                 const result: { Text: string; Value: string }[] = await response.json(); // Ensure correct API response type
 
                 // ✅ Convert API response to match `Options` type
-                const options: { Name: string; SeoName: string | null; Id: number }[] = result.map((item) => ({
+                const options: Option[] = result.map((item) => ({
                     Name: item.Text, // Use API's "Text" as "Name"
-                    SeoName: null,
                     Id: Number(item.Value) // Ensure `Id` is a number
                 }));
 
@@ -58,11 +62,11 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
         })();
     }, [makeId]);
 
-    const handleMakeSelect = useCallback((option: { Name: string; SeoName: string | null; Id: number }) => {
+    const handleMakeSelect = useCallback((option: Option) => {
         setSeoName(option.SeoName)
         setMakeId(option.Id);
     }, []);
-    const handleModelSelect = useCallback((option: { Name: string; SeoName: string | null; Id: number }) => {
+    const handleModelSelect = useCallback((option: Option) => {
         setSeoName(option.SeoName)
         setModel((prevModel) => ({
             ...prevModel,

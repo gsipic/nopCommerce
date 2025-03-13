@@ -1,11 +1,11 @@
 import React, {useState, useCallback, useEffect, memo} from "react";
-import { DropdownProps } from "./App"; // Import the type
+import {DropdownProps, Option} from "./App"; // Import the type
 
 interface FormItemProps {
     item: DropdownProps;
     style: string;
     isLast?: boolean;
-    onPress: (Option : { Name: string; SeoName: string | null; Id: number; }) => void;
+    onPress: (Option : Option) => void;
 }
 
 const FormItem: React.FC<FormItemProps> = ({ item, style, isLast ,onPress }) => {
@@ -32,7 +32,7 @@ const FormItem: React.FC<FormItemProps> = ({ item, style, isLast ,onPress }) => 
 
     // ✅ Memoize option selection function
     const handleOptionClick = useCallback(
-        (option : { Name: string; SeoName: string | null; Id: number; }) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+        (option : Option) => (e: React.MouseEvent<HTMLAnchorElement>) => {
             e.preventDefault();
             setIsVisible(false);
             setName(option.Name);
