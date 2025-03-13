@@ -15,6 +15,7 @@ export interface DropdownProps{
 const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
     const [activeTab, setActiveTab] = useState("New");
     const [seoName, setSeoName] = useState<string | undefined>();
+    const [bodyTypeSelection, setBodyTypeSelection] = useState<number | undefined>();
     const [makeId, setMakeId] = useState<number>();
     const [make] = useState<DropdownProps>(props.dropdowns[0]);
     //const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -110,7 +111,7 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                     <FormItem item={make} style={"fi-list"} onPress={handleMakeSelect}/>
                     <FormItem item={model} style={"fi-list"} onPress={handleModelSelect}/>
                     <FormItem item={bodyType} style={"fi-car fs-lg"} onPress={useCallback((option) => {
-                        console.log(option)
+                        setBodyTypeSelection(option.Id);
                     }, [])}/>
                     <FormItem item={location} style={"fi-map-pin"} isLast={true} onPress={useCallback((option) => {
                         console.log(option)
@@ -118,7 +119,15 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                     
                     {/* Search Button */}
                     <div className="col-lg-2">
-                        <button className="btn btn-primary w-100" type="button"  onClick={() => window.location.href = `https://localhost:5001/${seoName}`}>
+                        <button className="btn btn-primary w-100" type="button" onClick={() => {
+                            let link = `https://localhost:5001/${seoName}`;
+
+                            if (bodyTypeSelection !== undefined) {
+                                link += `?specs=${encodeURIComponent(bodyTypeSelection)}`;
+                            }
+
+                            window.location.href = link;
+                        }}>
                             Search
                         </button>
                     </div>
