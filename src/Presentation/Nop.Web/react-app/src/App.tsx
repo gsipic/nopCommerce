@@ -237,7 +237,7 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                             
                             window.location.href = link;
                         }}>
-                            { productCount ? `Search (${productCount})` : "Search" }
+                            { productCount !== undefined ? `Search (${productCount})` : "Search" }
                         </button>
                     </div>
                 </div>
