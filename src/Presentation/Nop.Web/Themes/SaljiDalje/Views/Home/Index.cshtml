@@ -18,9 +18,6 @@
     var productsModel = (await productModelFactory.PrepareProductOverviewModelsAsync(products, true, true)).ToList();
     var rootCategories = await _catalogModelFactory.PrepareTopMenuModelAsync();
     var items = rootCategories.Categories.First(item => item.Name == "Osnovni automobili").SubCategories.Select(item => item);
-    var foo = await (_catalogModelFactory as CostumeCatalogModelFactory).FormCategoryFilterAsync();
-    
-    
     
     var dropdowns = new List<ExpandoObject>();
 
@@ -43,28 +40,11 @@
         option.Id = id;
         return option;
     }
-    
-    // Convert foo.BodyTypes and foo.Locations to ExpandoObject lists
-    var bodyTypes = new List<ExpandoObject>();
-    foreach (var item in ((dynamic)foo).BodyTypes)
-    {
-        bodyTypes.Add(CreateOption(item.Name, null, item.Id)); 
-    }
-
-    var locations = new List<ExpandoObject>();
-    foreach (var item in ((dynamic)foo).Locations)
-    {
-        locations.Add(CreateOption(item.Name, null, item.Id)); 
-    }
-
     // Populate dropdown list with ExpandoObject-based options
     dropdowns.Add(CreateDropdown("Make", "fi-list", items.Select(item => CreateOption(item.Name, item.SeName, item.Id.ToString())).ToList()));
-    dropdowns.Add(CreateDropdown("Model", "fi-list", new List<ExpandoObject>
-    {
-        
-    }));
-    dropdowns.Add(CreateDropdown("Body type", "fi-car fs-lg", bodyTypes));
-    dropdowns.Add(CreateDropdown("Location", "fi-map-pin", locations));
+    dropdowns.Add(CreateDropdown("Model", "fi-list", []));
+    dropdowns.Add(CreateDropdown("Body type", "fi-car fs-lg", []));
+    dropdowns.Add(CreateDropdown("Location", "fi-map-pin", []));
 }
 <!-- Vendor Styles-->
 <link rel="stylesheet" media="screen" href="/Themes/SaljiDalje/Content/vendor/tiny-slider/dist/tiny-slider.css"

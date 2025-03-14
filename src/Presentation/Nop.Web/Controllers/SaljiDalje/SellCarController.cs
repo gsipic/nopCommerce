@@ -24,7 +24,6 @@ namespace Nop.Web.Themes.SaljiDalje.Controllers;
 
 [Authorize]
 public partial class SellCarController(
-    ICatalogModelFactory catalogModelFactory,
     ICategoryService categoryService,
     IProductService productService,
     IUrlRecordService urlRecordService,
@@ -33,7 +32,6 @@ public partial class SellCarController(
     ISpecificationAttributeService specificationAttributeService,
     IRepository<ProductExtended> productExtendedRepository,
     IRepository<Product> productRepository,
-    IRepository<SpecificationAttribute> specificationAttributeRepository,
     IRepository<CostumerPictureAttachmentMapping> costumerPictureAttachmentMappingRepository,
     IWorkContext workContext)
     : BasePublicController
@@ -338,10 +336,10 @@ public partial class SellCarController(
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> ChildrenCategories([FromBody] PostExample test)
+    public async Task<IActionResult> ChildrenCategories([FromBody] int categoryId)
     {
         //Console.WriteLine(test);
-        var model = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(test.id));
+        var model = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(categoryId));
         var tasks = model.Select(async option => 
         {
             dynamic obj = new ExpandoObject();
@@ -358,6 +356,40 @@ public partial class SellCarController(
 
         var foo = await Task.WhenAll(tasks);
         return Json(foo);
+    }
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetSpecificationsByCategory([FromBody] SpecificationRequest specificationRequest)
+    {
+        var categoryIds = new List<int> { specificationRequest.CategoryId };
+        categoryIds.AddRange(await categoryService.GetChildCategoryIdsAsync(specificationRequest.CategoryId, 0));
+        var products = await productService.SearchProductsAsync(
+            categoryIds: categoryIds // Filter by category
+        );
+        IEnumerable<string> specificationOptions;
+
+        // 🔄 Switch based on CommandTypeEnum
+        switch (specificationRequest.CommandType)
+        {
+            case SpecificationRequest.CommandTypeEnum.BODY_TYPE:
+                specificationOptions = (await getSpecificationOptions(
+                    specificationAttributeService, "Vehicle information", "BodyType"
+                )).Select(item => item.Value);
+                break;
+
+            case SpecificationRequest.CommandTypeEnum.LOCATIONS:
+                specificationOptions = (await getSpecificationOptions(specificationAttributeService,"Location", "Županija")).Select(item => item.Value);
+                break;
+
+            default:
+                return BadRequest("Invalid CommandType.");
+        }
+        
+        if (!products.Any())
+            return Json(new List<ProductSpecificationAttribute>());
+
+        var specificationAttributeOptions = await specificationAttributeService.GetFiltrableSpecificationAttributeOptionsByCategoryIdAsync(specificationRequest.CategoryId);
+        return Json((specificationAttributeOptions.Where(item => specificationOptions.Contains(item.Id.ToString())).Distinct()));
     }
 
     [HttpPost]
@@ -676,3 +708,12 @@ public class Root
     public object color { get; set; }
     public Output output { get; set; }
 }
+
+public class SpecificationRequest
+{
+    public int CategoryId { get; set; }
+    public CommandTypeEnum CommandType { get; set; }
+    
+    public enum CommandTypeEnum { BODY_TYPE, LOCATIONS }
+}
+
