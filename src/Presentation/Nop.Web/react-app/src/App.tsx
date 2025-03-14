@@ -219,7 +219,7 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                     
                     {/* Search Button */}
                     <div className="col-lg-2">
-                        <button className="btn btn-primary w-100" type="button" onClick={() => {
+                        <button className="btn btn-primary w-100" disabled={!seoName} type="button" onClick={() => {
                             let link = `https://localhost:5001/${seoName}`;
                             let specsParams: number[] = [];
                             
