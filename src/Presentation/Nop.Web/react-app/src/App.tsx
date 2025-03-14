@@ -12,11 +12,22 @@ export interface DropdownProps{
     Options: Option[];
 }
 
+interface ProductResponse {
+    ProductsCount?: number;
+    Properties: { Text: string; Value: string; SeoName: string }[];
+}
+interface ProductChildResponse {
+    ProductsCount?: number;
+    Properties: { Id : number, Name : string }[]
+}
+
+
 const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
     const [activeTab, setActiveTab] = useState("New");
     const [seoName, setSeoName] = useState<string | undefined>();
     const [bodyTypeSelection, setBodyTypeSelection] = useState<number | undefined>();
     const [locationTypeSelection, setLocationTypeSelection] = useState<number>()
+    const [productCount, setProductCount] = useState<number>()
     const [makeId, setMakeId] = useState<number>();
     const [modelId, setModelId] = useState<number>();
     const [make] = useState<DropdownProps>(props.dropdowns[0]);
@@ -69,24 +80,25 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                const result: { Text: string; Value: string, SeoName: string }[] = await response.json(); // Ensure correct API response type
-                const resultBodyType: { Id : number, Name : string }[] = await responseBodyType.json(); // Ensure correct API response type
-                const resultLocationType: { Id : number, Name : string }[] = await responseLocationType.json(); // Ensure correct API response type
-
+                const result: ProductResponse = await response.json(); // Ensure correct API response type
+                const resultBodyType: ProductChildResponse = await responseBodyType.json(); // Ensure correct API response type
+                const resultLocationType: ProductChildResponse = await responseLocationType.json(); // Ensure correct API response type
+                
+                setProductCount(result.ProductsCount);
                 // ✅ Convert API response to match `Options` type
-                const options: Option[] = result.map((item) => ({
+                const options: Option[] = result.Properties.map((item) => ({
                     Name: item.Text, // Use API's "Text" as "Name"
                     SeoName: item.SeoName,
                     Id: Number(item.Value) // Ensure `Id` is a number
                 }));
 
                 // ✅ Convert API response to match `Options` type
-                const bodyType: Option[] = resultBodyType.map((item) => ({
+                const bodyType: Option[] = resultBodyType.Properties.map((item) => ({
                     Name: item.Name, 
                     Id: item.Id
                 }));
 
-                const locationType: Option[] = resultLocationType.map((item) => ({
+                const locationType: Option[] = resultLocationType.Properties.map((item) => ({
                     Name: item.Name,
                     Id: item.Id
                 }));
@@ -126,12 +138,13 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                 },
                 body: JSON.stringify(specificationRequest(modelId,"BODY_TYPE")),
             });
-            const resultBodyType: { Id : number, Name : string }[] = await responseBodyType.json(); // Ensure correct API response type
+            const resultBodyType: ProductChildResponse = await responseBodyType.json(); // Ensure correct API response type
             // ✅ Convert API response to match `Options` type
-            const bodyType: Option[] = resultBodyType.map((item) => ({
+            const bodyType: Option[] = resultBodyType.Properties.map((item) => ({
                 Name: item.Name,
                 Id: item.Id
             }));
+            setProductCount(resultBodyType.ProductsCount);
             setBodyType((prevState) => ({
                 ...prevState,
                 Name: "Body type",
@@ -224,7 +237,7 @@ const SearchForm: React.FC<{ dropdowns: DropdownProps[] }> = (props) => {
                             
                             window.location.href = link;
                         }}>
-                            Search
+                            { productCount ? `Search (${productCount})` : "Search" }
                         </button>
                     </div>
                 </div>

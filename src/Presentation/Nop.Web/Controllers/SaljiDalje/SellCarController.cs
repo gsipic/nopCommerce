@@ -338,8 +338,12 @@ public partial class SellCarController(
     [AllowAnonymous]
     public async Task<IActionResult> ChildrenCategories([FromBody] int categoryId)
     {
-        //Console.WriteLine(test);
+        var categoryIds = new List<int> { categoryId };
+        categoryIds.AddRange(await categoryService.GetChildCategoryIdsAsync(categoryId, 0));
         var model = (await categoryService.GetAllCategoriesByParentCategoryIdAsync(categoryId));
+        var products = await productService.SearchProductsAsync(
+            categoryIds: categoryIds // Filter by category
+        );
         var tasks = model.Select(async option => 
         {
             dynamic obj = new ExpandoObject();
@@ -353,9 +357,12 @@ public partial class SellCarController(
         {
             return NoContent();
         }
-
-        var foo = await Task.WhenAll(tasks);
-        return Json(foo);
+        
+        dynamic result = new ExpandoObject();
+        result.ProductsCount = products.Count;
+        result.Properties = await Task.WhenAll(tasks);
+        
+        return Json(result);
     }
     [HttpPost]
     [AllowAnonymous]
@@ -385,11 +392,13 @@ public partial class SellCarController(
                 return BadRequest("Invalid CommandType.");
         }
         
-        if (!products.Any())
-            return Json(new List<ProductSpecificationAttribute>());
-
         var specificationAttributeOptions = await specificationAttributeService.GetFiltrableSpecificationAttributeOptionsByCategoryIdAsync(specificationRequest.CategoryId);
-        return Json((specificationAttributeOptions.Where(item => specificationOptions.Contains(item.Id.ToString())).Distinct()));
+        
+        dynamic result = new ExpandoObject();
+        result.ProductsCount = products.Count;
+        result.Properties = (specificationAttributeOptions.Where(item => specificationOptions.Contains(item.Id.ToString())).Distinct());
+        
+        return Json(result);
     }
 
     [HttpPost]
